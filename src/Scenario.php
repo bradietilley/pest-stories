@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard;
 
 use BradieTilley\StoryBoard\Traits\HasName;
 use Closure;
+use Illuminate\Container\Container;
 
 class Scenario
 {
@@ -12,9 +13,9 @@ class Scenario
     protected static array $registered = [];
 
     public function __construct(
-        public string $name,
-        public string $variable,
-        public Closure $generator
+        protected string $name,
+        protected string $variable,
+        protected Closure $generator,
     ) {
 
     }
@@ -43,5 +44,14 @@ class Scenario
     public static function make(string $name, string $variable, Closure $generator)
     {
         return (new self($name, $variable, $generator))->register();
+    }
+
+    public function boot(Story $story, $arguments): void
+    {
+        $generator = $this->generator;
+
+        Container::getInstance()->call($generator, [
+            'story' => $story,
+        ] + $arguments);
     }
 }

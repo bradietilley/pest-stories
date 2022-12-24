@@ -47,6 +47,13 @@ trait HasStories
     }
 
     /**
+     */
+    public function hasStories(): bool
+    {
+        return !empty($this->stories);
+    }
+
+    /**
      * Get all stories
      * 
      * @return array<string,Story>

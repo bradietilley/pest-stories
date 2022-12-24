@@ -20,6 +20,8 @@ class Story
     use HasStories;
     use HasTask;
 
+    protected ?string $name = null;
+
     public function __construct(protected ?Story $parent = null)
     {
     }
@@ -30,6 +32,11 @@ class Story
     public static function make(?Story $parent = null)
     {
         return new self($parent);
+    }
+
+    public function hasParent(): bool
+    {
+        return $this->parent !== null;
     }
 
     /**
@@ -48,6 +55,13 @@ class Story
     public function setParent(Story $parent): self
     {
         $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function run(): self
+    {
+        $this->bootScenarios();
 
         return $this;
     }

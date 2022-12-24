@@ -4,10 +4,11 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 
+/**
+ * @property ?string $name
+ */
 trait HasName
 {
-    public ?string $name = null;
-
     /**
      * Set the name (or name fragment) of this story
      * 
@@ -41,7 +42,7 @@ trait HasName
         /**
          * Only the most lowest level story should get prefixed with can or cannot
          */
-        if (empty($this->stories)) {
+        if (! $this->hasStories()) {
             if (property_exists($this, 'expectCan') && ($this->expectCan !== null)) {
                 $can = $this->expectCan ? 'Can' : 'Cannot';
 
