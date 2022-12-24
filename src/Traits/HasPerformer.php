@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 trait HasPerformer
 {
+    protected ?Authenticatable $user = null;
+
     /**
      * Set the user to perform this test
      * 

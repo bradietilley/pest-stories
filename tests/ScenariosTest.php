@@ -55,7 +55,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
     expect($actual)->toBe($expect);
 });
 
-test('scenarios can be booted when a story boots scenarios', function () {
+test('scenario callbacks are executed when a story boots its scenarios', function () {
     $test = [
         'creation' => [],
         'role' => [],
