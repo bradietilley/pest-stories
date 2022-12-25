@@ -9,12 +9,12 @@ class StoryBoard extends Story
         parent::__construct();
     }
 
-    public function test(): self
+    public function createTestCase(): self
     {
         $stories = $this->all();
         
         foreach ($stories as $story) {
-            $story->test();
+            $story->createTestCase();
         }
 
         return $this;

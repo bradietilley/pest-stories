@@ -22,6 +22,8 @@ class Story
 
     protected ?string $name = null;
 
+    protected bool $booted = false;
+
     public function __construct(protected ?Story $parent = null)
     {
     }
@@ -61,13 +63,18 @@ class Story
 
     public function boot(): self
     {
+        if ($this->booted) {
+            return $this;
+        } 
+
         $this->bootScenarios();
         $this->bootTask();
+        $this->booted = true;
 
         return $this;
     }
 
-    public function test(): self
+    public function createTestCase(): self
     {
         $story = $this;
 

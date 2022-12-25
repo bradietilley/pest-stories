@@ -3,6 +3,9 @@
 use BradieTilley\StoryBoard\Scenario;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\Exception;
 
 $data = collect([
     'shared_scenario' => null,
@@ -12,24 +15,67 @@ $data = collect([
     'cannot' => null,
 ]);
 
+/**
+ * Callback to assert the data is correctly updated (indicating all scenarios and tasks were run)
+ */
+function expectTestSuiteRun(&$data): void
+{
+    expect($data['shared_scenario'])->toBe('1')
+        ->and($data['scenario'])->toBe('3')
+        ->and($data['can'])->toBe('[Can] full suite test with child one')
+        ->and($data['cannot'])->toBe('[Cannot] full suite test with child two')
+        ->and($data['tasks'])->toBeArray()->toHaveCount(2)
+        ->and($data['tasks'][0])->toBe([
+            'shared' => 1,
+            'scenario' => 2,
+            'story' => '[Can] full suite test with child one',
+        ])
+        ->and($data['tasks'][1])->toBe([
+            'shared' => 1,
+            'scenario' => 3,
+            'story' => '[Cannot] full suite test with child two',
+        ]);
+
+    // reset
+    $data = collect([
+        'shared_scenario' => null,
+        'scenario' => null,
+        'tasks' => [],
+        'can' => null,
+        'cannot' => null,
+    ]);
+}
+
+/**
+ * Test Scenario to be executed during Story boot
+ */
 Scenario::make('shared_scenario', 'shared', function () use (&$data) {
     $data['shared_scenario'] = '1';
 
     return 1;
 });
 
+/**
+ * Test Scenario to be executed during Story boot
+ */
 Scenario::make('scenario_one', 'scenario', function () use (&$data) {
     $data['scenario'] = '2';
 
     return 2;
 });
 
+/**
+ * Test Scenario to be executed during Story boot
+ */
 Scenario::make('scenario_two', 'scenario', function () use (&$data) {
     $data['scenario'] = '3';
 
     return 3;
 });
 
+/**
+ * Create a storyboard with a shared scenario and two child tests
+ */
 $story = StoryBoard::make()
     ->name('full suite test')
     ->scenario('shared_scenario')
@@ -66,43 +112,28 @@ $story = StoryBoard::make()
             ->cannot(),
     ]);
 
-$story->test();
+/**
+ * Generate the test cases (to be automatically run by Pest)
+ */
+$story->createTestCase();
 
-function expectTestSuiteRun(&$data) {
-    expect($data['shared_scenario'])->toBe('1')
-        ->and($data['scenario'])->toBe('3')
-        ->and($data['can'])->toBe('[Can] full suite test with child one')
-        ->and($data['cannot'])->toBe('[Cannot] full suite test with child two')
-        ->and($data['tasks'])->toBeArray()->toHaveCount(2)
-        ->and($data['tasks'][0])->toBe([
-            'shared' => 1,
-            'scenario' => 2,
-            'story' => '[Can] full suite test with child one',
-        ])
-        ->and($data['tasks'][1])->toBe([
-            'shared' => 1,
-            'scenario' => 3,
-            'story' => '[Cannot] full suite test with child two',
-        ]);
-
-    // reset
-    $data = collect([
-        'shared_scenario' => null,
-        'scenario' => null,
-        'tasks' => [],
-        'can' => null,
-        'cannot' => null,
-    ]);
-}
-
+/**
+ * Assert that the above test cases were run correctly
+ */
 test('check the full suite test ran correctly', function () use (&$data) {
     expectTestSuiteRun($data);
 });
 
+/**
+ * Manually register the test cases
+ */
 test($story->getFullName() . ' (manual)', function (Story $story) {
     $story->boot()->assert();
 })->with($story->all());
 
+/**
+ * Assert that the above test cases were run correctly
+ */
 test('check the full suite test ran correctly (manual)', function () use (&$data) {
     expectTestSuiteRun($data);
 });
