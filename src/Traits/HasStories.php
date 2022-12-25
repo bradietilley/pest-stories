@@ -58,7 +58,7 @@ trait HasStories
      * 
      * @return array<string,Story>
      */
-    public function allStories(): array
+    public function all(): array
     {
         /** @var Story|self|HasName $this */
 
@@ -70,7 +70,7 @@ trait HasStories
 
         $children = Collection::make($this->getStories())
             ->map(
-                fn (Story $story) => $story->allStories()
+                fn (Story $story) => $story->all()
             )
             ->collapse()
             ->keyBy(

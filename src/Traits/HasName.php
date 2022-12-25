@@ -29,15 +29,19 @@ trait HasName
         return $this->name;
     }
 
+    public function getParentName(): ?string
+    {
+        return $this->parent ? $this->parent->getFullName() : null;
+    }
+
     public function getFullName(): ?string
     {
         /** @var Story|self $this */
         $fullName = $this->getName();
         
         if ($this->parent) {
-            $fullName = "{$this->parent->getFullName()} {$fullName}";
+            $fullName = "{$this->getParentName()} {$fullName}";
         }
-
 
         /**
          * Only the most lowest level story should get prefixed with can or cannot

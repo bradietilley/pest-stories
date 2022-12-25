@@ -5,7 +5,7 @@ use BradieTilley\StoryBoard\StoryBoard;
 
 test('a storyboard with a single story can generate test cases with names', function () {
     $storyboard = StoryBoard::make()->name('Can create something cool');
-    $tests = $storyboard->allStories();
+    $tests = $storyboard->all();
 
     expect($tests)->toHaveCount(1)->toHaveKey('Can create something cool');
     expect($tests['Can create something cool'])->toBeInstanceOf(Story::class);
@@ -19,7 +19,7 @@ test('a storyboard with multiple stories can generate test cases with names', fu
             Story::make()->name('as customer')->scenario('as_customer')->cannot(),
         ]);
 
-    $tests = $storyboard->allStories();
+    $tests = $storyboard->all();
 
     $expectedKeys = [
         '[Can] create something cool as admin',
@@ -44,7 +44,7 @@ test('a storyboard with multiple nested stories can generate test cases with nam
             ]),
         ]);
 
-    $tests = $storyboard->allStories();
+    $tests = $storyboard->all();
 
     $expectedKeys = [
         '[Can] create something cool as admin if not blocked',
@@ -72,7 +72,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
             ]),
         ]);
     
-    $tests = $storyboard->allStories();
+    $tests = $storyboard->all();
 
     $expect = [
         '[Can] create something cool as admin if not blocked' => [

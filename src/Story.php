@@ -59,9 +59,10 @@ class Story
         return $this;
     }
 
-    public function run(): self
+    public function boot(): self
     {
         $this->bootScenarios();
+        $this->bootTask();
 
         return $this;
     }
@@ -71,9 +72,7 @@ class Story
         $story = $this;
 
         test($this->getFullName(), function () use ($story) {
-            $story->bootScenarios();
-            $story->bootTask();
-            $story->assert();
+            $story->boot()->assert();
         });
 
         return $this;

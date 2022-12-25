@@ -68,7 +68,7 @@ $story = StoryBoard::make()
 
 $story->test();
 
-test('check the full suite test ran correctly', function () use ($data) {
+function expectTestSuiteRun(&$data) {
     expect($data['shared_scenario'])->toBe('1')
         ->and($data['scenario'])->toBe('3')
         ->and($data['can'])->toBe('[Can] full suite test with child one')
@@ -84,4 +84,25 @@ test('check the full suite test ran correctly', function () use ($data) {
             'scenario' => 3,
             'story' => '[Cannot] full suite test with child two',
         ]);
+
+    // reset
+    $data = collect([
+        'shared_scenario' => null,
+        'scenario' => null,
+        'tasks' => [],
+        'can' => null,
+        'cannot' => null,
+    ]);
+}
+
+test('check the full suite test ran correctly', function () use (&$data) {
+    expectTestSuiteRun($data);
+});
+
+test($story->getFullName() . ' (manual)', function (Story $story) {
+    $story->boot()->assert();
+})->with($story->all());
+
+test('check the full suite test ran correctly (manual)', function () use (&$data) {
+    expectTestSuiteRun($data);
 });

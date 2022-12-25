@@ -20,7 +20,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
             ]),
         ]);
     
-    $tests = $storyboard->allStories();
+    $tests = $storyboard->all();
 
     $expect = [
         '[Can] create something cool as admin if not blocked' => [

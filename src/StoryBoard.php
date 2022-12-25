@@ -11,7 +11,7 @@ class StoryBoard extends Story
 
     public function test(): self
     {
-        $stories = $this->allStories();
+        $stories = $this->all();
         
         foreach ($stories as $story) {
             $story->test();
