@@ -116,3 +116,33 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
         ],
     ]);
 });
+
+test('scenario variables are made accessible to the task() and check() callbacks', function () {
+    Scenario::make('as_admin', 'role', fn () => 'ROLE::admin');
+    Scenario::make('as_blocked', 'blocked', fn () => 'is blocked');
+   
+    $data = [];
+    
+    $story = StoryBoard::make()
+        ->can()
+        ->name('do something')
+        ->scenario('as_admin')
+        ->scenario('as_blocked')
+        ->task(function ($role, $blocked) use (&$data) {
+            $data['task_role'] = $role;
+            $data['task_blocked'] = $blocked;
+        })
+        ->check(function ($role, $blocked) use (&$data) {
+            $data['check_role'] = $role;
+            $data['check_blocked'] = $blocked;
+        });
+
+    $story->boot()->assert();
+    
+    expect($data)->toBe([
+        'task_role' => 'ROLE::admin',
+        'task_blocked' => 'is blocked',
+        'check_role' => 'ROLE::admin',
+        'check_blocked' => 'is blocked',
+    ]);
+});

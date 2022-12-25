@@ -79,6 +79,15 @@ trait HasTask
         return null;
     }
 
+    public function getParameters(): array
+    {
+        return array_replace($this->allData(), [
+            'story' => $this,
+            'can' => $this->checkCan,
+            'user' => $this->user(),
+        ]);
+    }
+
     public function bootTask(): self
     {
         $task = $this->getTask();
@@ -91,10 +100,7 @@ trait HasTask
         $result = [];
 
         try {
-            $data = array_replace($this->allData(), [
-                'story' => $this,
-                'user' => $this->user(),
-            ]);
+            $data = $this->getParameters();
 
             /* Call before listener */
             if ($callback = $this->before) {
@@ -185,11 +191,6 @@ trait HasTask
             throw new \Exception('No checker');
         }
 
-        $container = Container::getInstance();
-
-        $container->call($checker, [
-            'story' => $this,
-            'can' => $this->checkCan,
-        ]);
+        Container::getInstance()->call($checker, $this->getParameters());
     }
 }
