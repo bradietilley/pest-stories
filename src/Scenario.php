@@ -46,11 +46,16 @@ class Scenario
         return (new self($name, $variable, $generator))->register();
     }
 
-    public function boot(Story $story, $arguments): void
+    public function variable(): string
+    {
+        return $this->variable;
+    }
+
+    public function boot(Story $story, $arguments): mixed
     {
         $generator = $this->generator;
 
-        Container::getInstance()->call($generator, [
+        return Container::getInstance()->call($generator, [
             'story' => $story,
         ] + $arguments);
     }

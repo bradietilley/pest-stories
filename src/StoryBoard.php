@@ -8,4 +8,15 @@ class StoryBoard extends Story
     {
         parent::__construct();
     }
+
+    public function test(): self
+    {
+        $stories = $this->allStories();
+        
+        foreach ($stories as $story) {
+            $story->test();
+        }
+
+        return $this;
+    }
 }

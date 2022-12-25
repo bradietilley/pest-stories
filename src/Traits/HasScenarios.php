@@ -40,10 +40,15 @@ trait HasScenarios
     public function bootScenarios(): void
     {
         /** @var Story|self $this */
+        $scenarios = $this->getScenarios();
 
-        Collection::make($this->getScenarios())
+        Collection::make($scenarios)
             ->map(function (array $arguments, string $scenario) {
-                return Scenario::fetch($scenario)->boot($this, $arguments);
+                /** @var Story|self $this */
+                $scenario = Scenario::fetch($scenario);
+                $value = $scenario->boot($this, $arguments);
+
+                $this->setData($scenario->variable(), $value);
             });
     }
 }

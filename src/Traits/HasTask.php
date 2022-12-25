@@ -16,6 +16,10 @@ trait HasTask
     protected ?Closure $checkCan = null;
     
     protected ?Closure $checkCannot = null;
+    
+    protected ?Closure $before = null;
+    
+    protected ?Closure $after = null;
 
     protected ?bool $expectCan = null;
 
@@ -58,10 +62,16 @@ trait HasTask
             return $this->task;
         }
 
-        while ($story->getTask() === null) {
+        $task = null;
+
+        while ($task === null) {
             $story = $story->getParent();
 
-            if ($story && $story->getTask()) {
+            if ($story === null) {
+                break;
+            }
+
+            if ($story->getTask() !== null) {
                 return $story->getTask();
             }
         }
@@ -85,7 +95,7 @@ trait HasTask
                 'story' => $this,
                 'user' => $this->user(),
             ]);
-            
+
             /* Call before listener */
             if ($callback = $this->before) {
                 $app->call($callback, $data);
@@ -101,6 +111,7 @@ trait HasTask
                 $app->call($callback, $data);
             }
         } catch (\Throwable $e) {
+            throw $e;
             $result['error'] = $e;
         }
 
@@ -136,13 +147,39 @@ trait HasTask
         return $this->can(false);
     }
 
-    public function assert()
+    public function getCheckCan(): ?Closure
+    {
+        return $this->checkCan;
+    }
+
+    public function getCheckCannot(): ?Closure
+    {
+        return $this->checkCannot;
+    }
+
+    public function assert(): void
     {
         if ($this->expectCan === null) {
             throw new \Exception('No expected result');
         }
 
-        $checker = $this->expectCan ? $this->checkCan : $this->checkCannot;
+        /** @var Story|self $this */
+        $checker = null;
+        $story = $this;
+
+        while ($checker === null) {
+            $checker = $this->expectCan ? $story->getCheckCan() : $story->getCheckCannot();
+
+            if ($checker !== null) {
+                break;
+            }
+
+            $story = $story->getParent();
+
+            if ($story === null) {
+                break;
+            }
+        }
 
         if ($checker === null) {
             throw new \Exception('No checker');

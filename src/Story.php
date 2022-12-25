@@ -31,7 +31,7 @@ class Story
      */
     public static function make(?Story $parent = null)
     {
-        return new self($parent);
+        return new static($parent);
     }
 
     public function hasParent(): bool
@@ -62,6 +62,19 @@ class Story
     public function run(): self
     {
         $this->bootScenarios();
+
+        return $this;
+    }
+
+    public function test(): self
+    {
+        $story = $this;
+
+        test($this->getFullName(), function () use ($story) {
+            $story->bootScenarios();
+            $story->bootTask();
+            $story->assert();
+        });
 
         return $this;
     }
