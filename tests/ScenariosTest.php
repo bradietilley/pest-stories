@@ -170,5 +170,3 @@ test('scenarios can be booted in a custom order', function () {
         '4',
     ]);
 });
-
-// test('scenarios can reference variables from other scenarios ')
