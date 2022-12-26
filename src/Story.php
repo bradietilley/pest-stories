@@ -9,6 +9,10 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTask;
+use Exception;
+use Pest\Exceptions\InvalidPestCommand;
+use Pest\Exceptions\ShouldNotHappen;
+use Throwable;
 
 class Story
 {
@@ -29,13 +33,16 @@ class Story
     }
 
     /**
-     * @return $this
+     * Create a new story
      */
     public static function make(?Story $parent = null)
     {
         return new static($parent);
     }
 
+    /**
+     * Does this story have a parent?
+     */
     public function hasParent(): bool
     {
         return $this->parent !== null;
@@ -61,6 +68,23 @@ class Story
         return $this;
     }
 
+    /**
+     * Get parameters available for DI callbacks
+     * 
+     * @return array 
+     */
+    public function getParameters(): array
+    {
+        return array_replace($this->allData(), [
+            'story' => $this,
+            'can' => $this->checkCan,
+            'user' => $this->user(),
+        ]);
+    }
+
+    /**
+     * Boot the story scenarios and tasks
+     */
     public function boot(): self
     {
         if ($this->booted) {
@@ -74,6 +98,9 @@ class Story
         return $this;
     }
 
+    /**
+     * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
+     */
     public function createTestCase(): self
     {
         $story = $this;

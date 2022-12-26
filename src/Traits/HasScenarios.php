@@ -47,8 +47,6 @@ trait HasScenarios
 
     /**
      * Boot all registered scenarios for this test.
-     * 
-     * @todo Add priority/boot order
      */
     public function bootScenarios(): void
     {
@@ -56,10 +54,20 @@ trait HasScenarios
         $scenarios = $this->getScenarios();
 
         Collection::make($scenarios)
-            ->map(function (array $arguments, string $scenario) {
+            ->map(fn (array $arguments, string $scenario) => [
+                'scenario' => Scenario::fetch($scenario),
+                'arguments' => $arguments,
+            ])
+            ->sortBy(fn (array $data) => $data['scenario']->order())
+            ->map(function (array $data) {
                 /** @var Story|self $this */
-                $scenario = Scenario::fetch($scenario);
-                $value = $scenario->boot($this, $arguments);
+                
+                /** @var Scenario $scenario */
+                $scenario = $data['scenario'];
+                /** @var array $args */
+                $args = $data['arguments'];
+
+                $value = $scenario->boot($this, $args);
 
                 $this->setData($scenario->variable(), $value);
             });

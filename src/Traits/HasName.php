@@ -29,11 +29,24 @@ trait HasName
         return $this->name;
     }
 
+    /**
+     * Get the parent test name
+     * 
+     * Example: create something > as low level user > with correct permissions
+     * Output:  create something as low level user 
+     * 
+     */
     public function getParentName(): ?string
     {
         return $this->parent ? $this->parent->getFullName() : null;
     }
 
+    /**
+     * Get the full test name
+     * 
+     * Example: create something > as low level user > with correct permissions
+     * Output:  [Can] create something as low level user with correct permissions 
+     */
     public function getFullName(): ?string
     {
         /** @var Story|self $this */

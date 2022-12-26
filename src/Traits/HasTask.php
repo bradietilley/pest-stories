@@ -79,15 +79,6 @@ trait HasTask
         return null;
     }
 
-    public function getParameters(): array
-    {
-        return array_replace($this->allData(), [
-            'story' => $this,
-            'can' => $this->checkCan,
-            'user' => $this->user(),
-        ]);
-    }
-
     public function bootTask(): self
     {
         $task = $this->getTask();
