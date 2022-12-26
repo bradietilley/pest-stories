@@ -26,6 +26,8 @@ class Scenario
     }
 
     /**
+     * Manually register the scenario (if not created via `make()`)
+     * 
      * @return $this
      */
     public function register(): self
@@ -36,7 +38,7 @@ class Scenario
     }
 
     /**
-     * Fetch a scenario
+     * Fetch a scenario from the registrar
      */
     public static function fetch(string $name): Scenario
     {
@@ -44,6 +46,8 @@ class Scenario
     }
 
     /**
+     * Make and register this scenario
+     * 
      * @return $this
      */
     public static function make(string $name, string $variable, Closure $generator)

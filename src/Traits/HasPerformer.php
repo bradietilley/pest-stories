@@ -13,7 +13,7 @@ trait HasPerformer
      * 
      * @return $this
      */
-    public function setUser(Authenticatable|null $user)
+    public function user(Authenticatable|null $user): self
     {
         $this->user = $user;
 
@@ -23,7 +23,7 @@ trait HasPerformer
     /**
      * Get the user to perform this test
      */
-    public function user(): Authenticatable|null
+    public function getUser(): Authenticatable|null
     {
         return $this->user;
     }

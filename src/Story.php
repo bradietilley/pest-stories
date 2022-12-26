@@ -78,7 +78,7 @@ class Story
         return array_replace($this->allData(), [
             'story' => $this,
             'can' => $this->checkCan,
-            'user' => $this->user(),
+            'user' => $this->getUser(),
         ]);
     }
 
