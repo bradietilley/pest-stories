@@ -58,7 +58,7 @@ trait HasScenarios
                 'scenario' => Scenario::fetch($scenario),
                 'arguments' => $arguments,
             ])
-            ->sortBy(fn (array $data) => $data['scenario']->order())
+            ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->map(function (array $data) {
                 /** @var Story|self $this */
                 

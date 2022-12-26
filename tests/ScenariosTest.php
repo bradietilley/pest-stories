@@ -146,3 +146,29 @@ test('scenario variables are made accessible to the task() and check() callbacks
         'check_blocked' => 'is blocked',
     ]);
 });
+
+test('scenarios can be booted in a custom order', function () {
+    $data = collect();
+
+    Scenario::make('one', 'dataone', fn () => $data->push('3'))->order(3);
+    Scenario::make('two', 'datatwo', fn () => $data->push('1'))->order(1);
+    Scenario::make('three', 'datathree', fn () => $data->push('4'))->order(4);
+    Scenario::make('four', 'datafour', fn () => $data->push('2'))->order(2);
+
+    Story::make()
+        ->name('test')
+        ->scenario('one')
+        ->scenario('two')
+        ->scenario('three')
+        ->scenario('four')
+        ->bootScenarios();
+
+    expect($data->toArray())->toBe([
+        '1',
+        '2',
+        '3',
+        '4',
+    ]);
+});
+
+// test('scenarios can reference variables from other scenarios ')

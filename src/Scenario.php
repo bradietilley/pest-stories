@@ -18,9 +18,11 @@ class Scenario
         protected string $name,
         protected string $variable,
         protected Closure $generator,
-        protected int $order = 0,
+        protected ?int $order = null,
     ) {
-        $this->setOrder($order);
+        if ($order !== null) {
+            $this->order($order);
+        }
     }
 
     /**

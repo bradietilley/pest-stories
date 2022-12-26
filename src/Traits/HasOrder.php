@@ -9,7 +9,7 @@ trait HasOrder
     /**
      * Get the boot order for this item
      */
-    public function order(): int
+    public function getOrder(): int
     {
         return $this->order ??= (++self::$max);
     }
@@ -19,7 +19,7 @@ trait HasOrder
      * 
      * @return $this 
      */
-    public function setOrder(int $order): self
+    public function order(int $order): self
     {
         $this->order = $order;
         self::$max = max(self::$max, $order);
