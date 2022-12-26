@@ -8,10 +8,16 @@ use Illuminate\Support\Collection;
 
 trait HasScenarios
 {
+    /**
+     * Scenarios and their arguments
+     * 
+     * @var array<string,array>
+     */
     protected array $scenarios = [];
 
     /**
-     * Register a scenario for this story
+     * Register a scenario for this story.
+     * Optionally pass in arguments (matched by name) if the scenario supports them.
 
      * @return $this 
      */
@@ -22,6 +28,11 @@ trait HasScenarios
         return $this;
     }
 
+    /**
+     * Get all scenarios for this story, including those inherited from parents
+     * 
+     * @return array<string,array> 
+     */
     public function getScenarios(): array
     {
         /** @var self|Story $this */
@@ -35,6 +46,8 @@ trait HasScenarios
     }
 
     /**
+     * Boot all registered scenarios for this test.
+     * 
      * @todo Add priority/boot order
      */
     public function bootScenarios(): void

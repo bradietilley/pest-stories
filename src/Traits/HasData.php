@@ -4,10 +4,13 @@ namespace BradieTilley\StoryBoard\Traits;
 
 trait HasData
 {
+    /**
+     * Container of all variables from scenario
+     */
     protected array $data = [];
 
     /**
-     * Set a variable
+     * Set a variable or scenario result
      */
     public function setData(string $key, mixed $value): static
     {
@@ -17,7 +20,7 @@ trait HasData
     }
 
     /**
-     * Get a variable
+     * Get a variable or scenario result
      */
     public function getData(string $key, mixed $default = null): mixed
     {
