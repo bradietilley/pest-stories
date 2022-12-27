@@ -1,6 +1,6 @@
 {
     "name": "bradietilley/pest-storyboard",
-    "description": "A tool for creating complex permutations of test case scenarios in Pest PHP (for Laravel)",
+    "description": "A tool to assist in creating complex permutations of test case scenarios in Pest PHP (for Laravel)",
     "type": "library",
     "license": "MIT",
     "autoload": {
