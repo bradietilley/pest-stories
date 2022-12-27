@@ -195,8 +195,9 @@ StoryBoard
                         +---------- Story 2B2
 ```
 
-### How it Works
+### Documentation
 
+<a id="doc-scenarios"></a>
 **Scenarios:**
 
 With storyboards you'll want to first register each reusable scenario you might use across your app (or just in the current PHP file). 
@@ -239,6 +240,7 @@ Story::make()->scenario('as_blocked')->scenario('as_publisher');
 
 Inheritance is supported. You may specify the `->scenario()` on any story object, including the parent or grandparent level. Each child story will inherit the scenario from the parents.
 
+<a id="doc-tasks"></a>
 **Task:**
 
 The task is the bit of logic that will run in each story/test. For example a form validation test might be:
@@ -255,9 +257,10 @@ Tasks are run on `$story->boot()`, not when they're registered or added to a sto
 
 Inheritance is supported. You may specify the `->task()` on any story object, including the parent or grandparent level. Each child story will inherit the task from the parents.
 
+<a id="doc-expectations"></a>
 **Can/Cannot expectations:**
 
-You will need to specify what clarifies as a pass/fail. By default, Stories support `can` and `cannot` to add clear distinction based on what each story is expected to do. They can be specified as such:
+You will need to specify what clarifies as a pass, and optionally a fail. By default, Stories support `can` and `cannot` to add clear distinction based on what each story is expected to do. They can be specified as such:
 
 ```php
 ->stories([
@@ -265,6 +268,8 @@ You will need to specify what clarifies as a pass/fail. By default, Stories supp
     Story::make()->scenario('b')->cannot(), // same as ->can(false)
 ])
 ```
+
+_In some scenarios you may wish to avoid `cannot` entirely and instead you may solely use the `can` expectation with your own custom logic that performs its own can/cannot logic._ 
 
 Inheritance is supported. You may specify `->can()` or `->cannot()` on any story object, including the parent or grandparent level. Each child story will inherit the can/cannot from the parents.
 
@@ -292,4 +297,15 @@ Following a `task()` execution, you will need to specify what logic needs to be 
 )
 ```
 
+_In some scenarios you may wish to avoid `cannot` entirely and instead you may solely use the `can` expectation with your own custom logic that performs its own can/cannot logic._ 
+
 Inheritance is supported. You may specify `->check()` on any story object, including the parent or grandparent level. Each child story will inherit the assertion checks from the parents.
+
+
+### TODO
+
+- Convert Tasks to class-based entities similar to scenarios, while still supporting inline closures.
+- Add Multiple Task support, with ordering, similar to scenarios.
+- Add inline closure support for scenarios
+- Move `variable` in scenario constructor to after generator and nullify (and inherit name of scenario)
+- Add Macro support on Story
