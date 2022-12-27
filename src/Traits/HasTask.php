@@ -5,9 +5,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use Closure;
-use Exception;
 use Illuminate\Container\Container;
-use Throwable;
 
 trait HasTask
 {
