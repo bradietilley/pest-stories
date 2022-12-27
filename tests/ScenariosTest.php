@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
 use BradieTilley\StoryBoard\Scenario;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
@@ -170,3 +171,9 @@ test('scenarios can be booted in a custom order', function () {
         '4',
     ]);
 });
+
+test('an exception is thrown when a scenario is referenced but not found', function () {
+    Scenario::make('found', 'var', fn () => null);
+
+    Story::make()->scenario('found')->scenario('not found');
+})->throws(ScenarioNotFoundException::class, 'The `not_found` scenario could not be found.');

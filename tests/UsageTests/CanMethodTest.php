@@ -3,7 +3,7 @@
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 
-function createStoryBoard(int $level, &$names): StoryBoard
+function createStoryBoardForCanMethod(int $level, &$names): StoryBoard
 {
     return StoryBoard::make()
         ->name('do something')
@@ -62,7 +62,7 @@ function createStoryBoard(int $level, &$names): StoryBoard
 
 test('the can method can be applied at a grandparent story level', function () {
     $names = collect();
-    $board = createStoryBoard(level: 1, names: $names);
+    $board = createStoryBoardForCanMethod(level: 1, names: $names);
 
     foreach ($board->allStories() as $story) {
         $story->boot()->assert();
@@ -78,7 +78,7 @@ test('the can method can be applied at a grandparent story level', function () {
 
 test('the can method can be applied at a parent story level', function () {
     $names = collect();
-    $board = createStoryBoard(level: 2, names: $names);
+    $board = createStoryBoardForCanMethod(level: 2, names: $names);
 
     foreach ($board->allStories() as $story) {
         $story->boot()->assert();
@@ -94,7 +94,7 @@ test('the can method can be applied at a parent story level', function () {
 
 test('the can method can be applied at a child story level', function () {
     $names = collect();
-    $board = createStoryBoard(level: 3, names: $names);
+    $board = createStoryBoardForCanMethod(level: 3, names: $names);
 
     foreach ($board->allStories() as $story) {
         $story->boot()->assert();

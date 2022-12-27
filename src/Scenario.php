@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
@@ -42,6 +43,10 @@ class Scenario
      */
     public static function fetch(string $name): Scenario
     {
+        if (! isset(static::$registered[$name])) {
+            throw StoryBoardException::scenarioNotFound($name);
+        }
+
         return static::$registered[$name];
     }
 
