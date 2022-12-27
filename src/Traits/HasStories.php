@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 trait HasStories
 {
@@ -24,12 +25,10 @@ trait HasStories
 
             foreach ($storyList as $story) {
                 if (! ($story instanceof Story)) {
-                    //
+                    throw new InvalidArgumentException('You must only provide Story classes to the stories() method.');
                 }
 
-                $story->setParent($this);
-
-                $this->stories[] = $story;
+                $this->stories[] = $story->setParent($this);
             }
         }
 
@@ -47,6 +46,7 @@ trait HasStories
     }
 
     /**
+     * Does this Story/Storyboard have children stories?
      */
     public function hasStories(): bool
     {
@@ -54,7 +54,10 @@ trait HasStories
     }
 
     /**
-     * Get all stories
+     * Get the stories under this story.
+     * 
+     * If this story has no child stories, it returns itself.
+     * If this story has child stories then it returns its children only.
      * 
      * @return array<string,Story>
      */

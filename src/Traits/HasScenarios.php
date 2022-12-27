@@ -28,6 +28,11 @@ trait HasScenarios
         return $this;
     }
 
+    public function scenarios(): array
+    {
+        return $this->scenarios;
+    }
+
     /**
      * Get all scenarios for this story, including those inherited from parents
      * 
@@ -35,14 +40,8 @@ trait HasScenarios
      */
     public function getScenarios(): array
     {
-        /** @var self|Story $this */
-        $scenarios = $this->scenarios;
-        
-        if ($this->hasParent()) {
-            $scenarios = array_replace($this->parent->getScenarios(), $scenarios);
-        }
-
-        return $scenarios;
+        /** @var Story $this */
+        return $this->combineFromParents('scenarios');
     }
 
     /**

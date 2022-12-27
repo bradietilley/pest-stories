@@ -112,18 +112,6 @@ $story = StoryBoard::make()
             ->cannot(),
     ]);
 
-// /**
-//  * Generate the test cases (to be automatically run by Pest)
-//  */
-// $story->createTestCase();
-
-// /**
-//  * Assert that the above test cases were run correctly
-//  */
-// test('check the full suite test ran correctly', function () use (&$data) {
-//     expectTestSuiteRun($data);
-// });
-
 /**
  * Manually register the test cases
  */

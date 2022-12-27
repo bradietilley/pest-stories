@@ -38,7 +38,7 @@ trait HasName
      */
     public function getParentName(): ?string
     {
-        return $this->parent ? $this->parent->getFullName() : null;
+        return $this->getParent() ? $this->getParent()->getFullName() : null;
     }
 
     /**
@@ -52,7 +52,7 @@ trait HasName
         /** @var Story|self $this */
         $fullName = $this->getName();
         
-        if ($this->parent) {
+        if ($this->hasParent()) {
             $fullName = "{$this->getParentName()} {$fullName}";
         }
 

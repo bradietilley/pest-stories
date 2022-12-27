@@ -5,7 +5,9 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use Closure;
+use Exception;
 use Illuminate\Container\Container;
+use Throwable;
 
 trait HasTask
 {
@@ -79,8 +81,12 @@ trait HasTask
         return null;
     }
 
+    /**
+     * @return $this
+     */
     public function bootTask(): self
     {
+        /** @var Story|self $this */
         $task = $this->getTask();
 
         if ($task === null) {
@@ -114,9 +120,14 @@ trait HasTask
 
         $this->result = $result;
 
+        $this->expectCan = $this->inheritFromParents('getCan');
+
         return $this;
     }
 
+    /**
+     * @return $this 
+     */
     public function check(Closure $can = null, Closure $cannot = null): self
     {
         $this->checkCan = $can;
@@ -125,6 +136,9 @@ trait HasTask
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function noAssertion(): self
     {
         $this->expectCan = null;
@@ -132,6 +146,9 @@ trait HasTask
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function can(bool $can = true): self
     {
         $this->expectCan = $can;
@@ -139,6 +156,17 @@ trait HasTask
         return $this;
     }
 
+    /**
+     * Get the 'can' or 'cannot' flag for this story
+     */
+    public function getCan(): ?bool
+    {
+        return $this->expectCan;
+    }
+
+    /**
+     * @return $this
+     */
     public function cannot(): self
     {
         return $this->can(false);
