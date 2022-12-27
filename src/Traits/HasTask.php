@@ -5,7 +5,9 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use Closure;
+use Exception;
 use Illuminate\Container\Container;
+use InvalidArgumentException;
 
 trait HasTask
 {
@@ -13,9 +15,9 @@ trait HasTask
     
     protected ?Closure $task = null;
     
-    protected ?Closure $checkCan = null;
+    protected ?Closure $canAssertion = null;
     
-    protected ?Closure $checkCannot = null;
+    protected ?Closure $cannotAssertion = null;
     
     protected ?Closure $before = null;
     
@@ -128,8 +130,8 @@ trait HasTask
      */
     public function check(Closure $can = null, Closure $cannot = null): self
     {
-        $this->checkCan = $can;
-        $this->checkCannot = $cannot;
+        $this->canAssertion = $can;
+        $this->cannotAssertion = $cannot;
 
         return $this;
     }
@@ -145,6 +147,8 @@ trait HasTask
     }
 
     /**
+     * Set whether this task can run (i.e. passes)
+     * 
      * @return $this
      */
     public function can(bool $can = true): self
@@ -155,14 +159,8 @@ trait HasTask
     }
 
     /**
-     * Get the 'can' or 'cannot' flag for this story
-     */
-    public function getCan(): ?bool
-    {
-        return $this->can;
-    }
-
-    /**
+     * Set that this task cannot run (i.e. fails)
+     * 
      * @return $this
      */
     public function cannot(): self
@@ -170,16 +168,35 @@ trait HasTask
         return $this->can(false);
     }
 
-    public function getCheckCan(): ?Closure
+    /**
+     * Get the 'can' / 'cannot' flag for this story
+     */
+    public function getCan(): ?bool
     {
-        return $this->checkCan;
+        return $this->can;
     }
 
-    public function getCheckCannot(): ?Closure
+    /**
+     * Get the callback that detmerines if the task passed
+     * when the story is expected to pass.
+     */
+    public function getCanAssertion(): ?Closure
     {
-        return $this->checkCannot;
+        return $this->canAssertion;
     }
 
+    /**
+     * Get the callback that detmerines if the task failed
+     * when the story is expected to fail.
+     */
+    public function getCannotAssertion(): ?Closure
+    {
+        return $this->cannotAssertion;
+    }
+
+    /**
+     * Run the assertions
+     */
     public function assert(): void
     {
         if ($this->can === null) {
@@ -191,7 +208,7 @@ trait HasTask
         $story = $this;
 
         while ($checker === null) {
-            $checker = $this->can ? $story->getCheckCan() : $story->getCheckCannot();
+            $checker = $this->can ? $story->getCanAssertion() : $story->getCannotAssertion();
 
             if ($checker !== null) {
                 break;

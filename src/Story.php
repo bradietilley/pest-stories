@@ -51,7 +51,7 @@ class Story
     {
         return array_replace($this->allData(), [
             'story' => $this,
-            'can' => $this->checkCan,
+            'can' => $this->canAssertion,
             'user' => $this->getUser(),
         ]);
     }
