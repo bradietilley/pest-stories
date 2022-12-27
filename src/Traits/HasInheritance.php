@@ -73,13 +73,20 @@ trait HasInheritance
         $instance = $this;
         $all = Collection::make([]);
 
+        $instances = [];
+
         while ($instance !== null) {
             /** @var static $instance */
+            $instances[] = $instance;
+            $instance = $instance->getParent();
+        }
 
+        /** @var array<static> $instances */
+        $instances = array_reverse($instances);
+
+        foreach ($instances as $instance) {
             $value = $instance->{$getterMethod}();
             $all->push($value);
-
-            $instance = $instance->getParent();
         }
         
         return $all->collapse()->all();
