@@ -60,8 +60,8 @@ trait HasName
          * Only the most lowest level story should get prefixed with can or cannot
          */
         if (! $this->hasStories()) {
-            if (property_exists($this, 'expectCan') && ($this->expectCan !== null)) {
-                $can = $this->expectCan ? 'Can' : 'Cannot';
+            if (property_exists($this, 'can') && ($this->can !== null)) {
+                $can = $this->can ? 'Can' : 'Cannot';
 
                 $fullName = "[{$can}] {$fullName}";
             }

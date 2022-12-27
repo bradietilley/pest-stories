@@ -23,7 +23,7 @@ trait HasTask
     
     protected ?Closure $after = null;
 
-    protected ?bool $expectCan = null;
+    protected ?bool $can = null;
 
     /**
      * @return $this 
@@ -120,7 +120,7 @@ trait HasTask
 
         $this->result = $result;
 
-        $this->expectCan = $this->inheritFromParents('getCan');
+        $this->can = $this->inheritFromParents('getCan');
 
         return $this;
     }
@@ -141,7 +141,7 @@ trait HasTask
      */
     public function noAssertion(): self
     {
-        $this->expectCan = null;
+        $this->can = null;
 
         return $this;
     }
@@ -151,7 +151,7 @@ trait HasTask
      */
     public function can(bool $can = true): self
     {
-        $this->expectCan = $can;
+        $this->can = $can;
         
         return $this;
     }
@@ -161,7 +161,7 @@ trait HasTask
      */
     public function getCan(): ?bool
     {
-        return $this->expectCan;
+        return $this->can;
     }
 
     /**
@@ -184,7 +184,7 @@ trait HasTask
 
     public function assert(): void
     {
-        if ($this->expectCan === null) {
+        if ($this->can === null) {
             throw new \Exception('No expected result');
         }
 
@@ -193,7 +193,7 @@ trait HasTask
         $story = $this;
 
         while ($checker === null) {
-            $checker = $this->expectCan ? $story->getCheckCan() : $story->getCheckCannot();
+            $checker = $this->can ? $story->getCheckCan() : $story->getCheckCannot();
 
             if ($checker !== null) {
                 break;
