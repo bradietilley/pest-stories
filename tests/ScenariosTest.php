@@ -175,5 +175,5 @@ test('scenarios can be booted in a custom order', function () {
 test('an exception is thrown when a scenario is referenced but not found', function () {
     Scenario::make('found', 'var', fn () => null);
 
-    Story::make()->scenario('found')->scenario('not found');
+    Story::make()->scenario('found')->scenario('not_found')->boot();
 })->throws(ScenarioNotFoundException::class, 'The `not_found` scenario could not be found.');
