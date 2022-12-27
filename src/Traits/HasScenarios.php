@@ -16,19 +16,54 @@ trait HasScenarios
     protected array $scenarios = [];
 
     /**
-     * Register a scenario for this story.
-     * Optionally pass in arguments (matched by name) if the scenario supports them.
-
+     * Alias for setScenario()
+     * 
      * @return $this 
      */
     public function scenario(string $name, array $arguments = []): self
+    {
+        return $this->setScenario($name, $arguments);
+    }
+
+    /**
+     * Register a single scenario for this story.
+     * Optionally pass in arguments (matched by name) if the scenario supports them.
+r
+     * @return $this 
+     */
+    public function setScenario(string $name, array $arguments = []): self
     {
         $this->scenarios[$name] = $arguments;
 
         return $this;
     }
 
-    public function scenarios(): array
+    /**
+     * Register multiple scenarios for this story
+     * 
+     * @return $this
+     */
+    public function setScenarios(iterable $scenarios): self
+    {
+        foreach ($scenarios as $name => $arguments) {
+            $this->setScenario($name, $arguments);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get a registered scenario's arguments (no inheritance lookup)
+     */
+    public function getScenario(string $name): ?array
+    {
+        return $this->scenarios[$name] ?? null;
+    }
+
+    /**
+     * Get all regsitered scenarios for this story (no inheritance lookup)
+     */
+    public function getScenarios(): array
     {
         return $this->scenarios;
     }
@@ -38,10 +73,10 @@ trait HasScenarios
      * 
      * @return array<string,array> 
      */
-    public function getScenarios(): array
+    public function allScenarios(): array
     {
         /** @var Story $this */
-        return $this->combineFromParents('scenarios');
+        return $this->combineFromParents('getScenarios');
     }
 
     /**
@@ -50,7 +85,7 @@ trait HasScenarios
     public function bootScenarios(): void
     {
         /** @var Story|self $this */
-        $scenarios = $this->getScenarios();
+        $scenarios = $this->allScenarios();
 
         Collection::make($scenarios)
             ->map(fn (array $arguments, string $scenario) => [

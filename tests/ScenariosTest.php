@@ -20,7 +20,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
             ]),
         ]);
     
-    $tests = $storyboard->all();
+    $tests = $storyboard->allStories();
 
     $expect = [
         '[Can] create something cool as admin if not blocked' => [
@@ -47,7 +47,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
     $actual = [];
    
     foreach ($tests as $key => $story) {
-        $scenarios = array_keys($story->getScenarios());
+        $scenarios = array_keys($story->allScenarios());
 
         $actual[$key] = $scenarios;
     }
@@ -90,7 +90,7 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
             'name' => 'Something cool',
         ]);
 
-    expect($story->getScenarios())->toBe([
+    expect($story->allScenarios())->toBe([
         'allows_creation' => [],
         'as_admin' => [],
         'as_blocked' => [],

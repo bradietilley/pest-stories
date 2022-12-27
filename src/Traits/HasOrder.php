@@ -4,14 +4,14 @@ namespace BradieTilley\StoryBoard\Traits;
 
 trait HasOrder
 {
-    protected static int $max = 0;
+    protected static int $orderCounter = 0;
 
     /**
      * Get the boot order for this item
      */
     public function getOrder(): int
     {
-        return $this->order ??= (++self::$max);
+        return $this->order ??= (++self::$orderCounter);
     }
 
     /**
@@ -19,11 +19,21 @@ trait HasOrder
      * 
      * @return $this 
      */
-    public function order(int $order): self
+    public function setOrder(int $order): self
     {
         $this->order = $order;
-        self::$max = max(self::$max, $order);
+        self::$orderCounter = max(self::$orderCounter, $order);
 
         return $this;
+    }
+
+    /**
+     * Alias of setOrder()
+     * 
+     * @return $this 
+     */
+    public function order(int $order): self
+    {
+        return $this->setOrder($order);
     }
 }

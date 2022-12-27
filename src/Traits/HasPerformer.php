@@ -9,11 +9,21 @@ trait HasPerformer
     protected ?Authenticatable $user = null;
 
     /**
-     * Set the user to perform this test
+     * Alias of setUser()
      * 
      * @return $this
      */
     public function user(Authenticatable|null $user): self
+    {
+        return $this->setUser($user);
+    }
+
+    /**
+     * Set the user to perform this test
+     * 
+     * @return $this
+     */
+    public function setUser(Authenticatable|null $user): self
     {
         $this->user = $user;
 

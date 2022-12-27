@@ -10,11 +10,21 @@ use BradieTilley\StoryBoard\Story;
 trait HasName
 {
     /**
+     * Alias for setName()
+     * 
+     * @return $this 
+     */
+    public function name(string $name): self
+    {
+        return $this->setName($name);
+    }
+
+    /**
      * Set the name (or name fragment) of this story
      * 
      * @return $this
      */
-    public function name(string $name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
 

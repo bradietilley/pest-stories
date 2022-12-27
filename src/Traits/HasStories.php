@@ -11,12 +11,23 @@ trait HasStories
     protected array $stories = [];
 
     /**
-     * Add stories
+     * Alias of setStories()
      * 
      * @param Story|array<Story> $stories
      * @return $this 
      */
     public function stories(...$stories): self
+    {
+        return $this->setStories(...$stories);
+    }
+
+    /**
+     * Add stories
+     * 
+     * @param Story|array<Story> $stories
+     * @return $this 
+     */
+    public function setStories(...$stories): self
     {
         /** @var self|Story $this */
 
@@ -61,11 +72,12 @@ trait HasStories
      * 
      * @return array<string,Story>
      */
-    public function all(): array
+    public function allStories(): array
     {
         /** @var Story|self|HasName $this */
 
-        if (empty($this->stories)) {
+        // If it's a child story then the story is itself
+        if (! $this->hasStories()) {
             return [
                 $this->getFullName() => $this,
             ];
@@ -73,7 +85,7 @@ trait HasStories
 
         $children = Collection::make($this->getStories())
             ->map(
-                fn (Story $story) => $story->all()
+                fn (Story $story) => $story->allStories()
             )
             ->collapse()
             ->keyBy(

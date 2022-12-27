@@ -64,7 +64,7 @@ test('the can method can be applied at a grandparent story level', function () {
     $names = collect();
     $board = createStoryBoard(level: 1, names: $names);
 
-    foreach ($board->all() as $story) {
+    foreach ($board->allStories() as $story) {
         $story->boot()->assert();
     }
 
@@ -80,7 +80,7 @@ test('the can method can be applied at a parent story level', function () {
     $names = collect();
     $board = createStoryBoard(level: 2, names: $names);
 
-    foreach ($board->all() as $story) {
+    foreach ($board->allStories() as $story) {
         $story->boot()->assert();
     }
 
@@ -96,7 +96,7 @@ test('the can method can be applied at a child story level', function () {
     $names = collect();
     $board = createStoryBoard(level: 3, names: $names);
 
-    foreach ($board->all() as $story) {
+    foreach ($board->allStories() as $story) {
         $story->boot()->assert();
     }
 

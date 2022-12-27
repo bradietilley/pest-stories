@@ -10,7 +10,7 @@ class StoryBoard extends Story
      */
     public function createTestCase(): self
     {
-        $stories = $this->all();
+        $stories = $this->allStories();
         
         foreach ($stories as $story) {
             $story->createTestCase();

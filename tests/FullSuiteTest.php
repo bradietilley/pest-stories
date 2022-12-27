@@ -117,7 +117,7 @@ $story = StoryBoard::make()
  */
 test($story->getFullName() . ' (manual)', function (Story $story) {
     $story->boot()->assert();
-})->with($story->all());
+})->with($story->allStories());
 
 /**
  * Assert that the above test cases were run correctly
