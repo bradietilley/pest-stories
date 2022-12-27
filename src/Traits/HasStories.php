@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -36,7 +37,7 @@ trait HasStories
 
             foreach ($storyList as $story) {
                 if (! ($story instanceof Story)) {
-                    throw new InvalidArgumentException('You must only provide Story classes to the stories() method.');
+                    throw StoryBoardException::invalidStory();
                 }
 
                 $this->stories[] = $story->setParent($this);

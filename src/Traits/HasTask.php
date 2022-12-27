@@ -3,6 +3,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use Closure;
 use Exception;
@@ -90,7 +91,7 @@ trait HasTask
         $task = $this->getTask();
 
         if ($task === null) {
-            throw new \Exception('No task found for story');
+            throw StoryBoardException::taskNotFound($this);
         }
 
         $app = Container::getInstance();
@@ -121,6 +122,8 @@ trait HasTask
         $this->result = $result;
 
         $this->can = $this->inheritFromParents('getCan');
+        $this->canAssertion = $this->inheritFromParents('getCanAssertion');
+        $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
 
         return $this;
     }
@@ -199,30 +202,16 @@ trait HasTask
      */
     public function assert(): void
     {
+        $this->can = $this->inheritFromParents('getCan');
+        
         if ($this->can === null) {
-            throw new \Exception('No expected result');
+            throw StoryBoardException::assertionNotFound($this);
         }
-
-        /** @var Story|self $this */
-        $checker = null;
-        $story = $this;
-
-        while ($checker === null) {
-            $checker = $this->can ? $story->getCanAssertion() : $story->getCannotAssertion();
-
-            if ($checker !== null) {
-                break;
-            }
-
-            $story = $story->getParent();
-
-            if ($story === null) {
-                break;
-            }
-        }
+        
+        $checker = $this->can ? $this->canAssertion : $this->cannotAssertion;
 
         if ($checker === null) {
-            throw new \Exception('No checker');
+            throw StoryBoardException::assertionCheckerNotFound($this);
         }
 
         Container::getInstance()->call($checker, $this->getParameters());
