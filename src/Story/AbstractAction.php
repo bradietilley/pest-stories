@@ -43,7 +43,7 @@ abstract class AbstractAction
     public function registered(): bool
     {
         static::$registered[static::class] ??= [];
-        
+
         return isset(static::$registered[static::class][$this->name]);
     }
 
@@ -57,7 +57,7 @@ abstract class AbstractAction
      * 
      * @return static
      */
-    public static function fetch(string $name): self
+    public static function fetch(string $name): static
     {
         static::$registered[static::class] ??= [];
 
