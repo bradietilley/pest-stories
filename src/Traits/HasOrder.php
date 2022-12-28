@@ -19,8 +19,12 @@ trait HasOrder
      * 
      * @return $this 
      */
-    public function setOrder(int $order): self
+    public function setOrder(?int $order): self
     {
+        if ($order === null) {
+            $order = ++self::$orderCounter;
+        }
+
         $this->order = $order;
         self::$orderCounter = max(self::$orderCounter, $order);
 
@@ -32,7 +36,7 @@ trait HasOrder
      * 
      * @return $this 
      */
-    public function order(int $order): self
+    public function order(?int $order): self
     {
         return $this->setOrder($order);
     }

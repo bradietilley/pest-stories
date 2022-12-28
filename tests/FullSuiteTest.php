@@ -49,29 +49,29 @@ function expectTestSuiteRun(&$data): void
 /**
  * Test Scenario to be executed during Story boot
  */
-Scenario::make('shared_scenario', 'shared', function () use (&$data) {
+Scenario::make('shared_scenario', function () use (&$data) {
     $data['shared_scenario'] = '1';
 
     return 1;
-});
+}, 'shared');
 
 /**
  * Test Scenario to be executed during Story boot
  */
-Scenario::make('scenario_one', 'scenario', function () use (&$data) {
+Scenario::make('scenario_one', function () use (&$data) {
     $data['scenario'] = '2';
 
     return 2;
-});
+}, 'scenario');
 
 /**
  * Test Scenario to be executed during Story boot
  */
-Scenario::make('scenario_two', 'scenario', function () use (&$data) {
+Scenario::make('scenario_two', function () use (&$data) {
     $data['scenario'] = '3';
 
     return 3;
-});
+}, 'scenario');
 
 /**
  * Create a storyboard with a shared scenario and two child tests

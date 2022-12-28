@@ -16,15 +16,18 @@ class Scenario
 
     protected static array $registered = [];
 
+    protected string $variable;
+
+    protected int $order;
+
     public function __construct(
         protected string $name,
-        protected string $variable,
         protected Closure $generator,
-        protected ?int $order = null,
+        ?string $variable = null,
+        ?int $order = null,
     ) {
-        if ($order !== null) {
-            $this->order($order);
-        }
+        $this->variable = $variable ?? $name;
+        $this->order($order);
     }
 
     /**
@@ -56,9 +59,9 @@ class Scenario
      * 
      * @return $this
      */
-    public static function make(string $name, string $variable, Closure $generator)
+    public static function make(string $name, Closure $generator, ?string $variable = null)
     {
-        return (new self($name, $variable, $generator))->register();
+        return (new self($name, $generator, $variable))->register();
     }
 
     /**

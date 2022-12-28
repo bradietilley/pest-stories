@@ -6,13 +6,13 @@ use BradieTilley\StoryBoard\StoryBoard;
 
 function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
 {
-    Scenario::make('scenario_1', 'scenario1', fn () => null);
-    Scenario::make('scenario_2a', 'scenario2', fn () => null);
-    Scenario::make('scenario_2b', 'scenario2', fn () => null);
-    Scenario::make('scenario_3a', 'scenario3', fn () => null);
-    Scenario::make('scenario_3b', 'scenario3', fn () => null);
-    Scenario::make('scenario_3c', 'scenario3', fn () => null);
-    Scenario::make('scenario_3d', 'scenario3', fn () => null);
+    Scenario::make('scenario_1', fn () => null, 'scenario1');
+    Scenario::make('scenario_2a', fn () => null, 'scenario2');
+    Scenario::make('scenario_2b', fn () => null, 'scenario2');
+    Scenario::make('scenario_3a', fn () => null, 'scenario3');
+    Scenario::make('scenario_3b', fn () => null, 'scenario3');
+    Scenario::make('scenario_3c', fn () => null, 'scenario3');
+    Scenario::make('scenario_3d', fn () => null, 'scenario3');
 
     return StoryBoard::make()
         ->name('do something')

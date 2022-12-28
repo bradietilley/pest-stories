@@ -14,13 +14,13 @@ composer require bradietilley/pest-storyboard
 
 ```php
 
-Scenario::make('as_role', 'role', function (Story $story, string $role) {
+Scenario::make('as_role', function (Story $story, string $role) {
     $story->setUser($this->getUserByRole($role));
-});
+}, 'role');
 
-Scenario::make('as_blocked', 'blocked', function (Story $story, User $user) {
+Scenario::make('as_blocked', function (Story $story, User $user) {
     $story->user()->block();
-});
+}, 'blocked');
 
 StoryBoard::make()
     ->name('create post')
@@ -103,13 +103,13 @@ With Pest StoryBoard, the idea is to keep the code clean and reusable. Not only 
 ```php
 // Pest.php -- i.e. Reusable in any test
 
-Scenario::make('as_role', 'role', function (Story $story, string $role) {
+Scenario::make('as_role', function (Story $story, string $role) {
     $story->setUser($this->getUserByRole($role));
-});
+}, 'role');
 
-Scenario::make('as_blocked', 'blocked', function (Story $story, User $user) {
+Scenario::make('as_blocked', function (Story $story, User $user) {
     $story->user()->block();
-});
+}, 'blocked');
 
 // tests/Feature/Posts/CreateTest.php
 StoryBoard::make()
@@ -212,14 +212,14 @@ Registering a scenario:
 ```php
 Scenario::make(
     name: 'as_blocked',
-    variable: 'user',
     generator: fn (TestCase $test) => $story->getUser()->update([ 'blocked_at' => now() ]),
+    variable: 'user',
     order: 4,
 );
 Scenario::make(
     name: 'as_publisher',
-    variable: 'user',
     generator: fn (Story $story) => $story->setUser(createPublisher()),
+    variable: 'user',
     order: 1,
 );
 ```
