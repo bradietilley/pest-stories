@@ -7,6 +7,7 @@ use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
 use Illuminate\Container\Container;
+use BradieTilley\StoryBoard\Story;
 
 class Scenario
 {
