@@ -2,109 +2,33 @@
 
 namespace BradieTilley\StoryBoard\Story;
 
+use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
-use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Traits\HasContainer;
-use BradieTilley\StoryBoard\Traits\HasName;
-use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
-use Illuminate\Support\Str;
 
-class Task
+class Task extends AbstractAction
 {
-    use HasName;
-    use HasOrder;
-    use HasContainer;
-
-    protected static array $registered = [];
-
-    protected int $order;
-
     public function __construct(
         protected string $name,
         protected Closure $generator,
         ?int $order = null,
     ) {
-        $this->order($order);
+        parent::__construct($name, $generator, $order ?? self::getNextOrder());
     }
 
     /**
-     * Manually register the task (if not created via `make()`)
-     *
-     * @return $this
+     * Task not found
      */
-    public function register(): self
+    protected static function notFound(string $name): TaskNotFoundException
     {
-        static::$registered[$this->name] = $this;
-
-        return $this;
+        return StoryBoardException::taskNotFound($name);
     }
 
     /**
-     * Is this registered?
+     * Get the name of the variable
      */
-    public function registered(): bool
+    public function variable(): string
     {
-        return isset(static::$registered[$this->name]);
-    }
-
-    /**
-     * Fetch a task from the registrar
-     */
-    public static function fetch(string $name): Task
-    {
-        if (! isset(static::$registered[$name])) {
-            throw StoryBoardException::taskNotFound($name);
-        }
-
-        return static::$registered[$name];
-    }
-
-    /**
-     * Make and register this task
-     *
-     * @return $this
-     */
-    public static function make(string $name, Closure $generator, ?int $order = null)
-    {
-        return (new self(
-            name: $name,
-            generator: $generator,
-            order: $order,
-        ))->register();
-    }
-
-    /**
-     * Boot this task for the given story
-     */
-    public function boot(Story $story, array $arguments): mixed
-    {
-        $arguments = array_replace($story->getParameters(), $arguments);
-
-        return $this->call($this->generator, $arguments);
-    }
-
-    /**
-     * Get the name of the task to be referenced when building a story's set of tasks
-     */
-    public static function prepare(string|Closure|self $task): string
-    {
-        if (is_string($task)) {
-            return $task;
-        }
-
-        if ($task instanceof Closure) {
-            $task = self::make(
-                name: 'inline_'.(string) Str::random(),
-                generator: $task,
-            );
-        }
-
-        // Don't re-register if already registered, to prevent overwriting existing task (in the event of duplicate names)
-        if (! $task->registered()) {
-            $task->register();
-        }
-
-        return $task->getName();
+        return $this->variable;
     }
 }

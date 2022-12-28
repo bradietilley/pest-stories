@@ -305,4 +305,3 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 ### TODO
 
 - Add more tests
-- Combine Task and Scenario class where similar

@@ -178,7 +178,7 @@ test('an exception is thrown when a scenario is referenced but not found', funct
     Story::make()->scenario('found')->scenario('not_found')->boot();
 })->throws(ScenarioNotFoundException::class, 'The `not_found` scenario could not be found.');
 
-test('tasks can be defined as inline closures, Task objects, or string identifiers', function () {
+test('scenarios can be defined as inline closures, Task objects, or string identifiers', function () {
     $tasksRun = Collection::make();
 
     Scenario::make('registered', function ($a) use ($tasksRun) {

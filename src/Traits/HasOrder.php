@@ -7,11 +7,19 @@ trait HasOrder
     protected static int $orderCounter = 0;
 
     /**
+     * Get the next order number
+     */
+    protected static function getNextOrder(): int
+    {
+        return ++self::$orderCounter;
+    }
+
+    /**
      * Get the boot order for this item
      */
     public function getOrder(): int
     {
-        return $this->order ??= (++self::$orderCounter);
+        return $this->order ??= self::getNextOrder();
     }
 
     /**
@@ -21,9 +29,7 @@ trait HasOrder
      */
     public function setOrder(?int $order): self
     {
-        if ($order === null) {
-            $order = ++self::$orderCounter;
-        }
+        $order ??= self::getNextOrder();
 
         $this->order = $order;
         self::$orderCounter = max(self::$orderCounter, $order);
