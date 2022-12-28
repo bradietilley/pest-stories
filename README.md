@@ -304,7 +304,7 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 
 ### TODO
 
-- Convert Tasks to class-based entities similar to scenarios, while still supporting inline closures.
+- Convert Tasks to class-based entities similar to scenarios, with ordering, while still supporting inline closures.
 - Add inline closure support for scenarios
 - Move `variable` in scenario constructor to after generator and nullify (and inherit name of scenario)
 - Add Macro support on Story
