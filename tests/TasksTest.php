@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Task;
 use Illuminate\Support\Collection;
@@ -106,6 +107,12 @@ test('tasks can be booted in a custom order', function () {
         '4',
     ]);
 });
+
+test('an exception is thrown when a task is referenced but not found', function () {
+    Task::make('found', fn () => null);
+
+    Story::make()->task('found')->task('not_found')->boot();
+})->throws(TaskNotFoundException::class, 'The `not_found` task could not be found.');
 
 test('tasks can be defined as inline closures, Task objects, or string identifiers', function () {
     $tasksRun = Collection::make();
