@@ -6,9 +6,11 @@ namespace BradieTilley\StoryBoard\Traits;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Result;
+use BradieTilley\StoryBoard\Story\Task;
 use Closure;
 use Exception;
 use Illuminate\Container\Container;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 trait HasTasks
@@ -33,10 +35,13 @@ trait HasTasks
     /**
      * @return $this 
      */
-    public function task(Closure $task, string $name = null): self
+    public function task(Closure|Task|string $task): self
     {
-        $name ??= count($this->tasks);
-        $this->tasks[$name] = $task;
+        $task = Task::prepare($task);
+
+        if (! in_array($task, $this->tasks)) {
+            $this->tasks[] = $task;
+        }
 
         return $this;
     }
@@ -61,11 +66,17 @@ trait HasTasks
         return $this;
     }
 
+    /**
+     * Get this story's tasks
+     */
     public function getTasks(): array
     {
         return $this->tasks;
     }
 
+    /**
+     * Get this story's tasks and its parents (etc) tasks
+     */
     public function allTasks(): array
     {
         /** @var Story|self $this */
@@ -81,8 +92,20 @@ trait HasTasks
         $tasks = $this->allTasks();
 
         if (empty($tasks)) {
-            throw StoryBoardException::taskNotFound($this);
+            throw StoryBoardException::taskNotSpecified($this);
         }
+
+        $tasks = Collection::make($tasks)
+            ->map(
+                fn (string $task) => Task::fetch($task),
+            )
+            ->sortBy(
+                fn (Task $task) => $task->getOrder(),
+            )
+            ->all();
+        /**
+         * @var array<Task> $tasks
+         */
 
         $app = Container::getInstance();
         $result = new Result();
@@ -95,11 +118,12 @@ trait HasTasks
                 $app->call($callback, $data);
             }
 
+            // Allow callbacks to read the `$result`
             $data['result'] = $result->getValue();
 
             /* Run task */
             foreach ($tasks as $task) {
-                $result->setValue($app->call($task, $data));
+                $result->setValue($task->boot($this, $data));
             }
 
             /* Call after listener */

@@ -14,6 +14,13 @@ abstract class StoryBoardException extends Exception
         );
     }
 
+    public static function taskNotFound(string $task): TaskNotFoundException
+    {
+        return new TaskNotFoundException(
+            sprintf('The `%s` task could not be found.', $task),
+        );
+    }
+
     public static function invalidStory(): InvalidStoryException
     {
         return new InvalidStoryException(
@@ -21,9 +28,9 @@ abstract class StoryBoardException extends Exception
         );
     }
 
-    public static function taskNotFound(Story $story): TaskNotFoundException
+    public static function taskNotSpecified(Story $story): TaskNotSpecifiedException
     {
-        return new TaskNotFoundException(
+        return new TaskNotSpecifiedException(
             sprintf('No task was found for the story `%s`', $story->getFullName()),
         );
     }

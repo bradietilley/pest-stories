@@ -59,9 +59,14 @@ class Scenario
      * 
      * @return $this
      */
-    public static function make(string $name, Closure $generator, ?string $variable = null)
+    public static function make(string $name, Closure $generator, ?string $variable = null, ?int $order = null)
     {
-        return (new self($name, $generator, $variable))->register();
+        return (new self(
+            name: $name,
+            generator: $generator,
+            variable: $variable,
+            order: $order,
+        ))->register();
     }
 
     /**

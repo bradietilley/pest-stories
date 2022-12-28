@@ -304,7 +304,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 
 ### TODO
 
-- Convert Tasks to class-based entities similar to scenarios, with ordering, while still supporting inline closures.
 - Add inline closure support for scenarios
 - Add Macro support on Story
 - DRY for all instances of `Container::getInstance()->call()`
