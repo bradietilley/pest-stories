@@ -5,16 +5,20 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Result;
 use Closure;
 use Exception;
 use Illuminate\Container\Container;
 use InvalidArgumentException;
 
-trait HasTask
+trait HasTasks
 {
-    protected array $result = [];
+    protected ?Result $result = null;
     
-    protected ?Closure $task = null;
+    /**
+     * @var array<Closure>
+     */
+    protected array $tasks = [];
     
     protected ?Closure $canAssertion = null;
     
@@ -29,9 +33,10 @@ trait HasTask
     /**
      * @return $this 
      */
-    public function task(Closure $task): self
+    public function task(Closure $task, string $name = null): self
     {
-        $this->task = $task;
+        $name ??= count($this->tasks);
+        $this->tasks[$name] = $task;
 
         return $this;
     }
@@ -56,30 +61,15 @@ trait HasTask
         return $this;
     }
 
-    public function getTask(): ?Closure
+    public function getTasks(): array
     {
-        /** @var Story|self $story */
-        $story = $this;
-        
-        if ($this->task !== null) {
-            return $this->task;
-        }
+        return $this->tasks;
+    }
 
-        $task = null;
-
-        while ($task === null) {
-            $story = $story->getParent();
-
-            if ($story === null) {
-                break;
-            }
-
-            if ($story->getTask() !== null) {
-                return $story->getTask();
-            }
-        }
-
-        return null;
+    public function allTasks(): array
+    {
+        /** @var Story|self $this */
+        return $this->combineFromParents('getTasks');
     }
 
     /**
@@ -88,14 +78,14 @@ trait HasTask
     public function bootTask(): self
     {
         /** @var Story|self $this */
-        $task = $this->getTask();
+        $tasks = $this->allTasks();
 
-        if ($task === null) {
+        if (empty($tasks)) {
             throw StoryBoardException::taskNotFound($this);
         }
 
         $app = Container::getInstance();
-        $result = [];
+        $result = new Result();
 
         try {
             $data = $this->getParameters();
@@ -105,18 +95,21 @@ trait HasTask
                 $app->call($callback, $data);
             }
 
+            $data['result'] = $result->getValue();
+
             /* Run task */
-            $result['result'] = $app->call($task, $data);
+            foreach ($tasks as $task) {
+                $result->setValue($app->call($task, $data));
+            }
 
             /* Call after listener */
             if ($callback = $this->after) {
-                $data['result'] = $result['result'];
-
                 $app->call($callback, $data);
             }
         } catch (\Throwable $e) {
+            $result->setError($e);
+
             throw $e;
-            $result['error'] = $e;
         }
 
         $this->result = $result;

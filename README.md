@@ -241,9 +241,9 @@ Story::make()->scenario('as_blocked')->scenario('as_publisher');
 Inheritance is supported. You may specify the `->scenario()` on any story object, including the parent or grandparent level. Each child story will inherit the scenario from the parents.
 
 <a id="doc-tasks"></a>
-**Task:**
+**Tasks:**
 
-The task is the bit of logic that will run in each story/test. For example a form validation test might be:
+You may add one or more tasks to each story, which is the bit of logic that will run in each story/test. For example a form validation test might be:
 
 ```php
 ->task(function (Story $story, TestCase $test) {
@@ -305,7 +305,8 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 ### TODO
 
 - Convert Tasks to class-based entities similar to scenarios, while still supporting inline closures.
-- Add Multiple Task support, with ordering, similar to scenarios.
 - Add inline closure support for scenarios
 - Move `variable` in scenario constructor to after generator and nullify (and inherit name of scenario)
 - Add Macro support on Story
+- DRY for all instances of `Container::getInstance()->call()`
+- Actually ensure `TestCase` is accessible in all story callbacks (tasks, scenarios, checkers, etc)

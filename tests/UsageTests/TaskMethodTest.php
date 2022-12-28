@@ -3,7 +3,7 @@
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 
-function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
+function createStoryBoardForTaskTest(?int $level, &$names): StoryBoard
 {
     return StoryBoard::make()
         ->name('do something')
@@ -13,7 +13,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
             cannot: fn () => null,
         )
         ->when(
-            ($level === 1),
+            ($level === 1) || is_null($level),
             fn (Story $story) => $story->task(
                 fn () => $names[] = 'task_1',
             ),
@@ -22,7 +22,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
             Story::make()
                 ->name('foo')
                 ->when(
-                    ($level === 2),
+                    ($level === 2) || is_null($level),
                     fn (Story $story) => $story->task(
                         fn () => $names[] = 'task_2a',
                     ),
@@ -31,7 +31,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
                     Story::make()
                         ->name('one')
                         ->when(
-                            ($level === 3),
+                            ($level === 3) || is_null($level),
                             fn (Story $story) => $story->task(
                                 fn () => $names[] = 'task_3a'
                             )
@@ -39,7 +39,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
                     Story::make()
                         ->name('two')
                         ->when(
-                            ($level === 3),
+                            ($level === 3) || is_null($level),
                             fn (Story $story) => $story->task(
                                 fn () => $names[] = 'task_3b'
                             )
@@ -48,7 +48,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
             Story::make()
                 ->name('bar')
                 ->when(
-                    ($level === 2),
+                    ($level === 2) || is_null($level),
                     fn (Story $story) => $story->task(
                         fn () => $names[] = 'task_2b',
                     ),
@@ -57,7 +57,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
                     Story::make()
                         ->name('one')
                         ->when(
-                            ($level === 3),
+                            ($level === 3) || is_null($level),
                             fn (Story $story) => $story->task(
                                 fn () => $names[] = 'task_3c'
                             )
@@ -65,7 +65,7 @@ function createStoryBoardForTaskTest(int $level, &$names): StoryBoard
                     Story::make()
                         ->name('two')
                         ->when(
-                            ($level === 3),
+                            ($level === 3) || is_null($level),
                             fn (Story $story) => $story->task(
                                 fn () => $names[] = 'task_3d'
                             )
@@ -118,6 +118,30 @@ test('the can method can be applied at a child story level', function () {
         'task_3a',
         'task_3b',
         'task_3c',
+        'task_3d',
+    ]);
+});
+
+test('the task method can be applied at multiple levels', function () {
+    $names = collect();
+    $board = createStoryBoardForTaskTest(level: null, names: $names);
+
+    foreach ($board->allStories() as $story) {
+        $story->boot()->assert();
+    }
+
+    expect($names->toArray())->toBe([
+        'task_1',
+        'task_2a',
+        'task_3a',
+        'task_1',
+        'task_2a',
+        'task_3b',
+        'task_1',
+        'task_2b',
+        'task_3c',
+        'task_1',
+        'task_2b',
         'task_3d',
     ]);
 });

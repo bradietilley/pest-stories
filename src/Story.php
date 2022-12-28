@@ -9,7 +9,7 @@ use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
-use BradieTilley\StoryBoard\Traits\HasTask;
+use BradieTilley\StoryBoard\Traits\HasTasks;
 use Illuminate\Support\Traits\Conditionable;
 
 class Story
@@ -20,7 +20,7 @@ class Story
     use HasPerformer;
     use HasScenarios;
     use HasStories;
-    use HasTask;
+    use HasTasks;
     use HasInheritance;
     use Conditionable;
 
