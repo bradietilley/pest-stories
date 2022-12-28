@@ -1,6 +1,6 @@
 <?php
 
-namespace BradieTilley\StoryBoard;
+namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Traits\HasName;

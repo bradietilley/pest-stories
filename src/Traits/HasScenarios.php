@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Scenario;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
 

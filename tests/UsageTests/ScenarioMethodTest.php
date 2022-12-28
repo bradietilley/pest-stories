@@ -1,6 +1,6 @@
 <?php
 
-use BradieTilley\StoryBoard\Scenario;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 

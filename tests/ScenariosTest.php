@@ -1,7 +1,7 @@
 <?php
 
 use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
-use BradieTilley\StoryBoard\Scenario;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Contracts\Container\Container;
