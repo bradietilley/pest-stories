@@ -119,14 +119,12 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
     });
 
     Story::make()
-        ->can()
-        ->check(fn () => true)
         ->task($task)
         ->task('registered')
         ->task(function () use ($tasksRun) {
             $tasksRun[] = 'inline';
         })
-        ->boot();
+        ->bootTask();
     
     expect($tasksRun->toArray())->toBe([
         'registered',

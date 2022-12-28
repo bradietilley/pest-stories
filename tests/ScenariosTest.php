@@ -5,6 +5,7 @@ use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Collection;
 
 test('a storyboard with multiple nested stories can collate required scenarios', function () {
     $storyboard = StoryBoard::make()
@@ -177,3 +178,29 @@ test('an exception is thrown when a scenario is referenced but not found', funct
 
     Story::make()->scenario('found')->scenario('not_found')->boot();
 })->throws(ScenarioNotFoundException::class, 'The `not_found` scenario could not be found.');
+
+test('tasks can be defined as inline closures, Task objects, or string identifiers', function () {
+    $tasksRun = Collection::make();
+
+    Scenario::make('registered', function ($a) use ($tasksRun) {
+        $tasksRun[] = 'registered_' . $a;
+    });
+
+    $scenario = new Scenario('variable', function ($a) use ($tasksRun) {
+        $tasksRun[] = 'variable_' . $a;
+    });
+
+    Story::make()
+        ->scenario($scenario, ['a' => '1', ])
+        ->scenario('registered', [ 'a' => '2', ])
+        ->scenario(function ($a) use ($tasksRun) {
+            $tasksRun[] = 'inline_' . $a;
+        }, [ 'a' => '3', ])
+        ->bootScenarios();
+    
+    expect($tasksRun->toArray())->toBe([
+        'registered_2',
+        'variable_1',
+        'inline_3',
+    ]);
+});

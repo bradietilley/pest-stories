@@ -8,6 +8,7 @@ use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
 use Illuminate\Container\Container;
 use BradieTilley\StoryBoard\Story;
+use Illuminate\Support\Str;
 
 class Scenario
 {
@@ -40,6 +41,14 @@ class Scenario
         static::$registered[$this->name] = $this;
 
         return $this;
+    }
+
+    /**
+     * Is this registered?
+     */
+    public function registered(): bool
+    {
+        return isset(static::$registered[$this->name]);
     }
 
     /**
@@ -86,5 +95,29 @@ class Scenario
         $arguments = array_replace($story->getParameters(), $arguments);
 
         return Container::getInstance()->call($generator, $arguments);
+    }
+
+    /**
+     * Get the name of the scenario to be referenced when building a story's set of scenarios
+     */
+    public static function prepare(string|Closure|self $scenario): string
+    {
+        if (is_string($scenario)) {
+            return $scenario;
+        }
+
+        if ($scenario instanceof Closure) {
+            $scenario = self::make(
+                name: 'inline_' . (string) Str::random(),
+                generator: $scenario,
+            );
+        }
+
+        // Don't re-register if already registered, to prevent overwriting existing scenario (in the event of duplicate names)
+        if (! $scenario->registered()) {
+            $scenario->register();
+        }
+
+        return $scenario->getName();
     }
 }

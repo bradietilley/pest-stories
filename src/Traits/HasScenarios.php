@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
+use Closure;
 use Illuminate\Support\Collection;
 
 trait HasScenarios
@@ -20,9 +21,9 @@ trait HasScenarios
      * 
      * @return $this 
      */
-    public function scenario(string $name, array $arguments = []): self
+    public function scenario(string|Closure|Scenario $scenario, array $arguments = []): self
     {
-        return $this->setScenario($name, $arguments);
+        return $this->setScenario($scenario, $arguments);
     }
 
     /**
@@ -31,8 +32,10 @@ trait HasScenarios
 r
      * @return $this 
      */
-    public function setScenario(string $name, array $arguments = []): self
+    public function setScenario(string|Closure|Scenario $scenario, array $arguments = []): self
     {
+        $name = Scenario::prepare($scenario);
+
         $this->scenarios[$name] = $arguments;
 
         return $this;
@@ -45,8 +48,14 @@ r
      */
     public function setScenarios(iterable $scenarios): self
     {
-        foreach ($scenarios as $name => $arguments) {
-            $this->setScenario($name, $arguments);
+        foreach ($scenarios as $scenario => $arguments) {
+            // Closures and classes will be int key
+            if (is_string($arguments) || ($arguments instanceof Closure) || ($arguments instanceof Scenario)) {
+                $scenario = $arguments;
+                $arguments = [];
+            }
+
+            $this->setScenario($scenario, $arguments);
         }
 
         return $this;
