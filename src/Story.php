@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Traits\HasContainer;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
 use BradieTilley\StoryBoard\Traits\HasName;
@@ -22,6 +23,7 @@ class Story
     use HasStories;
     use HasTasks;
     use HasInheritance;
+    use HasContainer;
     use Conditionable;
 
     protected ?string $name = null;

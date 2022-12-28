@@ -8,10 +8,7 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\Task;
 use Closure;
-use Exception;
-use Illuminate\Container\Container;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
 
 trait HasTasks
 {
@@ -76,19 +73,23 @@ trait HasTasks
 
     /**
      * Get this story's tasks and its parents (etc) tasks
+     * 
+     * @requires HasInheritance
      */
     public function allTasks(): array
     {
-        /** @var Story|self $this */
+        /** @var HasInheritance $this */
         return $this->combineFromParents('getTasks');
     }
 
     /**
+     * @requires Story
      * @return $this
      */
     public function bootTask(): self
     {
-        /** @var Story|self $this */
+        /** @var Story $this */
+
         $tasks = $this->allTasks();
 
         if (empty($tasks)) {
@@ -107,7 +108,6 @@ trait HasTasks
          * @var array<Task> $tasks
          */
 
-        $app = Container::getInstance();
         $result = new Result();
 
         try {
@@ -115,7 +115,7 @@ trait HasTasks
 
             /* Call before listener */
             if ($callback = $this->before) {
-                $app->call($callback, $data);
+                $this->call($callback, $data);
             }
 
             // Allow callbacks to read the `$result`
@@ -128,7 +128,7 @@ trait HasTasks
 
             /* Call after listener */
             if ($callback = $this->after) {
-                $app->call($callback, $data);
+                $this->call($callback, $data);
             }
         } catch (\Throwable $e) {
             $result->setError($e);
@@ -216,9 +216,12 @@ trait HasTasks
 
     /**
      * Run the assertions
+     * 
+     * @requires Story
      */
     public function assert(): void
     {
+        /** @var Story $this */
         $this->can = $this->inheritFromParents('getCan');
         
         if ($this->can === null) {
@@ -231,6 +234,6 @@ trait HasTasks
             throw StoryBoardException::assertionCheckerNotFound($this);
         }
 
-        Container::getInstance()->call($checker, $this->getParameters());
+        $this->call($checker, $this->getParameters());
     }
 }

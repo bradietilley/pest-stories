@@ -56,10 +56,12 @@ trait HasName
      * 
      * Example: create something > as low level user > with correct permissions
      * Output:  [Can] create something as low level user with correct permissions 
+     * 
+     * @requires HasInheritance, HasStories
      */
     public function getFullName(): ?string
     {
-        /** @var Story|self $this */
+        /** @var HasInheritance|HasStories|HasName $this */
         $fullName = $this->getName();
         
         if ($this->hasParent()) {

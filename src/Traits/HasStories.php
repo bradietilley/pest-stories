@@ -30,8 +30,6 @@ trait HasStories
      */
     public function setStories(...$stories): self
     {
-        /** @var self|Story $this */
-
         foreach ($stories as $storyList) {
             $storyList = (is_array($storyList)) ? $storyList : [$storyList];
 
@@ -71,11 +69,12 @@ trait HasStories
      * If this story has no child stories, it returns itself.
      * If this story has child stories then it returns its children only.
      * 
+     * @requires HasName
      * @return array<string,Story>
      */
     public function allStories(): array
     {
-        /** @var Story|self|HasName $this */
+        /** @var HasName|HasStories $this */
 
         // If it's a child story then the story is itself
         if (! $this->hasStories()) {

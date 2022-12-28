@@ -80,30 +80,31 @@ r
     /**
      * Get all scenarios for this story, including those inherited from parents
      * 
+     * @requires HasInheritance
+     * 
      * @return array<string,array> 
      */
     public function allScenarios(): array
     {
-        /** @var Story $this */
+        /** @var HasInheritance $this */
         return $this->combineFromParents('getScenarios');
     }
 
     /**
      * Boot all registered scenarios for this test.
+     * 
+     * @requires HasInheritance
      */
     public function bootScenarios(): void
     {
-        /** @var Story|self $this */
-        $scenarios = $this->allScenarios();
-
-        Collection::make($scenarios)
+        Collection::make($this->allScenarios())
             ->map(fn (array $arguments, string $scenario) => [
                 'scenario' => Scenario::fetch($scenario),
                 'arguments' => $arguments,
             ])
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->map(function (array $data) {
-                /** @var Story|self $this */
+                /** @var HasData|HasScenarios $this */
                 
                 /** @var Scenario $scenario */
                 $scenario = $data['scenario'];

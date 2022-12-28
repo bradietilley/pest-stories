@@ -8,12 +8,14 @@ use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
 use Illuminate\Container\Container;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Traits\HasContainer;
 use Illuminate\Support\Str;
 
 class Scenario
 {
     use HasName;
     use HasOrder;
+    use HasContainer;
 
     protected static array $registered = [];
 
@@ -91,10 +93,9 @@ class Scenario
      */
     public function boot(Story $story, array $arguments): mixed
     {
-        $generator = $this->generator;
         $arguments = array_replace($story->getParameters(), $arguments);
 
-        return Container::getInstance()->call($generator, $arguments);
+        return $this->call($this->generator, $arguments);
     }
 
     /**
