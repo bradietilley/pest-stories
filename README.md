@@ -305,4 +305,3 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 ### TODO
 
 - Add Macro support on Story
-- Actually ensure `TestCase` is accessible in all story callbacks (tasks, scenarios, checkers, etc)
