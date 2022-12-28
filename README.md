@@ -304,4 +304,4 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 
 ### TODO
 
-- Add Macro support on Story
+- Add more tests

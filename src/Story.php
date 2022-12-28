@@ -12,6 +12,7 @@ use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
 use Illuminate\Support\Traits\Conditionable;
+use Illuminate\Support\Traits\Macroable;
 use PHPUnit\Framework\TestCase;
 
 class Story
@@ -26,6 +27,7 @@ class Story
     use HasInheritance;
     use HasContainer;
     use Conditionable;
+    use Macroable;
 
     protected ?string $name = null;
 
