@@ -71,7 +71,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
                 Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
             ]),
         ]);
-    
+
     $tests = $storyboard->allStories();
 
     $expect = [
@@ -97,7 +97,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
         ],
     ];
     $actual = [];
-   
+
     foreach ($tests as $key => $story) {
         $scenarios = array_keys($story->allScenarios());
 

@@ -1,10 +1,9 @@
 <?php
 
 use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
-use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
 
 test('a storyboard with multiple nested stories can collate required scenarios', function () {
@@ -21,7 +20,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
                 Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
             ]),
         ]);
-    
+
     $tests = $storyboard->allStories();
 
     $expect = [
@@ -47,7 +46,7 @@ test('a storyboard with multiple nested stories can collate required scenarios',
         ],
     ];
     $actual = [];
-   
+
     foreach ($tests as $key => $story) {
         $scenarios = array_keys($story->allScenarios());
 
@@ -122,9 +121,9 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
 test('scenario variables are made accessible to the task() and check() callbacks', function () {
     Scenario::make('as_admin', fn () => 'ROLE::admin', 'role');
     Scenario::make('as_blocked', fn () => 'is blocked', 'blocked');
-   
+
     $data = [];
-    
+
     $story = StoryBoard::make()
         ->can()
         ->name('do something')
@@ -140,7 +139,7 @@ test('scenario variables are made accessible to the task() and check() callbacks
         });
 
     $story->boot()->assert();
-    
+
     expect($data)->toBe([
         'task_role' => 'ROLE::admin',
         'task_blocked' => 'is blocked',
@@ -183,21 +182,21 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
     $tasksRun = Collection::make();
 
     Scenario::make('registered', function ($a) use ($tasksRun) {
-        $tasksRun[] = 'registered_' . $a;
+        $tasksRun[] = 'registered_'.$a;
     });
 
     $scenario = new Scenario('variable', function ($a) use ($tasksRun) {
-        $tasksRun[] = 'variable_' . $a;
+        $tasksRun[] = 'variable_'.$a;
     });
 
     Story::make()
-        ->scenario($scenario, ['a' => '1', ])
-        ->scenario('registered', [ 'a' => '2', ])
+        ->scenario($scenario, ['a' => '1'])
+        ->scenario('registered', ['a' => '2'])
         ->scenario(function ($a) use ($tasksRun) {
-            $tasksRun[] = 'inline_' . $a;
-        }, [ 'a' => '3', ])
+            $tasksRun[] = 'inline_'.$a;
+        }, ['a' => '3'])
         ->bootScenarios();
-    
+
     expect($tasksRun->toArray())->toBe([
         'registered_2',
         'variable_1',

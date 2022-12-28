@@ -5,7 +5,6 @@ namespace BradieTilley\StoryBoard\Traits;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
 
 trait HasStories
 {
@@ -13,9 +12,9 @@ trait HasStories
 
     /**
      * Alias of setStories()
-     * 
-     * @param Story|array<Story> $stories
-     * @return $this 
+     *
+     * @param  Story|array<Story>  $stories
+     * @return $this
      */
     public function stories(...$stories): self
     {
@@ -24,9 +23,9 @@ trait HasStories
 
     /**
      * Add stories
-     * 
-     * @param Story|array<Story> $stories
-     * @return $this 
+     *
+     * @param  Story|array<Story>  $stories
+     * @return $this
      */
     public function setStories(...$stories): self
     {
@@ -47,7 +46,7 @@ trait HasStories
 
     /**
      * Get stories
-     * 
+     *
      * @return array<Story>
      */
     public function getStories(): array
@@ -60,16 +59,17 @@ trait HasStories
      */
     public function hasStories(): bool
     {
-        return !empty($this->stories);
+        return ! empty($this->stories);
     }
 
     /**
      * Get the stories under this story.
-     * 
+     *
      * If this story has no child stories, it returns itself.
      * If this story has child stories then it returns its children only.
-     * 
+     *
      * @requires HasName
+     *
      * @return array<string,Story>
      */
     public function allStories(): array

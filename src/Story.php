@@ -36,7 +36,7 @@ class Story
 
     /**
      * Create a new story
-     * 
+     *
      * @return $this
      */
     public static function make(?Story $parent = null): static
@@ -46,8 +46,8 @@ class Story
 
     /**
      * Get parameters available for DI callbacks
-     * 
-     * @return array 
+     *
+     * @return array
      */
     public function getParameters(): array
     {
@@ -60,14 +60,14 @@ class Story
 
     /**
      * Boot the story scenarios and tasks
-     * 
+     *
      * @return $this
      */
     public function boot(): self
     {
         if ($this->booted) {
             return $this;
-        } 
+        }
 
         $this->bootScenarios();
         $this->bootTask();
@@ -78,7 +78,7 @@ class Story
 
     /**
      * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
-     * 
+     *
      * @return $this
      */
     public function createTestCase(): self

@@ -1,7 +1,7 @@
 <?php
 
-use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
 
 function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
@@ -134,16 +134,16 @@ test('the can method can be applied at a child story level', function () {
 
     expect($names->toArray())->toBe([
         '[Can] do something foo one#' => [
-            'scenario_3a'
+            'scenario_3a',
         ],
         '[Can] do something foo two#' => [
-            'scenario_3b'
+            'scenario_3b',
         ],
         '[Can] do something bar one#' => [
-            'scenario_3c'
+            'scenario_3c',
         ],
         '[Can] do something bar two#' => [
-            'scenario_3d'
+            'scenario_3d',
         ],
     ]);
 });

@@ -3,12 +3,11 @@
 namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
+use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Traits\HasContainer;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
-use Illuminate\Container\Container;
-use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Traits\HasContainer;
 use Illuminate\Support\Str;
 
 class Scenario
@@ -35,7 +34,7 @@ class Scenario
 
     /**
      * Manually register the scenario (if not created via `make()`)
-     * 
+     *
      * @return $this
      */
     public function register(): self
@@ -67,7 +66,7 @@ class Scenario
 
     /**
      * Make and register this scenario
-     * 
+     *
      * @return $this
      */
     public static function make(string $name, Closure $generator, ?string $variable = null, ?int $order = null)
@@ -109,7 +108,7 @@ class Scenario
 
         if ($scenario instanceof Closure) {
             $scenario = self::make(
-                name: 'inline_' . (string) Str::random(),
+                name: 'inline_'.(string) Str::random(),
                 generator: $scenario,
             );
         }

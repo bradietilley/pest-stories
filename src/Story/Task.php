@@ -3,12 +3,11 @@
 namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
+use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Traits\HasContainer;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
-use Illuminate\Container\Container;
-use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Traits\HasContainer;
 use Illuminate\Support\Str;
 
 class Task
@@ -31,7 +30,7 @@ class Task
 
     /**
      * Manually register the task (if not created via `make()`)
-     * 
+     *
      * @return $this
      */
     public function register(): self
@@ -63,7 +62,7 @@ class Task
 
     /**
      * Make and register this task
-     * 
+     *
      * @return $this
      */
     public static function make(string $name, Closure $generator, ?int $order = null)
@@ -96,7 +95,7 @@ class Task
 
         if ($task instanceof Closure) {
             $task = self::make(
-                name: 'inline_' . (string) Str::random(),
+                name: 'inline_'.(string) Str::random(),
                 generator: $task,
             );
         }

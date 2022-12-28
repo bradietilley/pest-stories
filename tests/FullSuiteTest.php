@@ -1,11 +1,8 @@
 <?php
 
-use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
-use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\Exception;
 
 $data = collect([
     'shared_scenario' => null,
@@ -115,7 +112,7 @@ $story = StoryBoard::make()
 /**
  * Manually register the test cases
  */
-test($story->getFullName() . ' (manual)', function (Story $story) {
+test($story->getFullName().' (manual)', function (Story $story) {
     $story->boot()->assert();
 })->with($story->allStories());
 

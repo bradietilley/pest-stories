@@ -16,8 +16,8 @@ trait HasOrder
 
     /**
      * Set the order to register/boot this item
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function setOrder(?int $order): self
     {
@@ -33,8 +33,8 @@ trait HasOrder
 
     /**
      * Alias of setOrder()
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function order(?int $order): self
     {

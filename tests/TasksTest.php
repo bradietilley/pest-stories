@@ -12,7 +12,7 @@ test('storyboard tasks are run when bootTasks is run', function () {
         'after' => [],
         'checks' => [],
     ];
-    
+
     $story = Story::make()
         ->before(function () use (&$test) {
             $test['before'][] = 'run1';
@@ -132,7 +132,7 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
             $tasksRun[] = 'inline';
         })
         ->bootTask();
-    
+
     expect($tasksRun->toArray())->toBe([
         'registered',
         'variable',

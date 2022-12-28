@@ -1,6 +1,5 @@
 <?php
 
-
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
@@ -13,24 +12,24 @@ use Illuminate\Support\Collection;
 trait HasTasks
 {
     protected ?Result $result = null;
-    
+
     /**
      * @var array<Closure>
      */
     protected array $tasks = [];
-    
+
     protected ?Closure $canAssertion = null;
-    
+
     protected ?Closure $cannotAssertion = null;
-    
+
     protected ?Closure $before = null;
-    
+
     protected ?Closure $after = null;
 
     protected ?bool $can = null;
 
     /**
-     * @return $this 
+     * @return $this
      */
     public function task(Closure|Task|string $task): self
     {
@@ -44,22 +43,22 @@ trait HasTasks
     }
 
     /**
-     * @return $this 
+     * @return $this
      */
     public function before(Closure $before): self
     {
         $this->before = $before;
-        
+
         return $this;
     }
 
     /**
-     * @return $this 
+     * @return $this
      */
     public function after(Closure $after): self
     {
         $this->after = $after;
-        
+
         return $this;
     }
 
@@ -73,7 +72,7 @@ trait HasTasks
 
     /**
      * Get this story's tasks and its parents (etc) tasks
-     * 
+     *
      * @requires HasInheritance
      */
     public function allTasks(): array
@@ -84,12 +83,12 @@ trait HasTasks
 
     /**
      * @requires Story
+     *
      * @return $this
      */
     public function bootTask(): self
     {
         /** @var Story $this */
-
         $tasks = $this->allTasks();
 
         if (empty($tasks)) {
@@ -107,7 +106,6 @@ trait HasTasks
         /**
          * @var array<Task> $tasks
          */
-
         $result = new Result();
 
         try {
@@ -146,7 +144,7 @@ trait HasTasks
     }
 
     /**
-     * @return $this 
+     * @return $this
      */
     public function check(Closure $can = null, Closure $cannot = null): self
     {
@@ -168,19 +166,19 @@ trait HasTasks
 
     /**
      * Set whether this task can run (i.e. passes)
-     * 
+     *
      * @return $this
      */
     public function can(bool $can = true): self
     {
         $this->can = $can;
-        
+
         return $this;
     }
 
     /**
      * Set that this task cannot run (i.e. fails)
-     * 
+     *
      * @return $this
      */
     public function cannot(): self
@@ -216,18 +214,18 @@ trait HasTasks
 
     /**
      * Run the assertions
-     * 
+     *
      * @requires Story
      */
     public function assert(): void
     {
         /** @var Story $this */
         $this->can = $this->inheritFromParents('getCan');
-        
+
         if ($this->can === null) {
             throw StoryBoardException::assertionNotFound($this);
         }
-        
+
         $checker = $this->can ? $this->canAssertion : $this->cannotAssertion;
 
         if ($checker === null) {

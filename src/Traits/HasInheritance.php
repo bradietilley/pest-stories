@@ -17,7 +17,7 @@ trait HasInheritance
 
     /**
      * Get the parent Story
-     * 
+     *
      * @return static
      */
     public function getParent(): ?static
@@ -27,9 +27,9 @@ trait HasInheritance
 
     /**
      * Set the parent of this story
-     * 
-     * @param static $parent
-     * @return $this 
+     *
+     * @param  static  $parent
+     * @return $this
      */
     public function setParent(self $parent): self
     {
@@ -41,7 +41,8 @@ trait HasInheritance
     /**
      * Get a value from this current object, or from its closest parent.
 
-     * @param Closure|null $inheritsWhen
+     *
+     * @param  Closure|null  $inheritsWhen
      *                        When null, the value will be inherited from the parent when the resolved value is not null
      *                        When closure, the value will be inherited from the parent when this callback returns true
      */
@@ -51,7 +52,6 @@ trait HasInheritance
 
         while ($instance !== null) {
             /** @var static $instance */
-
             $value = $instance->{$getterMethod}();
             $passes = ($inheritsWhen instanceof Closure) ? $inheritsWhen($this, $value) : ($value !== null);
 
@@ -61,7 +61,7 @@ trait HasInheritance
 
             $instance = $instance->getParent();
         }
-        
+
         return $default;
     }
 
@@ -88,7 +88,7 @@ trait HasInheritance
             $value = $instance->{$getterMethod}();
             $all->push($value);
         }
-        
+
         return $all->collapse()->all();
     }
 }

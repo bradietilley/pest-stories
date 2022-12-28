@@ -10,7 +10,7 @@ trait HasPerformer
 
     /**
      * Alias of setUser()
-     * 
+     *
      * @return $this
      */
     public function user(Authenticatable|null $user): self
@@ -20,7 +20,7 @@ trait HasPerformer
 
     /**
      * Set the user to perform this test
-     * 
+     *
      * @return $this
      */
     public function setUser(Authenticatable|null $user): self

@@ -2,8 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Scenario;
 use Closure;
 use Illuminate\Support\Collection;
 
@@ -11,15 +11,15 @@ trait HasScenarios
 {
     /**
      * Scenarios and their arguments
-     * 
+     *
      * @var array<string,array>
      */
     protected array $scenarios = [];
 
     /**
      * Alias for setScenario()
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function scenario(string|Closure|Scenario $scenario, array $arguments = []): self
     {
@@ -30,7 +30,7 @@ trait HasScenarios
      * Register a single scenario for this story.
      * Optionally pass in arguments (matched by name) if the scenario supports them.
 r
-     * @return $this 
+     * @return $this
      */
     public function setScenario(string|Closure|Scenario $scenario, array $arguments = []): self
     {
@@ -43,7 +43,7 @@ r
 
     /**
      * Register multiple scenarios for this story
-     * 
+     *
      * @return $this
      */
     public function setScenarios(iterable $scenarios): self
@@ -79,10 +79,10 @@ r
 
     /**
      * Get all scenarios for this story, including those inherited from parents
-     * 
+     *
      * @requires HasInheritance
-     * 
-     * @return array<string,array> 
+     *
+     * @return array<string,array>
      */
     public function allScenarios(): array
     {
@@ -92,7 +92,7 @@ r
 
     /**
      * Boot all registered scenarios for this test.
-     * 
+     *
      * @requires HasInheritance
      */
     public function bootScenarios(): void
@@ -105,7 +105,7 @@ r
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->map(function (array $data) {
                 /** @var HasData|HasScenarios $this */
-                
+
                 /** @var Scenario $scenario */
                 $scenario = $data['scenario'];
                 /** @var array $args */

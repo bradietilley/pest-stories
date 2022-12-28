@@ -11,8 +11,8 @@ trait HasName
 {
     /**
      * Alias for setName()
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function name(string $name): self
     {
@@ -21,7 +21,7 @@ trait HasName
 
     /**
      * Set the name (or name fragment) of this story
-     * 
+     *
      * @return $this
      */
     public function setName(string $name): self
@@ -41,10 +41,9 @@ trait HasName
 
     /**
      * Get the parent test name
-     * 
+     *
      * Example: create something > as low level user > with correct permissions
-     * Output:  create something as low level user 
-     * 
+     * Output:  create something as low level user
      */
     public function getParentName(): ?string
     {
@@ -53,17 +52,17 @@ trait HasName
 
     /**
      * Get the full test name
-     * 
+     *
      * Example: create something > as low level user > with correct permissions
-     * Output:  [Can] create something as low level user with correct permissions 
-     * 
+     * Output:  [Can] create something as low level user with correct permissions
+     *
      * @requires HasInheritance, HasStories
      */
     public function getFullName(): ?string
     {
         /** @var HasInheritance|HasStories|HasName $this */
         $fullName = $this->getName();
-        
+
         if ($this->hasParent()) {
             $fullName = "{$this->getParentName()} {$fullName}";
         }
