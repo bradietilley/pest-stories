@@ -215,3 +215,34 @@ test('scenarios can be defined as inline closures, Task objects, or string ident
         'inline_3',
     ]);
 });
+
+test('scenarios can offer to append their name to the story name', function () {
+    Scenario::make('test_a', fn () => null);
+    Scenario::make('test_b', fn () => null)->appendName('custom name');
+    Scenario::make('test_c', fn () => null)->appendName();
+
+    $story = StoryBoard::make()
+        ->name('parent name')
+        ->can()
+        ->check(fn () => true)
+        ->stories([
+            Story::make()->name('existing name')->scenario('test_a'), // parent name existing name
+            Story::make()->name('existing name')->scenario('test_b'), // parent name existing name custom name
+            Story::make()->name('existing name')->scenario('test_c'), // parent name existing name test c
+            Story::make()->scenario('test_b'),                        // parent name custom name
+            Story::make()->scenario('test_c'),                        // parent name test c
+        ]);
+
+    $stories = Collection::make($story->allStories())
+        ->map(fn (Story $story) => $story->getFullName())
+        ->values()
+        ->all();
+
+    expect($stories)->toBe([
+        'parent name existing name',
+        'parent name existing name custom name',
+        'parent name existing name test c',
+        'parent name custom name',
+        'parent name test c',
+    ]);
+});

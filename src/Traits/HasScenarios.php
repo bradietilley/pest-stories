@@ -108,4 +108,15 @@ r
                 $this->setData($scenario->variable(), $value);
             });
     }
+
+    public function getNameFromScenarios(): ?string
+    {
+        // Just this level
+        $scenarios = Collection::make($this->getScenarios())
+            ->pluck('scenario')
+            ->map(fn (Scenario $scenario) => $scenario->getAppendName())
+            ->filter();
+
+        return $scenarios->isNotEmpty() ? $scenarios->implode(' ') : null;
+    }
 }

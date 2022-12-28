@@ -63,6 +63,14 @@ trait HasName
         /** @var HasInheritance|HasStories|HasName $this */
         $fullName = $this->getName();
 
+        if (method_exists($this, 'getNameFromScenarios')) {
+            $appendName = $this->getNameFromScenarios();
+
+            if ($appendName !== null) {
+                $fullName = trim("{$fullName} {$appendName}");
+            }
+        }
+
         if ($this->hasParent()) {
             $fullName = "{$this->getParentName()} {$fullName}";
         }
