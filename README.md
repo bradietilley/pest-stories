@@ -304,7 +304,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 
 ### TODO
 
-- Add inline closure support for scenarios
 - Add Macro support on Story
 - DRY for all instances of `Container::getInstance()->call()`
 - Actually ensure `TestCase` is accessible in all story callbacks (tasks, scenarios, checkers, etc)
