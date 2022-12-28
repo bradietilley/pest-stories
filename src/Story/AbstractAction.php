@@ -91,10 +91,10 @@ abstract class AbstractAction
     /**
      * Get the name of the action to be referenced when building a story's set of actions
      */
-    public static function prepare(string|Closure|self $action): string
+    public static function prepare(string|Closure|self $action): self
     {
         if (is_string($action)) {
-            return $action;
+            return self::fetch($action);
         }
 
         if ($action instanceof Closure) {
@@ -109,6 +109,6 @@ abstract class AbstractAction
             $action->register();
         }
 
-        return $action->getName();
+        return $action;
     }
 }

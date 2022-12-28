@@ -7,6 +7,12 @@ use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a storyboard with multiple nested stories can collate required scenarios', function () {
+    Scenario::make('allows_creation', fn () => true);
+    Scenario::make('as_admin', fn () => true);
+    Scenario::make('as_customer', fn () => true);
+    Scenario::make('as_unblocked', fn () => true);
+    Scenario::make('as_blocked', fn () => true);
+
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->scenario('allows_creation')
@@ -91,7 +97,13 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
             'name' => 'Something cool',
         ]);
 
-    expect($story->allScenarios())->toBe([
+    $scenarios = $story->allScenarios();
+
+    foreach ($scenarios as $scenario => $data) {
+        $scenarios[$scenario] = $data['arguments'];
+    }
+
+    expect($scenarios)->toBe([
         'allows_creation' => [],
         'as_admin' => [],
         'as_blocked' => [],

@@ -2,7 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use Closure;
 use Illuminate\Support\Collection;
@@ -34,9 +33,12 @@ r
      */
     public function setScenario(string|Closure|Scenario $scenario, array $arguments = []): self
     {
-        $name = Scenario::prepare($scenario);
+        $scenario = Scenario::prepare($scenario);
 
-        $this->scenarios[$name] = $arguments;
+        $this->scenarios[$scenario->getName()] = [
+            'scenario' => $scenario,
+            'arguments' => $arguments,
+        ];
 
         return $this;
     }
@@ -59,14 +61,6 @@ r
         }
 
         return $this;
-    }
-
-    /**
-     * Get a registered scenario's arguments (no inheritance lookup)
-     */
-    public function getScenario(string $name): ?array
-    {
-        return $this->scenarios[$name] ?? null;
     }
 
     /**
@@ -97,14 +91,12 @@ r
      */
     public function bootScenarios(): void
     {
+        /** @var HasData|HasScenarios|HasName $this */
+
         Collection::make($this->allScenarios())
-            ->map(fn (array $arguments, string $scenario) => [
-                'scenario' => Scenario::fetch($scenario),
-                'arguments' => $arguments,
-            ])
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->map(function (array $data) {
-                /** @var HasData|HasScenarios $this */
+                /** @var HasData|HasScenarios|HasName $this */
 
                 /** @var Scenario $scenario */
                 $scenario = $data['scenario'];

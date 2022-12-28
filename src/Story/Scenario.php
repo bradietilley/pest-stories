@@ -10,6 +10,8 @@ class Scenario extends AbstractAction
 {
     protected string $variable;
 
+    protected ?string $appendName = null;
+
     public function __construct(
         protected string $name,
         protected Closure $generator,
@@ -35,5 +37,22 @@ class Scenario extends AbstractAction
     public function variable(): string
     {
         return $this->variable;
+    }
+
+    /**
+     * Append the name of this scenario to the tests
+     *
+     * @return $this
+     */
+    public function appendName(?string $name = null): self
+    {
+        $this->appendName = $name ?? str_replace('_', ' ', $this->getName());
+
+        return $this;
+    }
+
+    public function getAppendName(): ?string
+    {
+        return $this->appendName;
     }
 }

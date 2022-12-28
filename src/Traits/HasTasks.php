@@ -35,9 +35,7 @@ trait HasTasks
     {
         $task = Task::prepare($task);
 
-        if (! in_array($task, $this->tasks)) {
-            $this->tasks[] = $task;
-        }
+        $this->tasks[$task->getName()] = $task;
 
         return $this;
     }
@@ -96,12 +94,8 @@ trait HasTasks
         }
 
         $tasks = Collection::make($tasks)
-            ->map(
-                fn (string $task) => Task::fetch($task),
-            )
-            ->sortBy(
-                fn (Task $task) => $task->getOrder(),
-            )
+            ->values()
+            ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
         /**
          * @var array<Task> $tasks
@@ -116,12 +110,15 @@ trait HasTasks
                 $this->call($callback, $data);
             }
 
-            // Allow callbacks to read the `$result`
-            $data['result'] = $result->getValue();
-
             /* Run task */
             foreach ($tasks as $task) {
+                // Allow callbacks to read the `$result`
+                $data['result'] = $result->getValue();
+
                 $result->setValue($task->boot($this, $data));
+
+                // Allow callbacks to read the `$result`
+                $data['result'] = $result->getValue();
             }
 
             /* Call after listener */
@@ -232,6 +229,8 @@ trait HasTasks
             throw StoryBoardException::assertionCheckerNotFound($this);
         }
 
-        $this->call($checker, $this->getParameters());
+        $this->call($checker, $this->getParameters() + [
+            'result' => $this->result ? $this->result->getValue() : null,
+        ]);
     }
 }
