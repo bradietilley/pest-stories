@@ -3,6 +3,7 @@
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
+use PHPUnit\Framework\TestCase;
 
 $data = collect([
     'shared_scenario' => null,
@@ -21,6 +22,7 @@ function expectTestSuiteRun(&$data): void
         ->and($data['scenario'])->toBe('3')
         ->and($data['can'])->toBe('[Can] full suite test with child one')
         ->and($data['cannot'])->toBe('[Cannot] full suite test with child two')
+        ->and($data['testcase'])->toBe('P\\Tests\\FullSuiteTest')
         ->and($data['tasks'])->toBeArray()->toHaveCount(2)
         ->and($data['tasks'][0])->toBe([
             'shared' => 1,
@@ -76,7 +78,7 @@ Scenario::make('scenario_two', function () use (&$data) {
 $story = StoryBoard::make()
     ->name('full suite test')
     ->scenario('shared_scenario')
-    ->task(function (Story $story, $shared, $scenario) use (&$data) {
+    ->task(function (Story $story, TestCase $test, $shared, $scenario) use (&$data) {
         $tasks = $data['tasks'];
         $tasks[] = [
             'shared' => $shared,
@@ -85,6 +87,7 @@ $story = StoryBoard::make()
         ];
 
         $data['tasks'] = $tasks;
+        $data['testcase'] = get_class($test);
     })
     ->check(
         function (Story $story) use (&$data) {
@@ -107,7 +110,8 @@ $story = StoryBoard::make()
             ->name('with child two')
             ->scenario('scenario_two')
             ->cannot(),
-    ]);
+    ])
+    ->test();
 
 /**
  * Manually register the test cases

@@ -12,6 +12,7 @@ use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
 use Illuminate\Support\Traits\Conditionable;
+use PHPUnit\Framework\TestCase;
 
 class Story
 {
@@ -29,6 +30,8 @@ class Story
     protected ?string $name = null;
 
     protected bool $booted = false;
+
+    protected ?TestCase $test = null;
 
     public function __construct(protected ?Story $parent = null)
     {
@@ -53,6 +56,7 @@ class Story
     {
         return array_replace($this->allData(), [
             'story' => $this,
+            'test' => $this->getTest(),
             'can' => $this->canAssertion,
             'user' => $this->getUser(),
         ]);
@@ -77,16 +81,36 @@ class Story
     }
 
     /**
+     * Get the test case used for this story
+     */
+    public function getTest(): ?TestCase
+    {
+        return $this->test;
+    }
+
+    /**
+     * Set the test case used for this story
+     */
+    public function setTest(TestCase $test): self
+    {
+        $this->test = $test;
+
+        return $this;
+    }
+
+    /**
      * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
      *
      * @return $this
      */
-    public function createTestCase(): self
+    public function test(): self
     {
         $story = $this;
 
         test($this->getFullName(), function () use ($story) {
-            $story->boot()->assert();
+            /** @var Story $story */
+            /** @var TestCase $this */
+            $story->setTest($this)->boot()->assert();
         });
 
         return $this;
