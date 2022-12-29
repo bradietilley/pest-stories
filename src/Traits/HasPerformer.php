@@ -2,11 +2,23 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Story;
+use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 trait HasPerformer
 {
     protected ?Authenticatable $user = null;
+
+    protected static ?Closure $actingAsCallback = null;
+
+    /**
+     * Specify what to do when the user is set
+     */
+    public static function actingAs(Closure $actingAsCallback): void
+    {
+        static::$actingAsCallback = $actingAsCallback;
+    }
 
     /**
      * Alias of setUser()
@@ -27,6 +39,14 @@ trait HasPerformer
     {
         $this->user = $user;
 
+        if (static::$actingAsCallback !== null) {
+            if ($this instanceof Story) {
+                $this->call(static::$actingAsCallback, $this->getParameters());
+            } else {
+                call_user_func_array(static::$actingAsCallback, $this, $user);
+            }
+        }
+        
         return $this;
     }
 
