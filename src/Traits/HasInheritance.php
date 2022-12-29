@@ -86,6 +86,11 @@ trait HasInheritance
 
         foreach ($instances as $instance) {
             $value = $instance->{$getterMethod}();
+
+            if (! is_iterable($value)) {
+                $value = [$value];
+            }
+
             $all->push($value);
         }
 

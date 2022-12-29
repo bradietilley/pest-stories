@@ -305,3 +305,9 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 ### TODO
 
 - Add more tests
+- Add `->isolate()` to Story class to easily isolate a single test case when run
+    - Acts as a `--filter="dataset name"`except storyboard dataset names are dynamically generated so would be more difficult to figure the exact naming convention.
+    - It will have to apply some warning that an isolation is being applied to the Story, so the full Story is not being run (i.e. you want to remove isolate before pushing to production).
+    - It will run either a single Story or all children of the given story.
+    - It can be applied to multiple stories.
+    - As soon as any isolation is added, all stories will be automatically skipped (with message)

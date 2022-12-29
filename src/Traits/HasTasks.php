@@ -217,6 +217,17 @@ trait HasTasks
     public function assert(): void
     {
         /** @var Story $this */
+
+        if ($this->skipDueToIsolation()) {
+            $test = $this->getTest();
+
+            if ($test) {
+                $test->markTestSkipped('Isolation Mode Enabled');
+            }
+            
+            return;
+        }
+
         $this->can = $this->inheritFromParents('getCan');
 
         if ($this->can === null) {

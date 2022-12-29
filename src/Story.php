@@ -5,6 +5,7 @@ namespace BradieTilley\StoryBoard;
 use BradieTilley\StoryBoard\Traits\HasContainer;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
+use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
@@ -26,6 +27,7 @@ class Story
     use HasTasks;
     use HasInheritance;
     use HasContainer;
+    use HasIsolation;
     use Conditionable;
     use Macroable;
 
@@ -71,6 +73,10 @@ class Story
      */
     public function boot(): self
     {
+        if ($this->skipDueToIsolation()) {
+            return $this;
+        }
+
         if ($this->booted) {
             return $this;
         }
@@ -112,9 +118,18 @@ class Story
         test($this->getFullName(), function () use ($story) {
             /** @var Story $story */
             /** @var TestCase $this */
+
             $story->setTest($this)->boot()->assert();
         });
 
         return $this;
+    }
+
+    /**
+     * Get the group key to use to isolate this class.
+     */
+    protected static function getIsolationClassGroup(): string
+    {
+        return 'story';
     }
 }
