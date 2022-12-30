@@ -313,10 +313,13 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
         - Story names coloured differently
         - Hierarchy of stories coloured differently?
 - Add debug mode to dump out all data variables when a failure occurs
+- Add Collection wrapper when $stories fetched via property
 - Add more tests
     - Ensure scenarios of the same variable can be added at parent and child level, and the child level one will take precedence.
     - Ensure `->can()` on a parent story will still add `[Can]` to the child story name
     - More tests
+    - Ensure `->stories()` supports: single arg Story, multiple args ...Story, single array of Story, multiple arrays of Story
+- Update `Story::make()` to accept name (common usage) instead of parent (rare usage)
 - Refactor bootScenario/bootTask stages:
     - This should be two stages: registerScenarios and registerTasks + bootScenarios + bootTasks.
     - This separation should allow for the storys to better handle all inheritance, and naming modifications better
