@@ -22,7 +22,9 @@ class StoryBoard extends Story
                 /** @var Story $story */
                 /** @var TestCase $this */
 
+                // @codeCoverageIgnoreStart
                 $story->setTest($this)->boot()->assert();
+                // @codeCoverageIgnoreEnd
             })->with($stories);
         } else {
             foreach ($stories as $story) {
