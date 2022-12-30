@@ -51,6 +51,14 @@ trait HasTasks
     }
 
     /**
+     * Get the Before callback
+     */
+    public function getBefore(): ?Closure
+    {
+        return $this->before;
+    }
+
+    /**
      * @return $this
      */
     public function after(Closure $after): self
@@ -58,6 +66,14 @@ trait HasTasks
         $this->after = $after;
 
         return $this;
+    }
+
+    /**
+     * Get the After callback
+     */
+    public function getAfter(): ?Closure
+    {
+        return $this->after;
     }
 
     /**
@@ -100,7 +116,13 @@ trait HasTasks
         /**
          * @var array<Task> $tasks
          */
-        $result = new Result();
+        $result = $this->getResult();
+
+        $this->before = $this->inheritFromParents('getBefore');
+        $this->after = $this->inheritFromParents('getAfter');
+        $this->can = $this->inheritFromParents('getCan');
+        $this->canAssertion = $this->inheritFromParents('getCanAssertion');
+        $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
 
         try {
             $data = $this->getParameters();
@@ -130,12 +152,6 @@ trait HasTasks
 
             throw $e;
         }
-
-        $this->result = $result;
-
-        $this->can = $this->inheritFromParents('getCan');
-        $this->canAssertion = $this->inheritFromParents('getCanAssertion');
-        $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
 
         return $this;
     }
@@ -243,5 +259,13 @@ trait HasTasks
         $this->call($checker, $this->getParameters() + [
             'result' => $this->result ? $this->result->getValue() : null,
         ]);
+    }
+
+    /**
+     * Get the result from the task(s) if already run
+     */
+    public function getResult(): Result
+    {
+        return $this->result ??= new Result();
     }
 }

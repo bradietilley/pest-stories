@@ -152,3 +152,71 @@ test('a story must have at least one task', function () {
     }
 })->throws(TaskNotSpecifiedException::class, 'No task was found for the story `[Can] parent child`');
 
+test('all test callbacks can be inherited from parent story', function () {
+    $ran = Collection::make([]);
+
+    $board = StoryBoard::make()
+        ->name('parent')
+        ->can()
+        ->check(
+            fn () => $ran[] = 'can:parent',
+            fn () => $ran[] = 'cannot:parent',
+        )
+        ->before(fn () => $ran[] = 'before:parent')
+        ->after(fn () => $ran[] = 'after:parent')
+        ->task(fn () => $ran[] = 'task:parent')
+        ->stories([
+            Story::make()->name('child a'),
+            Story::make()
+                ->name('child b')
+                ->cannot()
+                ->check(
+                    fn () => $ran[] = 'can:child_b',
+                    fn () => $ran[] = 'cannot:child_b',
+                )
+                ->before(fn () => $ran[] = 'before:child_b')
+                ->after(fn () => $ran[] = 'after:child_b')
+                ->task(fn () => $ran[] = 'task:child_b'),
+            Story::make()->name('child c')->stories([
+                Story::make()->name('child c1'),
+                Story::make()
+                    ->name('child c2')
+                    ->check(
+                        fn () => $ran[] = 'can:child_c2',
+                        fn () => $ran[] = 'cannot:child_c2',
+                    )
+                    ->before(fn () => $ran[] = 'before:child_c2')
+                    ->after(fn () => $ran[] = 'after:child_c2')
+                    ->task(fn () => $ran[] = 'task:child_c2'),
+            ]),
+        ]);
+
+    foreach ($board->allStories() as $story) {
+        $story->boot()->assert();
+    }
+
+    expect($ran->toArray())->toBe([
+        // child a
+        'before:parent',
+        'task:parent',
+        'after:parent',
+        'can:parent', // can
+        // child b
+        'before:child_b',
+        'task:parent', // parent and child b task
+        'task:child_b',
+        'after:child_b',
+        'cannot:child_b', // cannot
+        // child c1
+        'before:parent',
+        'task:parent',
+        'after:parent',
+        'can:parent', // can
+        // child c2
+        'before:child_c2',
+        'task:parent', // parent and child b task
+        'task:child_c2',
+        'after:child_c2',
+        'can:child_c2', // can
+    ]);
+});
