@@ -238,3 +238,39 @@ test('tasks that are missing a generator throw an exception when booted', functi
     // The task 'something_cool' does not (no generator)
     $story->boot();
 })->throws(TaskGeneratorNotFoundException::class, 'The `something_cool` task generator callback could not be found.');
+
+test('you may create a story with an assertion and unset the assertion for a child story', function () {
+    $story = StoryBoard::make()
+        ->name('parent')
+        ->can()
+        ->stories([
+            // can: inherits from 'parent'
+            Story::make()->name('child can implicit'),
+            // can: overrwides from 'parent' (no affect really)
+            Story::make()->can()->name('child can explicit'),
+            // cannot: overrwides from 'parent'
+            Story::make()->cannot()->name('child cannot explicit'),
+            // null: overrwides from 'parent'
+            Story::make()->noAssertion()->name('child unset')->stories([
+                // null: inherits from 'child unset'
+                Story::make()->name('grandchild null implicit'),
+                // can: overrides noAssertion from 'child unset'
+                Story::make()->can()->name('grandchild can explicit'),
+                // cannot: overrides noAssertion from 'child unset'
+                Story::make()->cannot()->name('grandchild cannot explicit'),
+            ]),
+        ]);
+
+    $actual = $story->storiesAll->keys()->toArray();
+
+    $expect = [
+        '[Can] parent child can implicit',
+        '[Can] parent child can explicit',
+        '[Cannot] parent child cannot explicit',
+        'parent child unset grandchild null implicit',
+        '[Can] parent child unset grandchild can explicit',
+        '[Cannot] parent child unset grandchild cannot explicit',
+    ];
+
+    expect($actual)->toBe($expect);
+});

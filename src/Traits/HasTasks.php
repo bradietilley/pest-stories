@@ -30,6 +30,17 @@ trait HasTasks
     protected ?bool $can = null;
 
     /**
+     * Flag that indicates that inheritance must halt at
+     * this story in the 'family tree'. If '$can' is 'null'
+     * here on this Story, we should not look any further.
+     * 
+     * Set to true when noAssertion() is run. This will override
+     * a parent can/cannot and reset it back to null for this
+     * story and its children.
+     */
+    protected bool $canHalt = false;
+
+    /**
      * @return $this
      */
     public function task(Closure|Task|string $task): self
@@ -174,6 +185,7 @@ trait HasTasks
     public function noAssertion(): self
     {
         $this->can = null;
+        $this->canHalt = true;
 
         return $this;
     }
@@ -206,6 +218,14 @@ trait HasTasks
     public function getCan(): ?bool
     {
         return $this->can;
+    }
+
+    /**
+     * Get the halt flag for the 'can' property.
+     */
+    public function getCanHalt(): bool
+    {
+        return $this->canHalt;
     }
 
     /**

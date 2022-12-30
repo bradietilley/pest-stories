@@ -65,7 +65,6 @@ class Story
             return $this->collectAllStories();
         }
 
-
         return $this->{$name};
     }
 

@@ -50,10 +50,24 @@ trait HasInheritance
     {
         $instance = $this;
 
+        $haltGetterMethod = $getterMethod . 'Halt';
+        $haltGetterMethodExists = method_exists($this, $haltGetterMethod);
+
         while ($instance !== null) {
             /** @var static $instance */
             $value = $instance->{$getterMethod}();
             $passes = ($inheritsWhen instanceof Closure) ? $inheritsWhen($this, $value) : ($value !== null);
+
+            // If at first it fails (is null, etc), check to see if we should halt the lookup
+            if ($passes === false) {
+                // if the halt flag method exists (e.g. 'getCan' -> 'getCanHalt')
+                if ($haltGetterMethodExists) {
+                    // if the halt flag is true then we should take the value as-is, even if it's null.
+                    if ($instance->{$haltGetterMethod}() === true) {
+                        $passes = true;
+                    }
+                }
+            }
 
             if ($passes === true) {
                 return $value;
