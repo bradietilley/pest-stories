@@ -166,14 +166,6 @@ class Story
     }
 
     /**
-     * Get the group key to use to isolate this class.
-     */
-    protected static function getIsolationClassGroup(): string
-    {
-        return 'story';
-    }
-
-    /**
      * Set the name of the function that powers the testing. Default: `test`
 
      * @throws TestFunctionNotFoundException 
