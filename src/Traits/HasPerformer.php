@@ -45,6 +45,12 @@ trait HasPerformer
             } else {
                 call_user_func_array(static::$actingAsCallback, $this, $user);
             }
+        } else {
+            if ($user !== null) {
+                auth()->login($user);
+            } else {
+                auth()->logout();
+            }
         }
         
         return $this;
