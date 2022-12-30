@@ -72,7 +72,7 @@ trait HasName
         }
 
         if ($this->hasParent()) {
-            $fullName = "{$this->getParentName()} {$fullName}";
+            $fullName = trim("{$this->getParentName()} {$fullName}");
         }
 
         /**

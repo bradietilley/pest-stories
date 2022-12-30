@@ -50,4 +50,11 @@ abstract class StoryBoardException extends Exception
             sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),
         );
     }
+
+    public static function testFunctionNotFound(string $function): TestFunctionNotFoundException
+    {
+        return new TestFunctionNotFoundException(
+            sprintf('The story test function `%s` could not be found', $function),
+        );
+    }
 }

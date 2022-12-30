@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
+use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Traits\HasContainer;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
@@ -36,6 +38,8 @@ class Story
     protected bool $booted = false;
 
     protected ?TestCase $test = null;
+
+    protected static string $testFunction = 'test';
 
     public function __construct(protected ?Story $parent = null)
     {
@@ -115,12 +119,24 @@ class Story
     {
         $story = $this;
 
-        test($this->getFullName(), function () use ($story) {
-            /** @var Story $story */
-            /** @var TestCase $this */
+        $function = self::getTestFunction();
+        $args = [
+            $this->getFullName(),
+            function () use ($story) {
+                /** @var Story $story */
+                /** @var TestCase $this */
+    
+                $story->setTest($this)->boot()->assert();
+            },
+        ];
 
-            $story->setTest($this)->boot()->assert();
-        });
+        /**
+         * Pest uses a Backtrace class which expects the most recent backtrace items
+         * to each include a file. By running call_user_func we lose the 'file' in the
+         * relevant backtrace and therefore Pest cannot operate. So instead we'll call
+         * the function directly. Not super nice, but hey.
+         */
+        $function(...$args);
 
         return $this;
     }
@@ -131,5 +147,27 @@ class Story
     protected static function getIsolationClassGroup(): string
     {
         return 'story';
+    }
+
+    /**
+     * Set the name of the function that powers the testing. Default: `test`
+
+     * @throws TestFunctionNotFoundException 
+     */
+    public static function setTestFunction(string $function = 'test'): void
+    {
+        if (! function_exists($function)) {
+            throw StoryBoardException::testFunctionNotFound($function);
+        }
+
+        self::$testFunction = $function;
+    }
+
+    /**
+     * Get the name of the function that powers the testing. Default: `test`
+     */
+    public static function getTestFunction(): string
+    {
+        return self::$testFunction;
     }
 }

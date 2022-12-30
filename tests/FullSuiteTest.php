@@ -3,6 +3,7 @@
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
 $data = collect([
@@ -125,4 +126,36 @@ test($story->getFullName().' (manual)', function (Story $story) {
  */
 test('check the full suite test ran correctly (manual)', function () use (&$data) {
     expectTestSuiteRun($data);
+});
+
+$testExecutions = Collection::make([]);
+
+function test_alternative(string $description, Closure $callback) {
+    global $testExecutions;
+
+    $testExecutions[$description] = $callback;
+}
+
+test('storyboard test function will call upon the pest test function for each story in its board', function () use ($testExecutions) {
+    // Swap out the test function for our test function
+    Story::setTestFunction('test_alternative');
+
+    StoryBoard::make()->name('parent')->can()->check(fn () => true)->stories([
+        Story::make()->name('child a'),
+        Story::make()->name('child b'),
+        Story::make()->stories([
+            Story::make()->name('child c1'),
+            Story::make()->name('child c2'),
+        ]),
+    ])->test();
+
+    expect($testExecutions->keys()->toArray())->toBe([
+        '[Can] parent child a',
+        '[Can] parent child b',
+        '[Can] parent child c1',
+        '[Can] parent child c2',
+    ]);
+    
+    // Reset back to Pest's test function
+    Story::setTestFunction();
 });
