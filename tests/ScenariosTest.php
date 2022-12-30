@@ -265,3 +265,54 @@ test('scenarios that are missing a generator throw an exception when booted', fu
     // The scenario 'something_cool' does not (no generator)
     $story->boot();
 })->throws(ScenarioGeneratorNotFoundException::class, 'The `something_cool` scenario generator callback could not be found.');
+
+
+test('a story with the multiple scenarios of the same variable will use the last/most-child one', function () {
+    Scenario::make('location_1')->as(fn () => '1')->variable('location')->order(1);
+    Scenario::make('location_2')->as(fn () => '2')->variable('location')->order(1);
+    Scenario::make('location_3')->as(fn () => '3')->variable('location')->order(1);
+    Scenario::make('location_4')->as(fn () => '4')->variable('location')->order(1);
+
+    $data = Collection::make([]);
+
+    Story::make()
+        ->name('parent')
+        ->scenario('location_1')
+        ->can()
+        ->before(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
+        ->task(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
+        ->after(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
+        ->check(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
+        ->stories([
+            // Test inheritance
+            Story::make()->name('1'),
+            // Test inheritance is ignored; duplicate at same level = last one taken
+            Story::make()->scenario('location_1')->scenario('location_2')->name('2'),
+            // Test inheritance is ignored; duplicate at same level = last one taken
+            Story::make()->scenario('location_2')->scenario('location_3')->stories([
+                Story::make()->name('3'),
+                Story::make()->scenario('location_4')->name('4'),
+            ]),
+        ])
+        ->storiesAll
+        ->each(fn (Story $story) => $story->boot()->assert());
+
+    expect($data->toArray())->toBe([
+        '1:1',
+        '1:1',
+        '1:1',
+        '1:1',
+        '2:2',
+        '2:2',
+        '2:2',
+        '2:2',
+        '3:3',
+        '3:3',
+        '3:3',
+        '3:3',
+        '4:4',
+        '4:4',
+        '4:4',
+        '4:4',
+    ]);
+});
