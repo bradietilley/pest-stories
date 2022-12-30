@@ -13,11 +13,25 @@ abstract class StoryBoardException extends Exception
             sprintf('The `%s` scenario could not be found.', $scenario),
         );
     }
+    
+    public static function scenarioGeneratorNotFound(string $scenario): ScenarioGeneratorNotFoundException
+    {
+        return new ScenarioGeneratorNotFoundException(
+            sprintf('The `%s` scenario generator callback could not be found.', $scenario),
+        );
+    }
 
     public static function taskNotFound(string $task): TaskNotFoundException
     {
         return new TaskNotFoundException(
             sprintf('The `%s` task could not be found.', $task),
+        );
+    }
+    
+    public static function taskGeneratorNotFound(string $task): TaskGeneratorNotFoundException
+    {
+        return new TaskGeneratorNotFoundException(
+            sprintf('The `%s` task generator callback could not be found.', $task),
         );
     }
 

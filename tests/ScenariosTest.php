@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\ScenarioGeneratorNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
@@ -246,3 +247,21 @@ test('scenarios can offer to append their name to the story name', function () {
         '[Can] parent name test c',
     ]);
 });
+
+test('scenarios that are missing a generator throw an exception when booted', function () {
+    $ran = Collection::make([]);
+
+    Scenario::make('something_cooler')->as(fn () => $ran[] = 'yes');
+    Scenario::make('something_cool');
+
+    $story = Story::make()
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->scenario('something_cooler')
+        ->scenario('something_cool');
+
+    // The scenario 'something_cooler' boots correctly
+    // The scenario 'something_cool' does not (no generator)
+    $story->boot();
+})->throws(ScenarioGeneratorNotFoundException::class, 'The `something_cool` scenario generator callback could not be found.');

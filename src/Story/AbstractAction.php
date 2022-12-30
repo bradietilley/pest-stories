@@ -20,9 +20,21 @@ abstract class AbstractAction
 
     public function __construct(
         protected string $name,
-        protected Closure $generator,
+        protected ?Closure $generator = null,
         protected int $order,
     ) {}
+
+    /**
+     * Set the generator
+     * 
+     * @return $this 
+     */
+    public function as(Closure $generator): self
+    {
+        $this->generator = $generator;
+
+        return $this;
+    }
 
     /**
      * Manually register the action (if not created via `make()`)
@@ -48,13 +60,19 @@ abstract class AbstractAction
     }
 
     /**
-     * Get an exception for story not found
+     * Get an exception for scenario/task not found
      */
     abstract protected static function notFound(string $name): StoryBoardException;
 
     /**
+     * Get an exception for generator not found
+     */
+    abstract protected static function generatorNotFound(string $name): StoryBoardException;
+
+    /**
      * Fetch a action from the registrar
      * 
+     * @throws StoryBoardException
      * @return static
      */
     public static function fetch(string $name): static
@@ -70,10 +88,16 @@ abstract class AbstractAction
 
     /**
      * Boot this action for the given story
+     * 
+     * @throws StoryBoardException
      */
     public function boot(Story $story, array $arguments): mixed
     {
         $arguments = array_replace($story->getParameters(), $arguments);
+
+        if ($this->generator === null) {
+            throw static::generatorNotFound($this->getName());
+        }
 
         return $this->call($this->generator, $arguments);
     }

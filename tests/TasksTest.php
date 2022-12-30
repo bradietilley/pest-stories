@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\TaskGeneratorNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\TaskNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
@@ -220,3 +221,20 @@ test('all test callbacks can be inherited from parent story', function () {
         'can:child_c2', // can
     ]);
 });
+
+test('tasks that are missing a generator throw an exception when booted', function () {
+    $ran = Collection::make([]);
+
+    Task::make('something_cooler')->as(fn () => $ran[] = 'yes');
+    Task::make('something_cool');
+
+    $story = Story::make()
+        ->can()
+        ->check(fn () => null)
+        ->task('something_cooler')
+        ->task('something_cool');
+
+    // The task 'something_cooler' boots correctly
+    // The task 'something_cool' does not (no generator)
+    $story->boot();
+})->throws(TaskGeneratorNotFoundException::class, 'The `something_cool` task generator callback could not be found.');
