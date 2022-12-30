@@ -5,7 +5,6 @@ use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a story can isolate itself and prevent other stories from running', function (string $story) {
-    Story::flushIsolation();
     $runs = collect();
 
     $storyA = Story::make()->name('A')->task(fn () => $runs[] = 'A')->check(fn () => true)->can();
@@ -35,6 +34,8 @@ test('a story can isolate itself and prevent other stories from running', functi
     }
 
     expect($runs->toArray())->toBe($expect);
+    
+    Story::flushIsolation();
 })->with([
     'A',
     'B',
@@ -79,6 +80,8 @@ test('a story can isolate itself and allow its children to also run', function (
         'child 1c1',
         'child 1c2',
     ]);
+
+    Story::flushIsolation();
 });
 
 test('multiple stories can be isolated and all isolated stories will run', function () {
@@ -131,4 +134,6 @@ test('multiple stories can be isolated and all isolated stories will run', funct
         'child 3c1',
         'child 3c2',
     ]);
+    
+    Story::flushIsolation();
 });
