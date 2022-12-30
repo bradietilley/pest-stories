@@ -18,6 +18,10 @@ use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @property-read Collection<int,Story> $storiesDirect
+ * @property-read Collection<string,Story> $storiesAll
+ */
 class Story
 {
     use HasData;
@@ -43,6 +47,26 @@ class Story
 
     public function __construct(protected ?Story $parent = null)
     {
+    }
+
+    /**
+     * Proxy certain property getters to methods
+     * 
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if ($name === 'storiesDirect') {
+            return $this->collectGetStories();
+        }
+
+        if ($name === 'storiesAll') {
+            return $this->collectAllStories();
+        }
+
+
+        return $this->{$name};
     }
 
     /**

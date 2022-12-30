@@ -4,6 +4,7 @@ use BradieTilley\StoryBoard\Exceptions\InvalidStoryException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
+use Illuminate\Support\Collection;
 
 test('a storyboard with a single story can generate test cases with names', function () {
     $storyboard = StoryBoard::make()->name('Can create something cool');
@@ -129,3 +130,33 @@ test('a story cannot accept children that are not story classes', function (stri
     'when given scenario' => 'scenario',
     'when given a story and a string' => 'mixed',
 ])->throws(InvalidStoryException::class, 'You must only provide Story classes to the stories() method.');
+
+test('a story can fetch its children stories via collection methods and property proxies', function () {
+    $story = Story::make()
+        ->name('parent')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
+        ->stories([
+            Story::make()->name('child 1'),
+            Story::make()->name('child 2')->stories([
+                Story::make()->name('child 2a'),
+                Story::make()->name('child 2b'),
+            ]),
+        ]);
+
+    $stories = $story->storiesDirect;
+    expect($stories)->toBeInstanceOf(Collection::class)->toHaveCount(2);
+    expect($stories->map(fn (Story $story) => $story->getName())->toArray())->toBe([
+        'child 1',
+        'child 2',
+    ]);
+
+    $stories = $story->storiesAll;
+    expect($stories)->toBeInstanceOf(Collection::class)->toHaveCount(3);
+    expect($stories->map(fn (Story $story) => $story->getName())->values()->toArray())->toBe([
+        'child 1',
+        'child 2a',
+        'child 2b',
+    ]);
+});
