@@ -60,6 +60,14 @@ abstract class AbstractAction
     }
 
     /**
+     * Flush all registrations
+     */
+    public static function flush(): void
+    {
+        static::$registered = [];
+    }
+
+    /**
      * Get an exception for scenario/task not found
      */
     abstract protected static function notFound(string $name): StoryBoardException;

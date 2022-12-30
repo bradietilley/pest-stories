@@ -6,6 +6,14 @@ use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
+beforeEach(function () {
+    Scenario::make('allows_creation', fn () => true);
+    Scenario::make('as_admin', fn () => true);
+    Scenario::make('as_customer', fn () => true);
+    Scenario::make('as_unblocked', fn () => true);
+    Scenario::make('as_blocked', fn () => true);
+});
+
 test('a storyboard with a single story can generate test cases with names', function () {
     $storyboard = StoryBoard::make()->name('Can create something cool');
     $tests = $storyboard->allStories();
@@ -159,4 +167,14 @@ test('a story can fetch its children stories via collection methods and property
         'child 2a',
         'child 2b',
     ]);
+
+    // throws error
+    $error = null;
+    try {
+        $story->something_doesnt_exist;
+    } catch (\Throwable $error) {
+    }
+
+    expect($error)->not()->toBeNull()
+        ->and($error->getMessage())->toBe('Undefined property: BradieTilley\StoryBoard\Story::$something_doesnt_exist');
 });

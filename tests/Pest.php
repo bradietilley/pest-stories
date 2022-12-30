@@ -24,6 +24,9 @@
 |
 */
 
+use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Task;
+
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
@@ -43,3 +46,8 @@ function something()
 {
     // ..
 }
+
+beforeEach(function () {
+    Scenario::flush();
+    Task::flush();
+});
