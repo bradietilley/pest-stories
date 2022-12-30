@@ -8,6 +8,7 @@ use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\Task;
 use Closure;
 use Illuminate\Support\Collection;
+use Throwable;
 
 trait HasTasks
 {
@@ -147,7 +148,7 @@ trait HasTasks
             if ($callback = $this->after) {
                 $this->call($callback, $data);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $result->setError($e);
 
             throw $e;
@@ -256,9 +257,15 @@ trait HasTasks
             throw StoryBoardException::assertionCheckerNotFound($this);
         }
 
-        $this->call($checker, $this->getParameters() + [
-            'result' => $this->result ? $this->result->getValue() : null,
-        ]);
+        try {
+            $this->call($checker, $this->getParameters() + [
+                'result' => $this->result ? $this->result->getValue() : null,
+            ]);
+        } catch (Throwable $e) {
+            $this->getResult()->setError($e);
+
+            throw $e;
+        }
     }
 
     /**

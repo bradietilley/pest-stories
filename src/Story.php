@@ -67,6 +67,7 @@ class Story
             'test' => $this->getTest(),
             'can' => $this->canAssertion,
             'user' => $this->getUser(),
+            'result' => $this->getResult(),
         ]);
     }
 
