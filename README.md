@@ -305,3 +305,18 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 ### TODO
 
 - Add more tests
+    - Ensure scenarios of the same variable can be added at parent and child level, and the child level one will take precedence.
+    - Ensure `->can()` on a parent story will still add `[Can]` to the child story name
+    - More tests
+- Refactor bootScenario/bootTask stages:
+    - This should be two stages: registerScenarios and registerTasks + bootScenarios + bootTasks.
+    - This separation should allow for the storys to better handle all inheritance, and naming modifications better
+- Add Scenario and Task groups
+    - Some typehints will need to be updated to Scenario|ScenarioGroup and Task|TaskGroup.
+    - Boot order: Groups will have their own `->order()` to define the order in which to boot in. A `->useChildrenOrder()` method will indicate that the children ordering should be honoured.
+    - Naming: Groups will have their own `->appendName()` to define a custom name to simplify complex groups of scenarios/tasks. A `->useChildrenAppendName()` method will allow the scenario group to utilise the individual names of its children. 
+    - Syntax: Scenario::group('owned_and_created_by_another_user', [ 'owned_by_another_user', 'created_by_another_user', ])->order(5)->appendName('owned and created by another user');
+- Add default scenarios (by variable name).
+    - Before booting scenarios, it should look at what registered scenarios have a `->default()` flag on them.
+    - This default flag will indicate that its `->variable()` should always be filled, and if the story has no scenario with a matching variable then the given default scenario should be added. The default scenario order and naming convention should still be applied.
+    - Example: you're testing access based on what Location the authorised User in comparison to the location of a another entity (e.g. Invoice), you may wish to default the `location` of the Invoice to the User's current location to save you having to add `->scenario('current_location')` many times.
