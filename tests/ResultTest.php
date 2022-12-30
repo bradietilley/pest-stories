@@ -112,3 +112,19 @@ test('when an error occurs during a callback, the result of the story contains a
     'after',
     'check',
 ]);
+
+test('checkers can inject the raw result as an argument', function () {
+    $results = Collection::make();
+
+    Story::make()
+        ->name('tester')
+        ->task(fn () => 1234567890)
+        // main thing is $result is an int, not Result object 
+        ->check(fn (int $result) => $results[] = $result)
+        ->can()
+        ->boot()
+        ->assert();
+
+    expect($results)->toHaveCount(1)
+        ->and($results[0])->toBe(1234567890);
+});

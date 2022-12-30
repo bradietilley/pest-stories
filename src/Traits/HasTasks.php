@@ -280,9 +280,9 @@ trait HasTasks
         }
 
         try {
-            $this->call($checker, $this->getParameters() + [
+            $this->call($checker, array_replace($this->getParameters(), [
                 'result' => $this->result ? $this->result->getValue() : null,
-            ]);
+            ]));
         } catch (Throwable $e) {
             $this->getResult()->setError($e);
 
