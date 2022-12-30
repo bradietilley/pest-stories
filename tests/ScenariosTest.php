@@ -316,3 +316,31 @@ test('a story with the multiple scenarios of the same variable will use the last
         '4:4',
     ]);
 });
+
+test('can set multiple scenarios of multiple types in a single function', function () {
+    $ran = Collection::make();
+
+    Scenario::make('old_object', fn ($arg = 'noarg') => $ran[] = "old_object:{$arg}");
+    Scenario::make('old_object2', fn ($arg = 'noarg') => $ran[] = "old_object2:{$arg}");
+
+    $story = Story::make()
+        ->name('scenario test')
+        ->setScenarios([
+            Scenario::make('new_object')->as(fn ($arg = 'noarg') => $ran[] = "new_object:{$arg}"),
+            'old_object',
+            fn ($arg = 'noarg') => $ran[] = "inline:{$arg}",
+            'old_object2' => [ 'arg' => 'works', ],
+        ])
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
+        ->boot()
+        ->assert();
+
+    expect($ran->toArray())->toBe([
+        'old_object:noarg',
+        'old_object2:works',
+        'new_object:noarg',
+        'inline:noarg',
+    ]);
+});
