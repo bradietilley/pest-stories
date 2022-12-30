@@ -34,7 +34,7 @@ class Scenario extends AbstractAction
     /**
      * Get the name of the variable
      */
-    public function variable(): string
+    public function getVariable(): string
     {
         return $this->variable;
     }

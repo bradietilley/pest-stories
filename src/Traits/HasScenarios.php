@@ -105,7 +105,7 @@ r
 
                 $value = $scenario->boot($this, $args);
 
-                $this->setData($scenario->variable(), $value);
+                $this->setData($scenario->getVariable(), $value);
             });
     }
 
