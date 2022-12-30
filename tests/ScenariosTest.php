@@ -239,10 +239,10 @@ test('scenarios can offer to append their name to the story name', function () {
         ->all();
 
     expect($stories)->toBe([
-        'parent name existing name',
-        'parent name existing name custom name',
-        'parent name existing name test c',
-        'parent name custom name',
-        'parent name test c',
+        '[Can] parent name existing name',
+        '[Can] parent name existing name custom name',
+        '[Can] parent name existing name test c',
+        '[Can] parent name custom name',
+        '[Can] parent name test c',
     ]);
 });
