@@ -133,7 +133,7 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
 
 test('scenario variables are made accessible to the task() and check() callbacks', function () {
     Scenario::make('as_admin', fn () => 'ROLE::admin', 'role');
-    Scenario::make('as_blocked', fn () => 'is blocked', 'blocked');
+    Scenario::make('as_blocked')->as(fn () => 'is blocked')->variable('blocked');
 
     $data = [];
 
