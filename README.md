@@ -315,8 +315,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 - Add debug mode to dump out all data variables when a failure occurs
 - Alias the `set`, `get` and `all`, to `setData`, `getData` and `allData`.
     - Previous `all` method (for allStories) to be removed.
-- Allow for Scenario calbacks and variable to be added after creation for cleaner syntax: `Scenario::make('name')->callback(fn () => true)->as('variable_name')`
-    - Both Tasks and Scenarios will throw an exception when the callback is not specified at time of execution.
 - Add more tests
     - Ensure scenarios of the same variable can be added at parent and child level, and the child level one will take precedence.
     - Ensure `->can()` on a parent story will still add `[Can]` to the child story name
