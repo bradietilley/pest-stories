@@ -79,10 +79,16 @@ trait HasName
          * Only the most lowest level story should get prefixed with can or cannot
          */
         if (! $this->hasStories()) {
-            if (property_exists($this, 'can') && ($this->can !== null)) {
-                $can = $this->can ? 'Can' : 'Cannot';
+            if (property_exists($this, 'can')) {
+                if ($this->can === null) {
+                    $this->can = $this->inheritFromParents('getCan');
+                }
+                
+                if ($this->can !== null) {
+                    $can = $this->can ? 'Can' : 'Cannot';
 
-                $fullName = "[{$can}] {$fullName}";
+                    $fullName = "[{$can}] {$fullName}";
+                }
             }
         }
 
