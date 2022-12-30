@@ -41,7 +41,7 @@ trait HasNameShortcuts
     /**
      * @return $this
      */
-    public function estore(string $item): self
+    public function restore(string $item): self
     {
         return $this->name('restore a '.Str::of($item)->afterLast('\\')->toString());
     }
