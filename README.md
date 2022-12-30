@@ -313,8 +313,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
         - Story names coloured differently
         - Hierarchy of stories coloured differently?
 - Add debug mode to dump out all data variables when a failure occurs
-- Alias the `set`, `get` and `all`, to `setData`, `getData` and `allData`.
-    - Previous `all` method (for allStories) to be removed.
 - Add more tests
     - Ensure scenarios of the same variable can be added at parent and child level, and the child level one will take precedence.
     - Ensure `->can()` on a parent story will still add `[Can]` to the child story name
