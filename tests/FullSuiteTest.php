@@ -140,21 +140,32 @@ test('storyboard test function will call upon the pest test function for each st
     // Swap out the test function for our test function
     Story::setTestFunction('test_alternative');
 
-    StoryBoard::make()->name('parent')->can()->check(fn () => true)->stories([
-        Story::make()->name('child a'),
-        Story::make()->name('child b'),
-        Story::make()->stories([
-            Story::make()->name('child c1'),
-            Story::make()->name('child c2'),
-        ]),
-    ])->test();
+    StoryBoard::make()
+        ->name('parent')
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->stories([
+            Story::make()->name('child a'),
+            Story::make()->name('child b'),
+            Story::make()->stories([
+                Story::make()->name('child c1'),
+                Story::make()->name('child c2'),
+            ]),
+        ])
+        ->test();
 
-    expect($testExecutions->keys()->toArray())->toBe([
+    $names = [
         '[Can] parent child a',
         '[Can] parent child b',
         '[Can] parent child c1',
         '[Can] parent child c2',
-    ]);
+    ];
+
+    expect($testExecutions->keys()->toArray())->toBe($names);
+
+    // Assertions of each test is tested above, where storyboard is created outside of
+    // any test() function and is finished with ->test()
     
     // Reset back to Pest's test function
     Story::setTestFunction();
