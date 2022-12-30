@@ -304,6 +304,15 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
 
 ### TODO
 
+- Add custom debug ouput for when `bradietilley\pest-printer` is composer required.
+    - Read composer.json and cache `isset($json['require-dev']['bradietilley\pest-printer'])` as a flag against Story/StoryBoard -- `supportsStoryBoardPrinting`
+    - if supportsStoryBoardPrinting:
+        - Clearer distinction of the naming of tests.
+        - Scenarios coloured differently (when appendName used)
+        - Tasks coloured different (when appendName used)
+        - Story names coloured differently
+        - Hierarchy of stories coloured differently?
+
 - Allow for Scenario calbacks and variable to be added after creation for cleaner syntax: `Scenario::make('name')->callback(fn () => true)->as('variable_name')`
     - Both Tasks and Scenarios will throw an exception when the callback is not specified at time of execution.
 - Add more tests
@@ -322,3 +331,7 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
     - Before booting scenarios, it should look at what registered scenarios have a `->default()` flag on them.
     - This default flag will indicate that its `->variable()` should always be filled, and if the story has no scenario with a matching variable then the given default scenario should be added. The default scenario order and naming convention should still be applied.
     - Example: you're testing access based on what Location the authorised User in comparison to the location of a another entity (e.g. Invoice), you may wish to default the `location` of the Invoice to the User's current location to save you having to add `->scenario('current_location')` many times.
+- Add `->prefix('89c1b6a6d134')` to prefix the story name with something:
+    - Useful when the dev wishes to have each test prefixed with a unique identifier.
+    - Example: you want to quickly ctrl+c and ctrl+f to find the exact story, and/or to easily isolate it natively in pest/phpunit using `--filter="89c1b6a6d134"`
+    - Should all prefixes be resolved first to find the longest one, and then have all other prefixes padded to match the same length?
