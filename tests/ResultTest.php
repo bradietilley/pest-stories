@@ -58,8 +58,8 @@ test('a result given from a story can be referenced in the checkers', function (
             return $result;
         })
         ->stories([
-            Story::make()->name('can')->can(),
-            Story::make()->name('cannot')->cannot(),
+            Story::make('can')->can(),
+            Story::make('cannot')->cannot(),
         ]);
     
     foreach ($story->allStories() as $story) {

@@ -21,13 +21,13 @@ test('a storyboard with multiple nested stories can collate required scenarios',
         ->name('create something cool')
         ->scenario('allows_creation')
         ->stories([
-            Story::make()->name('as admin')->scenario('as_admin')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->can(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as admin')->scenario('as_admin')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->can(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
-            Story::make()->name('as customer')->scenario('as_customer')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->cannot(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as customer')->scenario('as_customer')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->cannot(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
         ]);
 
@@ -230,9 +230,9 @@ test('scenarios can offer to append their name to the story name', function () {
         ->can()
         ->check(fn () => true)
         ->stories([
-            Story::make()->name('existing name')->scenario('test_a'), // parent name existing name
-            Story::make()->name('existing name')->scenario('test_b'), // parent name existing name custom name
-            Story::make()->name('existing name')->scenario('test_c'), // parent name existing name test c
+            Story::make('existing name')->scenario('test_a'), // parent name existing name
+            Story::make('existing name')->scenario('test_b'), // parent name existing name custom name
+            Story::make('existing name')->scenario('test_c'), // parent name existing name test c
             Story::make()->scenario('test_b'),                        // parent name custom name
             Story::make()->scenario('test_c'),                        // parent name test c
         ]);
@@ -288,12 +288,12 @@ test('a story with the multiple scenarios of the same variable will use the last
         ->check(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
         ->stories([
             // Test inheritance
-            Story::make()->name('1'),
+            Story::make('1'),
             // Test inheritance is ignored; duplicate at same level = last one taken
             Story::make()->scenario('location_1')->scenario('location_2')->name('2'),
             // Test inheritance is ignored; duplicate at same level = last one taken
             Story::make()->scenario('location_2')->scenario('location_3')->stories([
-                Story::make()->name('3'),
+                Story::make('3'),
                 Story::make()->scenario('location_4')->name('4'),
             ]),
         ])

@@ -147,11 +147,11 @@ test('storyboard test function will call upon the pest test function for each st
         ->task(fn () => null)
         ->check(fn () => null)
         ->stories([
-            Story::make()->name('child a'),
-            Story::make()->name('child b'),
+            Story::make('child a'),
+            Story::make('child b'),
             Story::make()->stories([
-                Story::make()->name('child c1'),
-                Story::make()->name('child c2'),
+                Story::make('child c1'),
+                Story::make('child c2'),
             ]),
         ])
         ->test();

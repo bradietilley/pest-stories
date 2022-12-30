@@ -9,7 +9,7 @@ test('a story can be given a name using different shortcuts', function () {
         ->task(fn () => null)
         ->check(fn () => null)
         ->stories([
-            Story::make()->name('do something basic'),
+            Story::make('do something basic'),
             Story::make()->view('App\Models\Brand'),
             Story::make()->create('App\Models\Product'),
             Story::make()->update('App\Models\Invoice'),
@@ -27,4 +27,10 @@ test('a story can be given a name using different shortcuts', function () {
         '[Can] delete a User',
         '[Can] restore a Category',
     ]);
+});
+
+test('a story can be named during the make static constructor', function () {
+    $story = Story::make('my name');
+
+    expect($story->getName())->toBe('my name');
 });

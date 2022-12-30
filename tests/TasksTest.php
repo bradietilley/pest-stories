@@ -145,7 +145,7 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
 
 test('a story must have at least one task', function () {
     $story = Story::make()->check(fn () => true)->can()->name('parent')->stories(
-        Story::make()->name('child'),
+        Story::make('child'),
     );
 
     foreach ($story->allStories() as $story) {
@@ -167,7 +167,7 @@ test('all test callbacks can be inherited from parent story', function () {
         ->after(fn () => $ran[] = 'after:parent')
         ->task(fn () => $ran[] = 'task:parent')
         ->stories([
-            Story::make()->name('child a'),
+            Story::make('child a'),
             Story::make()
                 ->name('child b')
                 ->cannot()
@@ -178,8 +178,8 @@ test('all test callbacks can be inherited from parent story', function () {
                 ->before(fn () => $ran[] = 'before:child_b')
                 ->after(fn () => $ran[] = 'after:child_b')
                 ->task(fn () => $ran[] = 'task:child_b'),
-            Story::make()->name('child c')->stories([
-                Story::make()->name('child c1'),
+            Story::make('child c')->stories([
+                Story::make('child c1'),
                 Story::make()
                     ->name('child c2')
                     ->check(
@@ -245,7 +245,7 @@ test('you may create a story with an assertion and unset the assertion for a chi
         ->can()
         ->stories([
             // can: inherits from 'parent'
-            Story::make()->name('child can implicit'),
+            Story::make('child can implicit'),
             // can: overrwides from 'parent' (no affect really)
             Story::make()->can()->name('child can explicit'),
             // cannot: overrwides from 'parent'
@@ -253,7 +253,7 @@ test('you may create a story with an assertion and unset the assertion for a chi
             // null: overrwides from 'parent'
             Story::make()->noAssertion()->name('child unset')->stories([
                 // null: inherits from 'child unset'
-                Story::make()->name('grandchild null implicit'),
+                Story::make('grandchild null implicit'),
                 // can: overrides noAssertion from 'child unset'
                 Story::make()->can()->name('grandchild can explicit'),
                 // cannot: overrides noAssertion from 'child unset'

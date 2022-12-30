@@ -15,7 +15,7 @@ beforeEach(function () {
 });
 
 test('a storyboard with a single story can generate test cases with names', function () {
-    $storyboard = StoryBoard::make()->name('Can create something cool');
+    $storyboard = StoryBoard::make('Can create something cool');
     $tests = $storyboard->allStories();
 
     expect($tests)->toHaveCount(1)->toHaveKey('Can create something cool');
@@ -26,8 +26,8 @@ test('a storyboard with multiple stories can generate test cases with names', fu
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->stories([
-            Story::make()->name('as admin')->scenario('as_admin')->can(),
-            Story::make()->name('as customer')->scenario('as_customer')->cannot(),
+            Story::make('as admin')->scenario('as_admin')->can(),
+            Story::make('as customer')->scenario('as_customer')->cannot(),
         ]);
 
     $tests = $storyboard->allStories();
@@ -45,13 +45,13 @@ test('a storyboard with multiple nested stories can generate test cases with nam
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->stories([
-            Story::make()->name('as admin')->scenario('as_admin')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->can(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as admin')->scenario('as_admin')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->can(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
-            Story::make()->name('as customer')->scenario('as_customer')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->cannot(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as customer')->scenario('as_customer')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->cannot(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
         ]);
 
@@ -73,13 +73,13 @@ test('a storyboard with multiple nested stories can collate required scenarios',
         ->name('create something cool')
         ->scenario('allows_creation')
         ->stories([
-            Story::make()->name('as admin')->scenario('as_admin')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->can(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as admin')->scenario('as_admin')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->can(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
-            Story::make()->name('as customer')->scenario('as_customer')->stories([
-                Story::make()->name('if not blocked')->scenario('as_unblocked')->cannot(),
-                Story::make()->name('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as customer')->scenario('as_customer')->stories([
+                Story::make('if not blocked')->scenario('as_unblocked')->cannot(),
+                Story::make('if blocked')->scenario('as_blocked')->cannot(),
             ]),
         ]);
 
@@ -127,7 +127,7 @@ test('a story cannot accept children that are not story classes', function (stri
             Scenario::make('test', fn () => true),
         ],
         'mixed' => [
-            Story::make()->name('test'),
+            Story::make('test'),
             'test',
         ],
     };
@@ -146,10 +146,10 @@ test('a story can fetch its children stories via collection methods and property
         ->check(fn () => null)
         ->task(fn () => null)
         ->stories([
-            Story::make()->name('child 1'),
-            Story::make()->name('child 2')->stories([
-                Story::make()->name('child 2a'),
-                Story::make()->name('child 2b'),
+            Story::make('child 1'),
+            Story::make('child 2')->stories([
+                Story::make('child 2a'),
+                Story::make('child 2b'),
             ]),
         ]);
 

@@ -40,12 +40,12 @@ StoryBoard::make()
             ]);
         },
     )->stories([
-        Story::make()->name('as an admin')->scenario('as_role', [ 'role' => 'admin', ])->can(),
-        Story::make()->name('as a publisher')->scenario('as_role', [ 'role' => 'publisher', ])->can(),
-        Story::make()->name('as a customer')->scenario('as_role', [ 'role' => 'customer', ])
+        Story::make('as an admin')->scenario('as_role', [ 'role' => 'admin', ])->can(),
+        Story::make('as a publisher')->scenario('as_role', [ 'role' => 'publisher', ])->can(),
+        Story::make('as a customer')->scenario('as_role', [ 'role' => 'customer', ])
             ->stories([
-                Story::make()->name('when not blocked')->can(),
-                Story::make()->name('when blocked')->scenario('as_blocked')->cannot(),
+                Story::make('when not blocked')->can(),
+                Story::make('when blocked')->scenario('as_blocked')->cannot(),
             ]),
     ])
     ->test();

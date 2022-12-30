@@ -6,7 +6,7 @@ use BradieTilley\StoryBoard\Story;
 
 test('a story must have at least one assertion', function () {
     $story = Story::make()->task(fn () => null)->check(fn () => true)->name('parent')->stories([
-        Story::make()->name('child'),
+        Story::make('child'),
     ]);
 
     foreach ($story->allStories() as $story) {
@@ -16,7 +16,7 @@ test('a story must have at least one assertion', function () {
 
 test('a story must have at least one assertion checker', function () {
     $story = Story::make()->task(fn () => null)->can()->name('parent')->stories(
-        Story::make()->name('child'),
+        Story::make('child'),
     );
 
     foreach ($story->allStories() as $story) {
