@@ -37,15 +37,13 @@ class Story
     use Conditionable;
     use Macroable;
 
-    protected ?string $name = null;
-
     protected bool $booted = false;
 
     protected ?TestCase $test = null;
 
     protected static string $testFunction = 'test';
 
-    public function __construct(protected ?Story $parent = null)
+    public function __construct(protected ?string $name = null, protected ?Story $parent = null)
     {
     }
 
@@ -73,9 +71,9 @@ class Story
      *
      * @return $this
      */
-    public static function make(?Story $parent = null): static
+    public static function make(?string $name = null, ?Story $parent = null): static
     {
-        return new static($parent);
+        return new static($name, $parent);
     }
 
     /**
