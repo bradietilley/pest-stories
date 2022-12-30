@@ -1,6 +1,8 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\InvalidStoryException;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
 
 test('a storyboard with a single story can generate test cases with names', function () {
@@ -106,3 +108,24 @@ test('a storyboard with multiple nested stories can collate required scenarios',
 
     expect($actual)->toBe($expect);
 });
+
+test('a story cannot accept children that are not story classes', function (string $type) {
+    $stories = match ($type) {
+        'string' => [
+            'test',
+        ],
+        'scenario' => [
+            Scenario::make('test', fn () => true),
+        ],
+        'mixed' => [
+            Story::make()->name('test'),
+            'test',
+        ],
+    };
+
+    StoryBoard::make()->stories($stories);
+})->with([
+    'when given string' => 'string',
+    'when given scenario' => 'scenario',
+    'when given a story and a string' => 'mixed',
+])->throws(InvalidStoryException::class, 'You must only provide Story classes to the stories() method.');

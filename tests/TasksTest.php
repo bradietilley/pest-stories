@@ -1,8 +1,10 @@
 <?php
 
 use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\TaskNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Task;
+use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('storyboard tasks are run when bootTasks is run', function () {
@@ -139,3 +141,14 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
         'inline',
     ]);
 });
+
+test('a story must have at least one task', function () {
+    $story = Story::make()->check(fn () => true)->can()->name('parent')->stories(
+        Story::make()->name('child'),
+    );
+
+    foreach ($story->allStories() as $story) {
+        $story->boot()->assert();
+    }
+})->throws(TaskNotSpecifiedException::class, 'No task was found for the story `[Can] parent child`');
+
