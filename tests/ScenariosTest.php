@@ -2,8 +2,11 @@
 
 use BradieTilley\StoryBoard\Exceptions\ScenarioGeneratorNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Task;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
@@ -343,4 +346,63 @@ test('can set multiple scenarios of multiple types in a single function', functi
         'new_object:noarg',
         'inline:noarg',
     ]);
+});
+
+test('scenarios and tasks can share the same name', function () {
+    Task::make('something', fn () => true);
+    Scenario::make('something', fn () => true);
+
+    expect(Task::fetch('something'))->toBeInstanceOf(Task::class);
+    expect(Scenario::fetch('something'))->toBeInstanceOf(Scenario::class);
+});
+
+test('scenario flush forgets all registered scenarios', function () {
+    Task::make('something', fn () => true);
+    Scenario::make('something', fn () => true);
+
+    // Works great by default
+    expect(Task::fetch('something'))->toBeInstanceOf(Task::class);
+    expect(Scenario::fetch('something'))->toBeInstanceOf(Scenario::class);
+
+    // Flush scenarios
+    Scenario::flush();
+
+    // Can still fetch Task
+    expect(Task::fetch('something'))->toBeInstanceOf(Task::class);
+
+    // But now can't fetch scenario (throws exception)
+    $scenarioNotFound = null;
+    try {
+        Scenario::fetch('something');
+    } catch (ScenarioNotFoundException $scenarioNotFound) {
+    }
+    // Expect error was thrown
+    expect($scenarioNotFound)->not()->toBeNull();
+
+    // Remake scenario
+    Scenario::make('something', fn () => true);
+
+    // Both continue to work great
+    expect(Task::fetch('something'))->toBeInstanceOf(Task::class);
+    expect(Scenario::fetch('something'))->toBeInstanceOf(Scenario::class);
+
+    AbstractAction::flush();
+
+    // Now we can't fetch task (throws exception)
+    $taskNotFound = null;
+    try {
+        Task::fetch('something');
+    } catch (TaskNotFoundException $taskNotFound) {
+    }
+    // Expect error was thrown
+    expect($taskNotFound)->not()->toBeNull();
+
+    // And can't fetch scenario either (throws exception)
+    $scenarioNotFound = null;
+    try {
+        Scenario::fetch('something');
+    } catch (ScenarioNotFoundException $scenarioNotFound) {
+    }
+    // Expect error was thrown
+    expect($scenarioNotFound)->not()->toBeNull();
 });

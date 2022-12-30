@@ -44,7 +44,7 @@ abstract class AbstractAction
     public function register(): static
     {
         static::$registered[static::class] ??= [];
-        static::$registered[$this->name] = $this;
+        static::$registered[static::class][$this->name] = $this;
 
         return $this;
     }
@@ -64,7 +64,13 @@ abstract class AbstractAction
      */
     public static function flush(): void
     {
-        static::$registered = [];
+        if (static::class === AbstractAction::class) {
+            static::$registered = [];
+
+            return;
+        }
+
+        static::$registered[static::class] = [];
     }
 
     /**
@@ -87,11 +93,11 @@ abstract class AbstractAction
     {
         static::$registered[static::class] ??= [];
 
-        if (! isset(static::$registered[$name])) {
+        if (! isset(static::$registered[static::class][$name])) {
             throw static::notFound($name);
         }
 
-        return static::$registered[$name];
+        return static::$registered[static::class][$name];
     }
 
     /**
