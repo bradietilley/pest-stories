@@ -23,12 +23,4 @@ class Task extends AbstractAction
     {
         return StoryBoardException::taskNotFound($name);
     }
-
-    /**
-     * Get the name of the variable
-     */
-    public function variable(): string
-    {
-        return $this->variable;
-    }
 }
