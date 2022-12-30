@@ -259,7 +259,9 @@ trait HasTasks
             $test = $this->getTest();
 
             if ($test) {
+                // @codeCoverageIgnoreStart
                 $test->markTestSkipped('Isolation Mode Enabled');
+                // @codeCoverageIgnoreEnd
             }
             
             return;
