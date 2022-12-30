@@ -15,7 +15,7 @@ trait HasPerformer
     /**
      * Specify what to do when the user is set
      */
-    public static function actingAs(Closure $actingAsCallback): void
+    public static function actingAs(?Closure $actingAsCallback): void
     {
         static::$actingAsCallback = $actingAsCallback;
     }

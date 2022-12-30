@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
@@ -170,3 +171,7 @@ test('storyboard test function will call upon the pest test function for each st
     // Reset back to Pest's test function
     Story::setTestFunction();
 });
+
+test('using an alternative test function will throw an exception if it does not exist', function () {
+    Story::setTestFunction('pest_storyboard_test_function_that_does_not_exist');
+})->throws(TestFunctionNotFoundException::class, 'The story test function `pest_storyboard_test_function_that_does_not_exist` could not be found');
