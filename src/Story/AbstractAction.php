@@ -16,7 +16,7 @@ abstract class AbstractAction
     use HasOrder;
     use HasContainer;
 
-    protected static array $registered = [];
+    protected static array $stored = [];
 
     public function __construct(
         protected string $name,
@@ -41,22 +41,22 @@ abstract class AbstractAction
      *
      * @return $this
      */
-    public function register(): static
+    public function store(): static
     {
-        static::$registered[static::class] ??= [];
-        static::$registered[static::class][$this->name] = $this;
+        static::$stored[static::class] ??= [];
+        static::$stored[static::class][$this->name] = $this;
 
         return $this;
     }
 
     /**
-     * Is this registered?
+     * Is this stored?
      */
-    public function registered(): bool
+    public function stored(): bool
     {
-        static::$registered[static::class] ??= [];
+        static::$stored[static::class] ??= [];
 
-        return isset(static::$registered[static::class][$this->name]);
+        return isset(static::$stored[static::class][$this->name]);
     }
 
     /**
@@ -65,12 +65,12 @@ abstract class AbstractAction
     public static function flush(): void
     {
         if (static::class === AbstractAction::class) {
-            static::$registered = [];
+            static::$stored = [];
 
             return;
         }
 
-        static::$registered[static::class] = [];
+        static::$stored[static::class] = [];
     }
 
     /**
@@ -91,13 +91,13 @@ abstract class AbstractAction
      */
     public static function fetch(string $name): static
     {
-        static::$registered[static::class] ??= [];
+        static::$stored[static::class] ??= [];
 
-        if (! isset(static::$registered[static::class][$name])) {
+        if (! isset(static::$stored[static::class][$name])) {
             throw static::notFound($name);
         }
 
-        return static::$registered[static::class][$name];
+        return static::$stored[static::class][$name];
     }
 
     /**
@@ -123,7 +123,7 @@ abstract class AbstractAction
      */
     public static function make()
     {
-        return (new static(...func_get_args()))->register();
+        return (new static(...func_get_args()))->store();
     }
 
     /**
@@ -143,8 +143,8 @@ abstract class AbstractAction
         }
 
         // Don't re-register if already registered, to prevent overwriting existing action (in the event of duplicate names)
-        if (! $action->registered()) {
-            $action->register();
+        if (! $action->stored()) {
+            $action->store();
         }
 
         return $action;
