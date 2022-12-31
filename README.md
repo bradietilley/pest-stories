@@ -314,9 +314,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
         - Hierarchy of stories coloured differently?
 - Add debug mode to dump out all data variables when a failure occurs
 - Add more tests
-- Refactor bootScenario/bootTask stages:
-    - This should be two stages: registerScenarios and registerTasks + bootScenarios + bootTasks.
-    - This separation should allow for the storys to better handle all inheritance, and naming modifications better
 - Add Scenario and Task groups
     - Some typehints will need to be updated to Scenario|ScenarioGroup and Task|TaskGroup.
     - Boot order: Groups will have their own `->order()` to define the order in which to boot in. A `->useChildrenOrder()` method will indicate that the children ordering should be honoured.
