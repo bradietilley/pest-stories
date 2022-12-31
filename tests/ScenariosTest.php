@@ -413,3 +413,34 @@ test('scenario flush forgets all registered scenarios', function () {
     // Expect error was thrown
     expect($scenarioNotFound)->not()->toBeNull();
 });
+
+test('a scenario may have a custom registering and booting callback', function () {
+    $data = Collection::make();
+    
+    Scenario::make('event_scenario')
+        ->as(fn () => $data[] = 'generating')
+        ->registering(fn () => $data[] = 'registering')
+        ->booting(fn () => $data[] = 'booting');
+    
+    $story = Story::make('events test')
+        ->scenario('event_scenario')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null);
+
+    expect($data->toArray())->toBe([]);
+
+    $story->register();
+
+    expect($data->toArray())->toBe([
+        'registering',
+    ]);
+
+    $story->boot();
+
+    expect($data->toArray())->toBe([
+        'registering',
+        'booting',
+        'generating',
+    ]);
+});

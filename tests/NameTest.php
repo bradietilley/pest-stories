@@ -66,3 +66,19 @@ test('a storyboard will not prefix its story names with the parent name when dat
     // Reset
     StoryBoard::disableDatasets();
 });
+
+test('getParentName method returns name of parent', function () {
+    $grandparent = StoryBoard::make('grandparent')
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->stories([
+            $parent = Story::make('parent')->stories([
+                $child = Story::make('child'),
+            ]),
+        ]);
+
+    expect($child->getParentName())->toBe('grandparent parent');
+    expect($parent->getParentName())->toBe('grandparent');
+    expect($grandparent->getParentName())->toBe(null);
+});

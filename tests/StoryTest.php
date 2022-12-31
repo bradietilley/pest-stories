@@ -221,3 +221,31 @@ test('stories can append child stories in various ways', function () {
         '[Can] parent story_h',
     ]);
 });
+
+test('you can retrieve all registered scenarios for a story', function () {
+    Scenario::make('scenario_1')->as(fn () => null);
+    Scenario::make('scenario_2')->as(fn () => null);
+
+    $story = StoryBoard::make('parent')
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->scenario('scenario_1')
+        ->stories([
+            Story::make('child')->scenario('scenario_2'),
+        ]);
+
+    $stories = $story->storiesAll;
+    expect($stories)->toHaveCount(1);
+
+    /** @var Story $story */
+    $story = $stories->first();
+
+    expect($scenarios = $story->registeredScenarios())->toHaveCount(2);
+
+    expect($scenarios['scenario_1']['scenario']->getName())->toBe('scenario_1');
+    expect($scenarios['scenario_1']['arguments'])->toBe([]);
+
+    expect($scenarios['scenario_2']['scenario']->getName())->toBe('scenario_2');
+    expect($scenarios['scenario_2']['arguments'])->toBe([]);
+});
