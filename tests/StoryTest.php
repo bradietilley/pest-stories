@@ -178,3 +178,30 @@ test('a story can fetch its children stories via collection methods and property
     expect($error)->not()->toBeNull()
         ->and($error->getMessage())->toBe('Undefined property: BradieTilley\StoryBoard\Story::$something_doesnt_exist');
 });
+
+test('stories can append child stories in various ways', function () {
+    $story = StoryBoard::make('parent');
+
+    $storyA = Story::make('story_a');
+    $storyB = Story::make('story_b');
+    $storyC = Story::make('story_c');
+    $storyD = Story::make('story_d');
+    $storyE = Story::make('story_e');
+    $storyF = Story::make('story_f');
+    $storyG = Story::make('story_g');
+    $storyH = Story::make('story_h');
+
+    $story->stories($storyA, $storyB, [ $storyC, $storyD ]);
+    $story->stories([ $storyE, $storyF ], $storyG, [ $storyH ]);
+
+    expect($story->storiesAll->keys()->toArray())->toBe([
+        'parent story_a',
+        'parent story_b',
+        'parent story_c',
+        'parent story_d',
+        'parent story_e',
+        'parent story_f',
+        'parent story_g',
+        'parent story_h',
+    ]);
+});
