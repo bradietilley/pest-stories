@@ -12,10 +12,10 @@ class StoryBoard extends Story
      * become dataset entries.
      * 
      * False example:
-     *      <parent test> <child test>
+     *      <parent test> <child test> <grandchild test>
      * 
      * True example:
-     *      <parent test> with "<parent test> <child test>"
+     *      <parent test> with dataset "<child test> <grandchild test>"
      * 
      * @var bool
      */
