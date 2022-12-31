@@ -314,8 +314,6 @@ Inheritance is supported. You may specify `->check()` on any story object, inclu
         - Hierarchy of stories coloured differently?
 - Add debug mode to dump out all data variables when a failure occurs
 - Add more tests
-    - More tests
-    - Ensure `->stories()` supports: single arg Story, multiple args ...Story, single array of Story, multiple arrays of Story
 - Refactor bootScenario/bootTask stages:
     - This should be two stages: registerScenarios and registerTasks + bootScenarios + bootTasks.
     - This separation should allow for the storys to better handle all inheritance, and naming modifications better
