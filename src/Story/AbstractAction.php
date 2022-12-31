@@ -18,6 +18,10 @@ abstract class AbstractAction
 
     protected static array $stored = [];
 
+    protected ?Closure $registeringCallback = null;
+
+    protected ?Closure $bootingCallback = null;
+
     public function __construct(
         protected string $name,
         protected ?Closure $generator = null,
@@ -32,6 +36,30 @@ abstract class AbstractAction
     public function as(Closure $generator): self
     {
         $this->generator = $generator;
+
+        return $this;
+    }
+
+    /**
+     * Set a callback when this action is registering
+     * 
+     * @return $this 
+     */
+    public function registering(Closure $callback): self
+    {
+        $this->registeringCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set a callback when this action is booting
+     * 
+     * @return $this 
+     */
+    public function booting(Closure $callback): self
+    {
+        $this->bootingCallback = $callback;
 
         return $this;
     }
@@ -100,8 +128,13 @@ abstract class AbstractAction
         return static::$stored[static::class][$name];
     }
 
-    public function register(Story $story, array $arguments): void
+    /**
+     * Register this action for the given story.
+     * By default nothing is done.
+     */
+    public function register(Story $story, array $arguments = []): void
     {
+        $this->callOptional($this->registeringCallback, $story->getParameters($arguments));
     }
 
     /**
@@ -109,15 +142,15 @@ abstract class AbstractAction
      * 
      * @throws StoryBoardException
      */
-    public function boot(Story $story, array $arguments): mixed
+    public function boot(Story $story, array $arguments = []): mixed
     {
-        $arguments = array_replace($story->getParameters(), $arguments);
+        $this->callOptional($this->bootingCallback, $story->getParameters($arguments));
 
         if ($this->generator === null) {
             throw static::generatorNotFound($this->getName());
         }
 
-        return $this->call($this->generator, $arguments);
+        return $this->call($this->generator, $story->getParameters($arguments));
     }
 
     /**

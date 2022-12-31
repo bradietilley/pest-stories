@@ -137,6 +137,11 @@ trait HasTasks
         $this->canAssertion = $this->inheritFromParents('getCanAssertion');
         $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
 
+        foreach ($this->tasksRegistered as $task) {
+            /** @var Task $task */
+            $task->register($this, $this->getParameters());
+        }
+
         return $this;
     }
 

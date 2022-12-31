@@ -79,6 +79,16 @@ r
     }
 
     /**
+     * Get a compiled list of all registered scenarios (including inheritance)
+
+     * @return array<string,Story|array> 
+     */
+    public function registeredScenarios(): array
+    {
+        return $this->registeredScenarios;
+    }
+
+    /**
      * Get all scenarios for this story, including those inherited from parents
      *
      * @requires HasInheritance
@@ -98,11 +108,20 @@ r
      */
     public function registerScenarios(): self
     {
-        /** @var HasData|HasScenarios|HasName $this */
+        /** @var Story $this */
 
         $this->registeredScenarios = Collection::make($this->allScenarios())
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->all();
+
+        foreach ($this->registeredScenarios as $data) {
+            /** @var Scenario $scenario */
+            $scenario = $data['scenario'];
+            /** @var array $args */
+            $args = $data['arguments'];
+
+            $scenario->register($this, $args);
+        }
 
         return $this;
     }

@@ -84,7 +84,7 @@ class Story
      *
      * @return array
      */
-    public function getParameters(): array
+    public function getParameters(array $additional = []): array
     {
         return array_replace($this->allData(), [
             'story' => $this,
@@ -92,7 +92,7 @@ class Story
             'can' => $this->canAssertion,
             'user' => $this->getUser(),
             'result' => $this->getResult(),
-        ]);
+        ], $additional);
     }
 
     /**
