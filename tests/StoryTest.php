@@ -232,8 +232,10 @@ test('you can retrieve all registered scenarios for a story', function () {
         ->check(fn () => null)
         ->scenario('scenario_1')
         ->stories([
-            Story::make('child')->scenario('scenario_2'),
+            $child = Story::make('child')->scenario('scenario_2'),
         ]);
+
+    expect($child->registeredScenarios())->toBe([]);
 
     $stories = $story->storiesAll;
     expect($stories)->toHaveCount(1);
