@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 trait HasStories

@@ -172,9 +172,9 @@ test('storyboard test function will call upon the pest test function for each st
     $testExecutions->forget($testExecutions->keys()->toArray());
     
     if ($datasetEnabled) {
-        StoryBoard::useDatasets();
+        StoryBoard::enableDatasets();
     } else {
-        StoryBoard::dontUseDatasets();
+        StoryBoard::disableDatasets();
     }
 
     StoryBoard::make()
@@ -192,14 +192,14 @@ test('storyboard test function will call upon the pest test function for each st
         ])
         ->test();
 
-    $names = [
-        '[Can] parent child a',
-        '[Can] parent child b',
-        '[Can] parent child c1',
-        '[Can] parent child c2',
-    ];
-
     if ($datasetEnabled) {
+        $names = [
+            '[Can] child a',
+            '[Can] child b',
+            '[Can] child c1',
+            '[Can] child c2',
+        ];
+        
         expect($testExecutions)->toHaveCount(2);
         $testExecutions = $testExecutions->pluck('value', 'type');
         expect($testExecutions)->toHaveKeys([
@@ -212,6 +212,13 @@ test('storyboard test function will call upon the pest test function for each st
 
         expect($testExecutions['dataset'])->toBeArray()->toHaveKeys($names);
     } else {
+        $names = [
+            '[Can] parent child a',
+            '[Can] parent child b',
+            '[Can] parent child c1',
+            '[Can] parent child c2',
+        ];
+
         expect($testExecutions)->toHaveCount(4);
         $testExecutions = $testExecutions->keyBy(fn (array $data) => $data['value']['description']);
         expect($testExecutions)->toHaveCount(4);

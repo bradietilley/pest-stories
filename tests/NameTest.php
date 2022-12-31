@@ -34,3 +34,32 @@ test('a story can be named during the make static constructor', function () {
 
     expect($story->getName())->toBe('my name');
 });
+
+test('a storyboard will not prefix its story names with the parent name when dataset mode is enabled', function () {
+    $story = StoryBoard::make('parent')
+        ->can()
+        ->stories([
+            Story::make('child 1'),
+            Story::make('child 2'),
+            Story::make('child 3'),
+        ]);
+
+    StoryBoard::disableDatasets();
+
+    expect(array_keys($story->allStories()))->toBe([
+        '[Can] parent child 1',
+        '[Can] parent child 2',
+        '[Can] parent child 3',
+    ]);
+
+    StoryBoard::enableDatasets();
+
+    expect(array_keys($story->allStories()))->toBe([
+        '[Can] child 1',
+        '[Can] child 2',
+        '[Can] child 3',
+    ]);
+
+    // Reset
+    StoryBoard::disableDatasets();
+});

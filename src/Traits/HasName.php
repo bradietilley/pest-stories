@@ -3,6 +3,7 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\StoryBoard;
 
 /**
  * @property ?string $name
@@ -47,7 +48,17 @@ trait HasName
      */
     public function getParentName(): ?string
     {
-        return $this->getParent() ? $this->getParent()->getFullName() : null;
+        $parent = $this->getParent();
+
+        if ($parent === null) {
+            return null;
+        }
+
+        if ((StoryBoard::datasetsEnabled() === true) && ($parent instanceof StoryBoard)) {
+            return null;
+        }
+
+        return $parent->getFullName();
     }
 
     /**
@@ -63,6 +74,9 @@ trait HasName
         /** @var HasInheritance|HasStories|HasName $this */
         $fullName = $this->getName();
 
+        /**
+         * Append names from scenarios (where scenarios opt to `->appendName()`)
+         */
         if (method_exists($this, 'getNameFromScenarios')) {
             $appendName = $this->getNameFromScenarios();
 
@@ -71,6 +85,9 @@ trait HasName
             }
         }
 
+        /**
+         * Prepend the parent story name
+         */
         if ($this->hasParent()) {
             $fullName = trim("{$this->getParentName()} {$fullName}");
         }

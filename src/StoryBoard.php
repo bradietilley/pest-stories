@@ -6,6 +6,19 @@ use PHPUnit\Framework\TestCase;
 
 class StoryBoard extends Story
 {
+    /**
+     * Flag to enable datasets where the parent StoryBoard
+     * becomes a Pest test case and all children stories
+     * become dataset entries.
+     * 
+     * False example:
+     *      <parent test> <child test>
+     * 
+     * True example:
+     *      <parent test> with "<parent test> <child test>"
+     * 
+     * @var bool
+     */
     protected static bool $datasetsEnabled = false;
 
     /**
@@ -13,12 +26,12 @@ class StoryBoard extends Story
      */
     public function test(): self
     {
-        $stories = $this->allStories();
-
         if (static::$datasetsEnabled) {
             $function = Story::getTestFunction();
+            $parentName = $this->getName();
+            $stories = $this->allStories();
 
-            $function($this->getName(), function (Story $story) {
+            $function($parentName, function (Story $story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
 
@@ -27,7 +40,7 @@ class StoryBoard extends Story
                 // @codeCoverageIgnoreEnd
             })->with($stories);
         } else {
-            foreach ($stories as $story) {
+            foreach ($this->allStories() as $story) {
                 $story->test();
             }
         }
@@ -35,13 +48,24 @@ class StoryBoard extends Story
         return $this;
     }
 
-    public static function useDatasets(): void
+    /**
+     * Enable the use of datasets (see static::$datasetsEnabled)
+     */
+    public static function enableDatasets(): void
     {
         static::$datasetsEnabled = true;
     }
 
-    public static function dontUseDatasets(): void
+    /**
+     * Disable the use of datasets (see static::$datasetsEnabled)
+     */
+    public static function disableDatasets(): void
     {
         static::$datasetsEnabled = false;
+    }
+
+    public static function datasetsEnabled(): bool
+    {
+        return static::$datasetsEnabled;
     }
 }
