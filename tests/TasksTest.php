@@ -8,7 +8,7 @@ use BradieTilley\StoryBoard\Story\Task;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
-test('storyboard tasks are run when bootTasks is run', function () {
+test('storyboard tasks are run when bootTaskss is run', function () {
     $test = [
         'before' => [],
         'task' => [],
@@ -36,7 +36,7 @@ test('storyboard tasks are run when bootTasks is run', function () {
             },
         );
 
-    $story->registerTask()->bootTask();
+    $story->registerTasks()->bootTasks();
 
     expect($test)->toBe([
         'before' => [
@@ -105,8 +105,8 @@ test('tasks can be booted in a custom order', function () {
         ->task('two')
         ->task('three')
         ->task('four')
-        ->registerTask()
-        ->bootTask();
+        ->registerTasks()
+        ->bootTasks();
 
     expect($data->toArray())->toBe([
         '1',
@@ -142,8 +142,8 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
         ->task(function () use ($tasksRun) {
             $tasksRun[] = 'inline';
         })
-        ->registerTask()
-        ->bootTask();
+        ->registerTasks()
+        ->bootTasks();
 
     expect($tasksRun->toArray())->toBe([
         'registered',

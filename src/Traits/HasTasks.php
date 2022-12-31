@@ -121,7 +121,7 @@ trait HasTasks
      * 
      * @return $this 
      */
-    public function registerTask(): self
+    public function registerTasks(): self
     {
         /** @var Story $this */
         $tasks = $this->allTasks();
@@ -145,7 +145,7 @@ trait HasTasks
      *
      * @return $this
      */
-    public function bootTask(): self
+    public function bootTasks(): self
     {
         /** @var Story $this */
         $tasks = $this->tasksRegistered;

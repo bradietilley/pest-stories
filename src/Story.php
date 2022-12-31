@@ -112,7 +112,7 @@ class Story
 
         $this->registered = true;
         $this->registerScenarios();
-        $this->registerTask();
+        $this->registerTasks();
 
         return $this;
     }
@@ -136,7 +136,7 @@ class Story
         
         $this->booted = true;
         $this->bootScenarios();
-        $this->bootTask();
+        $this->bootTasks();
 
         return $this;
     }
