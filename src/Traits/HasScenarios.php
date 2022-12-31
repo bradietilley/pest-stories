@@ -9,11 +9,18 @@ use Illuminate\Support\Collection;
 trait HasScenarios
 {
     /**
-     * Scenarios and their arguments
+     * All scenarios and their arguments (excluding inheritance)
      *
      * @var array<string,array>
      */
     protected array $scenarios = [];
+
+    /**
+     * All scenarios and their arguments (including inheritance)
+     * 
+     * @var array<string,array>
+     */
+    protected array $registeredScenarios = [];
 
     /**
      * Alias for setScenario()
@@ -85,34 +92,54 @@ r
     }
 
     /**
-     * Boot all registered scenarios for this test.
-     *
-     * @requires HasInheritance
+     * Resolve all scenarios that are inherited
+     * 
+     * @return $this
      */
-    public function bootScenarios(): void
+    public function registerScenarios(): self
     {
         /** @var HasData|HasScenarios|HasName $this */
 
-        Collection::make($this->allScenarios())
+        $this->registeredScenarios = Collection::make($this->allScenarios())
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
-            ->map(function (array $data) {
-                /** @var HasData|HasScenarios|HasName $this */
+            ->all();
 
-                /** @var Scenario $scenario */
-                $scenario = $data['scenario'];
-                /** @var array $args */
-                $args = $data['arguments'];
-
-                $value = $scenario->boot($this, $args);
-
-                $this->setData($scenario->getVariable(), $value);
-            });
+        return $this;
     }
 
+    /**
+     * Boot all registered scenarios for this test.
+     *
+     * @requires HasInheritance
+     * @return $this
+     */
+    public function bootScenarios(): self
+    {
+        /** @var HasData|HasScenarios|HasName $this */
+
+        foreach ($this->registeredScenarios as $data) {
+            /** @var HasData|HasScenarios|HasName $this */
+
+            /** @var Scenario $scenario */
+            $scenario = $data['scenario'];
+            /** @var array $args */
+            $args = $data['arguments'];
+
+            $value = $scenario->boot($this, $args);
+
+            $this->setData($scenario->getVariable(), $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get all names from all registered scenarios
+     */
     public function getNameFromScenarios(): ?string
     {
         // Just this level
-        $scenarios = Collection::make($this->getScenarios())
+        $scenarios = Collection::make($this->registeredScenarios)
             ->pluck('scenario')
             ->map(fn (Scenario $scenario) => $scenario->getAppendName())
             ->filter();

@@ -14,6 +14,7 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use PHPUnit\Framework\TestCase;
@@ -36,6 +37,8 @@ class Story
     use HasIsolation;
     use Conditionable;
     use Macroable;
+
+    protected bool $registered = false;
 
     protected bool $booted = false;
 
@@ -93,12 +96,36 @@ class Story
     }
 
     /**
+     * Register this story scenarios and tasks
+     * 
+     * @return $this 
+     */
+    public function register(): self
+    {
+        if ($this->skipDueToIsolation()) {
+            return $this;
+        }
+
+        if ($this->registered) {
+            return $this;
+        }
+
+        $this->registered = true;
+        $this->registerScenarios();
+        $this->registerTask();
+
+        return $this;
+    }
+
+    /**
      * Boot the story scenarios and tasks
      *
      * @return $this
      */
     public function boot(): self
     {
+        $this->register();
+
         if ($this->skipDueToIsolation()) {
             return $this;
         }
@@ -106,10 +133,10 @@ class Story
         if ($this->booted) {
             return $this;
         }
-
+        
+        $this->booted = true;
         $this->bootScenarios();
         $this->bootTask();
-        $this->booted = true;
 
         return $this;
     }

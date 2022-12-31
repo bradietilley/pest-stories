@@ -24,8 +24,11 @@
 |
 */
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
+use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story\Task;
+use BradieTilley\StoryBoard\StoryBoard;
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);

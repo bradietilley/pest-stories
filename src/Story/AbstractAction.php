@@ -100,6 +100,10 @@ abstract class AbstractAction
         return static::$stored[static::class][$name];
     }
 
+    public function register(Story $story, array $arguments): void
+    {
+    }
+
     /**
      * Boot this action for the given story
      * 

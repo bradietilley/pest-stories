@@ -18,6 +18,9 @@ test('a storyboard with multiple nested stories can collate required scenarios',
     Scenario::make('as_blocked', fn () => true);
 
     $storyboard = StoryBoard::make()
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
         ->name('create something cool')
         ->scenario('allows_creation')
         ->stories([
@@ -101,6 +104,7 @@ test('scenario callbacks are executed when a story boots its scenarios', functio
             'name' => 'Something cool',
         ]);
 
+    $story->registerScenarios();
     $scenarios = $story->allScenarios();
 
     foreach ($scenarios as $scenario => $data) {
@@ -178,6 +182,7 @@ test('scenarios can be booted in a custom order', function () {
         ->scenario('two')
         ->scenario('three')
         ->scenario('four')
+        ->registerScenarios()
         ->bootScenarios();
 
     expect($data->toArray())->toBe([
@@ -211,6 +216,7 @@ test('scenarios can be defined as inline closures, Task objects, or string ident
         ->scenario(function ($a) use ($tasksRun) {
             $tasksRun[] = 'inline_'.$a;
         }, ['a' => '3'])
+        ->registerScenarios()
         ->bootScenarios();
 
     expect($tasksRun->toArray())->toBe([
@@ -229,6 +235,7 @@ test('scenarios can offer to append their name to the story name', function () {
         ->name('parent name')
         ->can()
         ->check(fn () => true)
+        ->task(fn () => true)
         ->stories([
             Story::make('existing name')->scenario('test_a'), // parent name existing name
             Story::make('existing name')->scenario('test_b'), // parent name existing name custom name

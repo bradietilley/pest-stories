@@ -18,8 +18,11 @@ test('macros can be added to stories', function () {
     expect($data->all())->toBe([]);
 
     Story::make()
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
         ->asAdmin()
-        ->bootScenarios();
+        ->boot();
 
     expect($data->all())->toBe([
         'role:admin',

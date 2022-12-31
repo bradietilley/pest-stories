@@ -15,16 +15,23 @@ beforeEach(function () {
 });
 
 test('a storyboard with a single story can generate test cases with names', function () {
-    $storyboard = StoryBoard::make('Can create something cool');
+    $storyboard = StoryBoard::make('create something cool')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null);
+    
     $tests = $storyboard->allStories();
 
-    expect($tests)->toHaveCount(1)->toHaveKey('Can create something cool');
-    expect($tests['Can create something cool'])->toBeInstanceOf(Story::class);
+    expect($tests)->toHaveCount(1)->toHaveKey('[Can] create something cool');
+    expect($tests['[Can] create something cool'])->toBeInstanceOf(Story::class);
 });
 
 test('a storyboard with multiple stories can generate test cases with names', function () {
     $storyboard = StoryBoard::make()
         ->name('create something cool')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
         ->stories([
             Story::make('as admin')->scenario('as_admin')->can(),
             Story::make('as customer')->scenario('as_customer')->cannot(),
@@ -44,6 +51,9 @@ test('a storyboard with multiple stories can generate test cases with names', fu
 test('a storyboard with multiple nested stories can generate test cases with names', function () {
     $storyboard = StoryBoard::make()
         ->name('create something cool')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
         ->stories([
             Story::make('as admin')->scenario('as_admin')->stories([
                 Story::make('if not blocked')->scenario('as_unblocked')->can(),
@@ -68,9 +78,12 @@ test('a storyboard with multiple nested stories can generate test cases with nam
     expect($tests)->toHaveKeys($expectedKeys);
 });
 
-test('a storyboard with multiple nested stories can collate required scenarios', function () {
+test('a story with multiple nested stories can collate required scenarios', function () {
     $storyboard = StoryBoard::make()
         ->name('create something cool')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null)
         ->scenario('allows_creation')
         ->stories([
             Story::make('as admin')->scenario('as_admin')->stories([
@@ -180,7 +193,10 @@ test('a story can fetch its children stories via collection methods and property
 });
 
 test('stories can append child stories in various ways', function () {
-    $story = StoryBoard::make('parent');
+    $story = StoryBoard::make('parent')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => null);
 
     $storyA = Story::make('story_a');
     $storyB = Story::make('story_b');
@@ -195,13 +211,13 @@ test('stories can append child stories in various ways', function () {
     $story->stories([ $storyE, $storyF ], $storyG, [ $storyH ]);
 
     expect($story->storiesAll->keys()->toArray())->toBe([
-        'parent story_a',
-        'parent story_b',
-        'parent story_c',
-        'parent story_d',
-        'parent story_e',
-        'parent story_f',
-        'parent story_g',
-        'parent story_h',
+        '[Can] parent story_a',
+        '[Can] parent story_b',
+        '[Can] parent story_c',
+        '[Can] parent story_d',
+        '[Can] parent story_e',
+        '[Can] parent story_f',
+        '[Can] parent story_g',
+        '[Can] parent story_h',
     ]);
 });

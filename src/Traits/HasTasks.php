@@ -15,9 +15,18 @@ trait HasTasks
     protected ?Result $result = null;
 
     /**
-     * @var array<Closure>
+     * Tasks against this Story (excluding inheritance)
+     * 
+     * @var array<Task>
      */
     protected array $tasks = [];
+
+    /**
+     * Tasks against this Story (including inheritance)
+     * 
+     * @var array<Task>
+     */
+    protected array $tasksRegistered = [];
 
     protected ?Closure $canAssertion = null;
 
@@ -109,32 +118,43 @@ trait HasTasks
 
     /**
      * @requires Story
-     *
-     * @return $this
+     * 
+     * @return $this 
      */
-    public function bootTask(): self
+    public function registerTask(): self
     {
         /** @var Story $this */
         $tasks = $this->allTasks();
 
-        if (empty($tasks)) {
-            throw StoryBoardException::taskNotSpecified($this);
-        }
-
-        $tasks = Collection::make($tasks)
+        $this->tasksRegistered = Collection::make($tasks)
             ->values()
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
-        /**
-         * @var array<Task> $tasks
-         */
-        $result = $this->getResult();
 
         $this->before = $this->inheritFromParents('getBefore');
         $this->after = $this->inheritFromParents('getAfter');
         $this->can = $this->inheritFromParents('getCan');
         $this->canAssertion = $this->inheritFromParents('getCanAssertion');
         $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
+
+        return $this;
+    }
+
+    /**
+     * @requires Story
+     *
+     * @return $this
+     */
+    public function bootTask(): self
+    {
+        /** @var Story $this */
+        $tasks = $this->tasksRegistered;
+
+        if (empty($tasks)) {
+            throw StoryBoardException::taskNotSpecified($this);
+        }
+        
+        $result = $this->getResult();
 
         try {
             $data = $this->getParameters();

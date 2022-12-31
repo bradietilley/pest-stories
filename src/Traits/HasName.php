@@ -10,6 +10,8 @@ use BradieTilley\StoryBoard\StoryBoard;
  */
 trait HasName
 {
+    protected array $fullName = [];
+
     /**
      * Alias for setName()
      *
@@ -67,11 +69,20 @@ trait HasName
      * Example: create something > as low level user > with correct permissions
      * Output:  [Can] create something as low level user with correct permissions
      *
-     * @requires HasInheritance, HasStories
+     * @requires Story
      */
     public function getFullName(): ?string
     {
-        /** @var HasInheritance|HasStories|HasName $this */
+        $key = StoryBoard::datasetsEnabled() ? 'dataset' : 'full';
+
+        if (isset($this->fullName[$key])) {
+            return $this->fullName[$key];
+        }
+
+        /** @var Story $this */
+        $this->register();
+        
+        // Start with this test's name
         $fullName = $this->getName();
 
         /**
@@ -109,6 +120,6 @@ trait HasName
             }
         }
 
-        return $fullName;
+        return $this->fullName[$key] = $fullName;
     }
 }

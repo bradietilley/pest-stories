@@ -30,6 +30,7 @@ test('a story can be given a name using different shortcuts', function () {
 });
 
 test('a story can be named during the make static constructor', function () {
+    $d = 1;
     $story = Story::make('my name');
 
     expect($story->getName())->toBe('my name');
@@ -38,6 +39,8 @@ test('a story can be named during the make static constructor', function () {
 test('a storyboard will not prefix its story names with the parent name when dataset mode is enabled', function () {
     $story = StoryBoard::make('parent')
         ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
         ->stories([
             Story::make('child 1'),
             Story::make('child 2'),

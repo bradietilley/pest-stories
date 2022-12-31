@@ -17,6 +17,7 @@ test('storyboard tasks are run when bootTasks is run', function () {
     ];
 
     $story = Story::make()
+        ->can()
         ->before(function () use (&$test) {
             $test['before'][] = 'run1';
         })
@@ -35,7 +36,7 @@ test('storyboard tasks are run when bootTasks is run', function () {
             },
         );
 
-    $story->bootTask();
+    $story->registerTask()->bootTask();
 
     expect($test)->toBe([
         'before' => [
@@ -96,11 +97,15 @@ test('tasks can be booted in a custom order', function () {
     Task::make('four', fn () => $data->push('2'))->order(2);
 
     Story::make()
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
         ->name('test')
         ->task('one')
         ->task('two')
         ->task('three')
         ->task('four')
+        ->registerTask()
         ->bootTask();
 
     expect($data->toArray())->toBe([
@@ -129,11 +134,15 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
     });
 
     Story::make()
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
         ->task($task)
         ->task('registered')
         ->task(function () use ($tasksRun) {
             $tasksRun[] = 'inline';
         })
+        ->registerTask()
         ->bootTask();
 
     expect($tasksRun->toArray())->toBe([
@@ -144,13 +153,21 @@ test('tasks can be defined as inline closures, Task objects, or string identifie
 });
 
 test('a story must have at least one task', function () {
-    $story = Story::make()->check(fn () => true)->can()->name('parent')->stories(
-        Story::make('child'),
-    );
+    $story = Story::make()
+        ->check(fn () => true)
+        ->can()
+        ->name('parent')
+        ->stories(
+            Story::make('child'),
+        );
 
-    foreach ($story->allStories() as $story) {
-        $story->boot()->assert();
-    }
+    $all = $story->storiesAll;
+
+    expect($all)->toHaveCount(1);
+    /** @var Story $story */
+    $story = $all->first();
+
+    $story->boot()->assert();
 })->throws(TaskNotSpecifiedException::class, 'No task was found for the story `[Can] parent child`');
 
 test('all test callbacks can be inherited from parent story', function () {
