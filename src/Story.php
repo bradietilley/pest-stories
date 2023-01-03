@@ -14,6 +14,7 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
@@ -22,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @property-read Collection<int,Story> $storiesDirect
  * @property-read Collection<string,Story> $storiesAll
+ * @property-read ?Authenticatable $user
  */
 class Story
 {
@@ -64,6 +66,10 @@ class Story
 
         if ($name === 'storiesAll') {
             return $this->collectAllStories();
+        }
+
+        if ($name === 'user') {
+            return $this->getUser();
         }
 
         return $this->{$name};

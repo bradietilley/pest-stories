@@ -51,6 +51,16 @@ r
     }
 
     /**
+     * Alias for setScenarios()
+     * 
+     * @return $this
+     */
+    public function scenarios(iterable $scenarios): self
+    {
+        return $this->setScenarios($scenarios);
+    }
+
+    /**
      * Register multiple scenarios for this story
      *
      * @return $this

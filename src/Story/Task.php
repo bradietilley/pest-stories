@@ -7,6 +7,9 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TaskGeneratorNotFoundException;
 use Closure;
 
+/**
+ * @method static self make(string $name, ?Closure $generator = null, ?int $order = null) 
+ */
 class Task extends AbstractAction
 {
     public function __construct(

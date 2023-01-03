@@ -55,3 +55,7 @@ test('the story data can shared easily amongst callbacks', function () {
         'e',
     ]);
 });
+
+test('a story may inherit variables from its parent stories', function () {
+    expect(true)->toBeTrue();
+});

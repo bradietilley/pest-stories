@@ -7,6 +7,9 @@ use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use Closure;
 
+/**
+ * @method static self make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null) 
+ */
 class Scenario extends AbstractAction
 {
     protected string $variable;
