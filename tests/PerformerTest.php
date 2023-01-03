@@ -219,11 +219,14 @@ test('passing null to setUser method will log out the current user', function ()
         ->name('auth test')
         ->user($user);
 
+        
     // Should be logged in
+    expect($story->user)->toBe($user);
     expect(auth()->check())->toBeTrue();
 
     $story->user(null);
 
     // Should be logged out now
+    expect($story->user)->toBeNull();
     expect(auth()->check())->toBeFalse();
 });

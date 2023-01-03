@@ -335,7 +335,7 @@ test('can set multiple scenarios of multiple types in a single function', functi
 
     $story = Story::make()
         ->name('scenario test')
-        ->setScenarios([
+        ->scenarios([
             Scenario::make('new_object')->as(fn ($arg = 'noarg') => $ran[] = "new_object:{$arg}"),
             'old_object',
             fn ($arg = 'noarg') => $ran[] = "inline:{$arg}",
