@@ -4,7 +4,7 @@ namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Traits\HasContainer;
+use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use Closure;
@@ -14,19 +14,17 @@ abstract class AbstractAction
 {
     use HasName;
     use HasOrder;
-    use HasContainer;
+    use HasCallbacks;
 
     protected static array $stored = [];
 
-    protected ?Closure $registeringCallback = null;
-
-    protected ?Closure $bootingCallback = null;
-
     public function __construct(
         protected string $name,
-        protected ?Closure $generator = null,
+        ?Closure $generator = null,
         protected int $order,
-    ) {}
+    ) {
+        $this->setCallback('generator', $generator);
+    }
 
     /**
      * Set the generator
@@ -35,9 +33,7 @@ abstract class AbstractAction
      */
     public function as(Closure $generator): self
     {
-        $this->generator = $generator;
-
-        return $this;
+        return $this->setCallback('generator', $generator);
     }
 
     /**
@@ -47,9 +43,7 @@ abstract class AbstractAction
      */
     public function registering(Closure $callback): self
     {
-        $this->registeringCallback = $callback;
-
-        return $this;
+        return $this->setCallback('register', $callback);
     }
 
     /**
@@ -59,9 +53,7 @@ abstract class AbstractAction
      */
     public function booting(Closure $callback): self
     {
-        $this->bootingCallback = $callback;
-
-        return $this;
+        return $this->setCallback('boot', $callback);
     }
 
     /**
@@ -134,7 +126,7 @@ abstract class AbstractAction
      */
     public function register(Story $story, array $arguments = []): void
     {
-        $this->callOptional($this->registeringCallback, $story->getParameters($arguments));
+        $this->runCallback('register', $story->getParameters($arguments));
     }
 
     /**
@@ -144,13 +136,13 @@ abstract class AbstractAction
      */
     public function boot(Story $story, array $arguments = []): mixed
     {
-        $this->callOptional($this->bootingCallback, $story->getParameters($arguments));
+        $this->runCallback('boot', $story->getParameters($arguments));
 
-        if ($this->generator === null) {
+        if (! $this->hasCallback('generator')) {
             throw static::generatorNotFound($this->getName());
         }
 
-        return $this->call($this->generator, $story->getParameters($arguments));
+        return $this->runCallback('generator', $story->getParameters($arguments));
     }
 
     /**

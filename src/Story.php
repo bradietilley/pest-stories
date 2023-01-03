@@ -4,7 +4,7 @@ namespace BradieTilley\StoryBoard;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
-use BradieTilley\StoryBoard\Traits\HasContainer;
+use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
 use BradieTilley\StoryBoard\Traits\HasIsolation;
@@ -27,17 +27,17 @@ use PHPUnit\Framework\TestCase;
  */
 class Story
 {
+    use Conditionable;
+    use HasCallbacks;
     use HasData;
     use HasName;
     use HasNameShortcuts;
+    use HasInheritance;
+    use HasIsolation;
     use HasPerformer;
     use HasScenarios;
     use HasStories;
     use HasTasks;
-    use HasInheritance;
-    use HasContainer;
-    use HasIsolation;
-    use Conditionable;
     use Macroable;
 
     protected bool $registered = false;
@@ -95,7 +95,7 @@ class Story
         return array_replace($this->allData(), [
             'story' => $this,
             'test' => $this->getTest(),
-            'can' => $this->canAssertion,
+            'can' => $this->can,
             'user' => $this->getUser(),
             'result' => $this->getResult(),
         ], $additional);

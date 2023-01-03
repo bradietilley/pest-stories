@@ -28,14 +28,6 @@ trait HasTasks
      */
     protected array $tasksRegistered = [];
 
-    protected ?Closure $canAssertion = null;
-
-    protected ?Closure $cannotAssertion = null;
-
-    protected ?Closure $before = null;
-
-    protected ?Closure $after = null;
-
     protected ?bool $can = null;
 
     /**
@@ -64,11 +56,10 @@ trait HasTasks
     /**
      * @return $this
      */
-    public function before(Closure $before): self
+    public function before(?Closure $before): self
     {
-        $this->before = $before;
-
-        return $this;
+        /** @var HasTasks|HasCallbacks $this */
+        return $this->setCallback('before', $before);
     }
 
     /**
@@ -76,17 +67,17 @@ trait HasTasks
      */
     public function getBefore(): ?Closure
     {
-        return $this->before;
+        /** @var HasTasks|HasCallbacks $this */
+        return $this->getCallback('before');
     }
 
     /**
      * @return $this
      */
-    public function after(Closure $after): self
+    public function after(?Closure $after): self
     {
-        $this->after = $after;
-
-        return $this;
+        /** @var HasTasks|HasCallbacks $this */
+        return $this->setCallback('after', $after);
     }
 
     /**
@@ -94,7 +85,8 @@ trait HasTasks
      */
     public function getAfter(): ?Closure
     {
-        return $this->after;
+        /** @var HasTasks|HasCallbacks $this */
+        return $this->getCallback('after');
     }
 
     /**
@@ -131,11 +123,15 @@ trait HasTasks
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
 
-        $this->before = $this->inheritFromParents('getBefore');
-        $this->after = $this->inheritFromParents('getAfter');
+        $this->before($this->inheritFromParents('getBefore'));
+        $this->after($this->inheritFromParents('getAfter'));
+        
         $this->can = $this->inheritFromParents('getCan');
-        $this->canAssertion = $this->inheritFromParents('getCanAssertion');
-        $this->cannotAssertion = $this->inheritFromParents('getCannotAssertion');
+        
+        $this->check(
+            can: $this->inheritFromParents('getCanCallback'),
+            cannot: $this->inheritFromParents('getCannotCallback'),
+        );
 
         foreach ($this->tasksRegistered as $task) {
             /** @var Task $task */
@@ -164,10 +160,7 @@ trait HasTasks
         try {
             $data = $this->getParameters();
 
-            /* Call before listener */
-            if ($callback = $this->before) {
-                $this->call($callback, $data);
-            }
+            $this->runCallback('before', $data);
 
             /* Run task */
             foreach ($tasks as $task) {
@@ -181,9 +174,7 @@ trait HasTasks
             }
 
             /* Call after listener */
-            if ($callback = $this->after) {
-                $this->call($callback, $data);
-            }
+            $this->runCallback('after', $data);
         } catch (Throwable $e) {
             $result->setError($e);
 
@@ -198,8 +189,9 @@ trait HasTasks
      */
     public function check(Closure $can = null, Closure $cannot = null): self
     {
-        $this->canAssertion = $can;
-        $this->cannotAssertion = $cannot;
+        /** @var HasCallbacks|HasTasks $this */
+        $this->setCallback('can', $can);
+        $this->setCallback('cannot', $cannot);
 
         return $this;
     }
@@ -257,18 +249,20 @@ trait HasTasks
      * Get the callback that detmerines if the task passed
      * when the story is expected to pass.
      */
-    public function getCanAssertion(): ?Closure
+    public function getCanCallback(): ?Closure
     {
-        return $this->canAssertion;
+        /** @var HasCallbacks|HasTasks $this */
+        return $this->getCallback('can');
     }
 
     /**
      * Get the callback that detmerines if the task failed
      * when the story is expected to fail.
      */
-    public function getCannotAssertion(): ?Closure
+    public function getCannotCallback(): ?Closure
     {
-        return $this->cannotAssertion;
+        /** @var HasCallbacks|HasTasks $this */
+        return $this->getCallback('cannot');
     }
 
     /**
@@ -298,16 +292,18 @@ trait HasTasks
             throw StoryBoardException::assertionNotFound($this);
         }
 
-        $checker = $this->can ? $this->canAssertion : $this->cannotAssertion;
+        $callback = $this->can ? 'can' : 'cannot';
 
-        if ($checker === null) {
+        if (! $this->hasCallback($callback)) {
             throw StoryBoardException::assertionCheckerNotFound($this);
         }
 
         try {
-            $this->call($checker, array_replace($this->getParameters(), [
+            $args = array_replace($this->getParameters(), [
                 'result' => $this->result ? $this->result->getValue() : null,
-            ]));
+            ]);
+            
+            $this->runCallback($callback, $args);
         } catch (Throwable $e) {
             $this->getResult()->setError($e);
 

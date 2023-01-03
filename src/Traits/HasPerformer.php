@@ -10,14 +10,13 @@ trait HasPerformer
 {
     protected ?Authenticatable $user = null;
 
-    protected static ?Closure $actingAsCallback = null;
-
     /**
      * Specify what to do when the user is set
      */
     public static function actingAs(?Closure $actingAsCallback): void
     {
-        static::$actingAsCallback = $actingAsCallback;
+        /** @var HasPerformer|HasCallbacks $this */
+        static::setStaticCallback('actingAs', $actingAsCallback);
     }
 
     /**
@@ -39,12 +38,10 @@ trait HasPerformer
     {
         $this->user = $user;
 
-        if (static::$actingAsCallback !== null) {
-            if ($this instanceof Story) {
-                $this->call(static::$actingAsCallback, $this->getParameters());
-            } else {
-                call_user_func_array(static::$actingAsCallback, $this, $user);
-            }
+        /** @var HasPerformer|HasCallbacks $this */
+
+        if (static::hasStaticCallback('actingAs')) {
+            static::runStaticCallback('actingAs', $this->getParameters());
         } else {
             if ($user !== null) {
                 auth()->login($user);
