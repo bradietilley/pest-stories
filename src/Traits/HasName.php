@@ -63,6 +63,43 @@ trait HasName
         return $parent->getFullName();
     }
 
+    public function inheritName(): void
+    {
+        $name = [];
+        $levels = array_reverse($this->getAncestors());
+        $first = array_key_first($levels);
+
+        foreach ($levels as $key => $level) {
+            if ($key === $first) {
+                if (StoryBoard::datasetsEnabled()) {
+                    continue;
+                }
+            }
+
+            $name[] = $level->getLevelName();
+        }
+
+        $name = trim(preg_replace('/\s+/', ' ', implode(' ', $name)));
+
+        $this->name($name);
+    }
+
+    public function getLevelName(): string
+    {
+        $name = $this->getName();
+
+        /**
+         * Append names from scenarios (where scenarios opt to `->appendName()`)
+         */
+        if (method_exists($this, 'getNameFromScenarios')) {
+            $name = "{$name} {$this->getNameFromScenarios()}";
+        }
+
+        $name = trim($name);
+
+        return $name;
+    }
+
     /**
      * Get the full test name
      *
@@ -73,53 +110,53 @@ trait HasName
      */
     public function getFullName(): ?string
     {
-        $key = StoryBoard::datasetsEnabled() ? 'dataset' : 'full';
-
-        if (isset($this->fullName[$key])) {
-            return $this->fullName[$key];
+        if (! $this instanceof Story) {
+            return null;
         }
 
-        /** @var Story $this */
-        $this->register();
+        // $key = StoryBoard::datasetsEnabled() ? 'dataset' : 'full';
+
+        // if (isset($this->fullName[$key])) {
+        //     return $this->fullName[$key];
+        // }
+
+        // /** @var Story $this */
+        // $this->register();
         
-        // Start with this test's name
+        // // Start with this test's name
+        // $fullName = $this->getName();
+
+        // /**
+        //  * Append names from scenarios (where scenarios opt to `->appendName()`)
+        //  */
+        // if (method_exists($this, 'getNameFromScenarios')) {
+        //     $appendName = $this->getNameFromScenarios();
+
+        //     if ($appendName !== null) {
+        //         $fullName = trim("{$fullName} {$appendName}");
+        //     }
+        // }
+
+        // /**
+        //  * Prepend the parent story name
+        //  */
+        // if ($this->hasParent()) {
+        //     $fullName = trim("{$this->getParentName()} {$fullName}");
+        // }
+
         $fullName = $this->getName();
-
-        /**
-         * Append names from scenarios (where scenarios opt to `->appendName()`)
-         */
-        if (method_exists($this, 'getNameFromScenarios')) {
-            $appendName = $this->getNameFromScenarios();
-
-            if ($appendName !== null) {
-                $fullName = trim("{$fullName} {$appendName}");
-            }
-        }
-
-        /**
-         * Prepend the parent story name
-         */
-        if ($this->hasParent()) {
-            $fullName = trim("{$this->getParentName()} {$fullName}");
-        }
 
         /**
          * Only the most lowest level story should get prefixed with can or cannot
          */
         if (! $this->hasStories()) {
-            if (property_exists($this, 'can')) {
-                if ($this->can === null) {
-                    $this->can = $this->inheritFromParents('getCan');
-                }
-                
-                if ($this->can !== null) {
-                    $can = $this->can ? 'Can' : 'Cannot';
+            if ($this->can !== null) {
+                $can = $this->can ? 'Can' : 'Cannot';
 
-                    $fullName = "[{$can}] {$fullName}";
-                }
+                $fullName = "[{$can}] {$fullName}";
             }
         }
 
-        return $this->fullName[$key] = $fullName;
+        return $fullName;
     }
 }

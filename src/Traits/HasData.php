@@ -74,4 +74,16 @@ trait HasData
     {
         return $this->allData();
     }
+
+    public function inheritData(): void
+    {
+        /** @var HasCallbacks|HasInheritance $this */
+        $all = [];
+
+        foreach (array_reverse($this->getAncestors()) as $level) {
+            $all = array_replace($all, $level->getProperty('data'));
+        }
+
+        $this->data = $all;
+    }
 }

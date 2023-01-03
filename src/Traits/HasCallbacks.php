@@ -111,4 +111,24 @@ trait HasCallbacks
     {
         return isset(static::$registeredStaticCallbacks[$name]);
     }
+
+    public function inheritCallbacks(): void
+    {
+        /** @var HasCallbacks|HasInheritance $this */
+        $all = [];
+
+        foreach (array_reverse($this->getAncestors()) as $level) {
+            $callbacks = $level->getProperty('registeredCallbacks');
+
+            foreach ($callbacks as $name => $callback) {
+                if ($callback === null) {
+                    continue;
+                }
+
+                $all[$name] = $callback;
+            }
+        }
+
+        $this->registeredCallbacks = $all;
+    }
 }

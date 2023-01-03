@@ -14,6 +14,7 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
+use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
@@ -117,6 +118,7 @@ class Story
         }
 
         $this->registered = true;
+        $this->inherit();
         $this->registerScenarios();
         $this->registerTasks();
 
@@ -216,5 +218,31 @@ class Story
     public static function getTestFunction(): string
     {
         return self::$testFunction;
+    }
+
+    public function inherit(): self
+    {
+        $this->inheritName();
+        $this->inheritData();
+        $this->inheritScenarios();
+        $this->inheritTasks();
+        $this->inheritCallbacks();
+
+        return $this;
+    }
+
+    /**
+     * Register a callback to run when the test is set up
+     */
+    public function setUp(?Closure $callback): self
+    {
+        return $this->setCallback('setUp', $callback);
+    }
+
+    /**
+     * Register a callback to run when the test the teared down
+     */
+    public function tearDown(?Closure $callback): self{
+        return $this->setCallback('tearDown', $callback);
     }
 }

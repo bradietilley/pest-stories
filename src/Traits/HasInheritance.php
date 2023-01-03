@@ -110,4 +110,58 @@ trait HasInheritance
 
         return $all->collapse()->all();
     }
+
+    public function inheritProperty(string $property, ?Closure $inheritsWhen = null, mixed $default = null): mixed
+    {
+        $instance = $this;
+
+        while ($instance !== null) {
+            $value = $instance->getProperty($property);
+
+            if ($inheritsWhen === null) {
+                // Inherit when not null
+
+                if ($value !== null) {
+                    return $value;
+                }
+            } else {
+                // Inherit when not closure returns true
+
+                if ($inheritsWhen($value)) {
+                    return $value;
+                }
+            }
+
+            $instance = $instance->getParent();
+        }
+
+        return $default;
+    }
+
+    /**
+     * Get a property from this object
+     */
+    public function getProperty(string $property): mixed
+    {
+        return $this->{$property};
+    }
+
+    /**
+     * Get all ancestors starting with $this (child) ending with the grand parent
+     * 
+     * @return array<static>
+     */
+    public function getAncestors(): array
+    {
+        $all = [];
+        $instance = $this;
+
+        while ($instance !== null) {
+            $all[] = $instance;
+
+            $instance = $instance->getParent();
+        }
+
+        return $all;
+    }
 }

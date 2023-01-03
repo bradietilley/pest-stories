@@ -111,6 +111,11 @@ r
         return $this->combineFromParents('getScenarios');
     }
 
+    public function inheritScenarios(): void
+    {
+        $this->scenarios($this->allScenarios());
+    }
+
     /**
      * Resolve all scenarios that are inherited
      * 

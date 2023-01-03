@@ -85,6 +85,23 @@ trait HasStories
         return ! empty($this->stories);
     }
 
+    public function nestedStories(): array
+    {
+        /** @var HasName|HasStories $this */
+
+        $children = [];
+
+        foreach ($this->getStories() as $story) {
+            if ($story->hasStories()) {
+                $children = array_merge($children, $story->nestedStories());
+            } else {
+                $children[] = $this;
+            }
+        }
+
+        return $children;
+    }
+
     /**
      * Get the stories under this story.
      *
@@ -99,22 +116,13 @@ trait HasStories
     {
         /** @var HasName|HasStories $this */
 
-        // If it's a child story then the story is itself
-        if (! $this->hasStories()) {
-            return [
-                $this->getFullName() => $this,
-            ];
+        $stories = $this->nestedStories();
+
+        foreach ($stories as $story) {
+            $story->inherit();
         }
 
-        $children = Collection::make($this->getStories())
-            ->map(
-                fn (Story $story) => $story->allStories()
-            )
-            ->collapse()
-            ->keyBy(
-                fn (Story $story) => $story->getFullName(),
-            )
-            ->all();
+        $children = Collection::make($stories)->keyBy(fn (Story $story) => $story->getFullName())->all();
 
         return $children;
     }
