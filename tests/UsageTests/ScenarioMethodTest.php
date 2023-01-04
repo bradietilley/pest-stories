@@ -23,7 +23,7 @@ function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
         )
         ->task(fn () => true)
         ->check(
-            fn (Story $story) => $names[] = $story->getFullName(),
+            fn (Story $story) => $names[] = $story->getTestName(),
             fn (Story $story) => $names[] = 'cannot',
         )
         ->stories([
@@ -77,7 +77,7 @@ test('the scenario method can be applied at a grandparent story level', function
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getFullName()] = array_keys($story->allScenarios());
+        $names[$story->getTestName()] = array_keys($story->allScenarios());
     }
 
     expect($names->toArray())->toBe([
@@ -103,7 +103,7 @@ test('the scenario method can be applied at a parent story level', function () {
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getFullName()] = array_keys($story->allScenarios());
+        $names[$story->getTestName()] = array_keys($story->allScenarios());
     }
 
     expect($names->toArray())->toBe([
@@ -129,7 +129,7 @@ test('the can method can be applied at a child story level', function () {
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getFullName()] = array_keys($story->allScenarios());
+        $names[$story->getTestName()] = array_keys($story->allScenarios());
     }
 
     expect($names->toArray())->toBe([

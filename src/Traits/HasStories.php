@@ -85,6 +85,9 @@ trait HasStories
         return ! empty($this->stories);
     }
 
+    /**
+     * @return array<Story> 
+     */
     public function nestedStories(): array
     {
         /** @var HasName|HasStories $this */
@@ -95,7 +98,7 @@ trait HasStories
             if ($story->hasStories()) {
                 $children = array_merge($children, $story->nestedStories());
             } else {
-                $children[] = $this;
+                $children[] = $story;
             }
         }
 
@@ -122,7 +125,7 @@ trait HasStories
             $story->inherit();
         }
 
-        $children = Collection::make($stories)->keyBy(fn (Story $story) => $story->getFullName())->all();
+        $children = Collection::make($stories)->keyBy(fn (Story $story) => $story->getTestName())->all();
 
         return $children;
     }

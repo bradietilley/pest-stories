@@ -42,29 +42,14 @@ trait HasName
         return $this->name;
     }
 
-    /**
-     * Get the parent test name
-     *
-     * Example: create something > as low level user > with correct permissions
-     * Output:  create something as low level user
-     */
-    public function getParentName(): ?string
-    {
-        $parent = $this->getParent();
-
-        if ($parent === null) {
-            return null;
-        }
-
-        if ((StoryBoard::datasetsEnabled() === true) && ($parent instanceof StoryBoard)) {
-            return null;
-        }
-
-        return $parent->getFullName();
-    }
-
     public function inheritName(): void
     {
+        $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
+
+        if (isset($this->fullName[$datasetKey])) {
+            return;
+        }
+
         $name = [];
         $levels = array_reverse($this->getAncestors());
         $first = array_key_first($levels);
@@ -81,7 +66,14 @@ trait HasName
 
         $name = trim(preg_replace('/\s+/', ' ', implode(' ', $name)));
 
-        $this->name($name);
+        $this->fullName[$datasetKey] = $name;
+    }
+
+    public function getFullName(): string
+    {
+        $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
+        
+        return $this->fullName[$datasetKey] ?? $this->getName(); 
     }
 
     public function getLevelName(): string
@@ -100,63 +92,33 @@ trait HasName
         return $name;
     }
 
-    /**
-     * Get the full test name
-     *
-     * Example: create something > as low level user > with correct permissions
-     * Output:  [Can] create something as low level user with correct permissions
-     *
-     * @requires Story
-     */
-    public function getFullName(): ?string
-    {
-        if (! $this instanceof Story) {
-            return null;
-        }
+    // /**
+    //  * Get the full test name
+    //  *
+    //  * Example: create something > as low level user > with correct permissions
+    //  * Output:  [Can] create something as low level user with correct permissions
+    //  *
+    //  * @requires Story
+    //  */
+    // public function getFullName(): ?string
+    // {
+    //     if (! $this instanceof Story) {
+    //         return null;
+    //     }
 
-        // $key = StoryBoard::datasetsEnabled() ? 'dataset' : 'full';
+    //     $fullName = $this->getName();
 
-        // if (isset($this->fullName[$key])) {
-        //     return $this->fullName[$key];
-        // }
+    //     /**
+    //      * Only the most lowest level story should get prefixed with can or cannot
+    //      */
+    //     if (! $this->hasStories()) {
+    //         if ($this->can !== null) {
+    //             $can = $this->can ? 'Can' : 'Cannot';
 
-        // /** @var Story $this */
-        // $this->register();
-        
-        // // Start with this test's name
-        // $fullName = $this->getName();
+    //             $fullName = "[{$can}] {$fullName}";
+    //         }
+    //     }
 
-        // /**
-        //  * Append names from scenarios (where scenarios opt to `->appendName()`)
-        //  */
-        // if (method_exists($this, 'getNameFromScenarios')) {
-        //     $appendName = $this->getNameFromScenarios();
-
-        //     if ($appendName !== null) {
-        //         $fullName = trim("{$fullName} {$appendName}");
-        //     }
-        // }
-
-        // /**
-        //  * Prepend the parent story name
-        //  */
-        // if ($this->hasParent()) {
-        //     $fullName = trim("{$this->getParentName()} {$fullName}");
-        // }
-
-        $fullName = $this->getName();
-
-        /**
-         * Only the most lowest level story should get prefixed with can or cannot
-         */
-        if (! $this->hasStories()) {
-            if ($this->can !== null) {
-                $can = $this->can ? 'Can' : 'Cannot';
-
-                $fullName = "[{$can}] {$fullName}";
-            }
-        }
-
-        return $fullName;
-    }
+    //     return $fullName;
+    // }
 }

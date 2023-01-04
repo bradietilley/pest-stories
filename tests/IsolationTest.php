@@ -48,7 +48,7 @@ test('a story can isolate itself and allow its children to also run', function (
     $stories = StoryBoard::make()
         ->can()
         ->name('parent')
-        ->task(fn (Story $story) => $ran[] = $story->getName())
+        ->task(fn (Story $story) => $ran[] = $story->getFullName())
         ->check(fn () => true)
         ->stories([
             Story::make('child 1')->stories([
@@ -75,10 +75,10 @@ test('a story can isolate itself and allow its children to also run', function (
     }
 
     expect($ran->toArray())->toBe([
-        'child 1a',
-        'child 1b',
-        'child 1c1',
-        'child 1c2',
+        'parent child 1 child 1a',
+        'parent child 1 child 1b',
+        'parent child 1 child 1c child 1c1',
+        'parent child 1 child 1c child 1c2',
     ]);
 
     Story::flushIsolation();
@@ -90,7 +90,7 @@ test('multiple stories can be isolated and all isolated stories will run', funct
     $stories = StoryBoard::make()
         ->can()
         ->name('parent')
-        ->task(fn (Story $story) => $ran[] = $story->getName())
+        ->task(fn (Story $story) => $ran[] = $story->getFullName())
         ->check(fn () => true)
         ->stories([
             Story::make('child 1')->stories([
@@ -125,14 +125,14 @@ test('multiple stories can be isolated and all isolated stories will run', funct
     }
 
     expect($ran->toArray())->toBe([
-        'child 1a',
-        'child 1b',
-        'child 1c1',
-        'child 1c2',
-        'child 3a',
-        'child 3b',
-        'child 3c1',
-        'child 3c2',
+        'parent child 1 child 1a',
+        'parent child 1 child 1b',
+        'parent child 1 child 1c child 1c1',
+        'parent child 1 child 1c child 1c2',
+        'parent child 3 child 3a',
+        'parent child 3 child 3b',
+        'parent child 3 child 3c child 3c1',
+        'parent child 3 child 3c child 3c2',
     ]);
     
     Story::flushIsolation();

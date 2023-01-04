@@ -13,7 +13,7 @@ function createStoryBoardForCanMethod(int $level, &$names): StoryBoard
         )
         ->task(fn () => true)
         ->check(
-            fn (Story $story) => $names[] = $story->getFullName(),
+            fn (Story $story) => $names[] = $story->getTestName(),
             fn (Story $story) => $names[] = 'cannot',
         )
         ->stories([

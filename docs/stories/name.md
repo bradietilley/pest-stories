@@ -24,7 +24,7 @@ You may get the story's name via:
 $story->getName(); // can create something cool
 
 // Get the full name, including inheritance (see below)
-$story->getFullName(); // can create something cool
+$story->getTestName(); // can create something cool
 ```
 
 Note: The full name is what is passed to pest as the test name.
@@ -33,7 +33,7 @@ Note: The full name is what is passed to pest as the test name.
 
 See [Inheritance](/docs/stories/inheritance.md) for base information on what inheritance is.
 
-The way naming is inherited from parent stories differs slightly from how other story attributes inherit from their parents. Parent stories offer their name as a prefix to the child story name. The full name can be retrieved with `getFullName()` method.
+The way naming is inherited from parent stories differs slightly from how other story attributes inherit from their parents. Parent stories offer their name as a prefix to the child story name. The full name can be retrieved with `getTestName()` method.
 
 Example:
 
@@ -48,9 +48,9 @@ Story::make('parent')->stories([
     ]),
 ]);
 
-$a->getFullName(); // parent child1
-$b->getFullName(); // parent child2 grandchild1
-$c->getFullName(); // parent grandchild2
+$a->getTestName(); // parent child1
+$b->getTestName(); // parent child2 grandchild1
+$c->getTestName(); // parent grandchild2
 
 // Note: this code won't execute due to the stories missing required elements (such as expectations and tasks). Purely informational.
 ```
@@ -69,8 +69,8 @@ Story::make('parent')->stories([
     $a = Story::make('child 2')->cannot(),
 ]);
 
-$a->getFullName(); // [Can] parent child 1
-$b->getFullName(); // [Cannot] parent child 2
+$a->getTestName(); // [Can] parent child 1
+$b->getTestName(); // [Cannot] parent child 2
 ```
 
 **Names from actions**

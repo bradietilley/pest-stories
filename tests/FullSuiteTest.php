@@ -85,7 +85,7 @@ $story = StoryBoard::make()
         $tasks[] = [
             'shared' => $shared,
             'scenario' => $scenario,
-            'story' => $story->getFullName(),
+            'story' => $story->getTestName(),
         ];
 
         $data['tasks'] = $tasks;
@@ -93,12 +93,12 @@ $story = StoryBoard::make()
     })
     ->check(
         function (Story $story) use (&$data) {
-            $data['can'] = $story->getFullName();
+            $data['can'] = $story->getTestName();
 
             expect(true)->toBeTrue();
         },
         function (Story $story) use (&$data) {
-            $data['cannot'] = $story->getFullName();
+            $data['cannot'] = $story->getTestName();
 
             expect(true)->toBeTrue();
         },
@@ -118,7 +118,7 @@ $story = StoryBoard::make()
 /**
  * Manually register the test cases
  */
-test($story->getFullName().' (manual)', function (Story $story) {
+test($story->getTestName().' (manual)', function (Story $story) {
     $story->boot()->assert();
 })->with($story->allStories());
 
@@ -210,7 +210,6 @@ test('storyboard test function will call upon the pest test function for each st
         expect($testExecutions['function'])->toBeArray()->toHaveKeys(['description', 'callback'])
             ->and($testExecutions['function']['description'])->toBe('parent');
 
-        dd(array_keys($testExecutions['dataset']));
         expect($testExecutions['dataset'])->toBeArray()->toHaveKeys($names);
     } else {
         $names = [

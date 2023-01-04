@@ -245,7 +245,7 @@ test('scenarios can offer to append their name to the story name', function () {
         ]);
 
     $stories = Collection::make($story->allStories())
-        ->map(fn (Story $story) => $story->getFullName())
+        ->map(fn (Story $story) => $story->getTestName())
         ->values()
         ->all();
 
@@ -286,7 +286,6 @@ test('a story with the multiple scenarios of the same variable will use the last
     $data = Collection::make([]);
 
     Story::make()
-        ->name('parent')
         ->scenario('location_1')
         ->can()
         ->before(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)

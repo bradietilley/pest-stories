@@ -41,6 +41,12 @@ class Story
     use HasTasks;
     use Macroable;
 
+    public readonly int $id;
+
+    private static $idCounter = 0;
+
+    protected bool $inherited = false;
+
     protected bool $registered = false;
 
     protected bool $booted = false;
@@ -51,6 +57,7 @@ class Story
 
     public function __construct(protected ?string $name = null, protected ?Story $parent = null)
     {
+        $this->id = ++self::$idCounter;
     }
 
     /**
@@ -93,13 +100,15 @@ class Story
      */
     public function getParameters(array $additional = []): array
     {
-        return array_replace($this->allData(), [
+        $data = array_replace($this->allData(), [
             'story' => $this,
             'test' => $this->getTest(),
             'can' => $this->can,
             'user' => $this->getUser(),
             'result' => $this->getResult(),
         ], $additional);
+
+        return $data;
     }
 
     /**
@@ -178,7 +187,7 @@ class Story
 
         $function = self::getTestFunction();
         $args = [
-            $this->getFullName(),
+            $this->getTestName(),
             function () use ($story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
@@ -196,6 +205,24 @@ class Story
         $function(...$args);
 
         return $this;
+    }
+
+    public function getTestName(): string
+    {
+        $name = $this->getFullName();
+
+        /**
+         * Only the most lowest level story should get prefixed with can or cannot
+         */
+        if (! $this->hasStories()) {
+            if ($this->can !== null) {
+                $can = $this->can ? 'Can' : 'Cannot';
+
+                $name = "[{$can}] {$name}";
+            }
+        }
+
+        return $name;
     }
 
     /**
@@ -222,13 +249,26 @@ class Story
 
     public function inherit(): self
     {
+        if ($this->inherited) {
+            return $this;
+        }
+
+        $this->inherited = true;
         $this->inheritName();
         $this->inheritData();
         $this->inheritScenarios();
         $this->inheritTasks();
+        $this->inheritAssertions();
         $this->inheritCallbacks();
 
         return $this;
+    }
+
+    protected function inheritAssertions(): void
+    {
+        if (($can = $this->inheritProperty('can')) !== null) {
+            $this->can($can);
+        }
     }
 
     /**

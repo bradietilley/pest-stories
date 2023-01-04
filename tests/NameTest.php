@@ -49,7 +49,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
 
     StoryBoard::disableDatasets();
 
-    expect(array_keys($story->allStories()))->toBe([
+    expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] parent child 1',
         '[Can] parent child 2',
         '[Can] parent child 3',
@@ -57,7 +57,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
 
     StoryBoard::enableDatasets();
 
-    expect(array_keys($story->allStories()))->toBe([
+    expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] child 1',
         '[Can] child 2',
         '[Can] child 3',
@@ -67,18 +67,3 @@ test('a storyboard will not prefix its story names with the parent name when dat
     StoryBoard::disableDatasets();
 });
 
-test('getParentName method returns name of parent', function () {
-    $grandparent = StoryBoard::make('grandparent')
-        ->can()
-        ->task(fn () => null)
-        ->check(fn () => null)
-        ->stories([
-            $parent = Story::make('parent')->stories([
-                $child = Story::make('child'),
-            ]),
-        ]);
-
-    expect($child->getParentName())->toBe('grandparent parent');
-    expect($parent->getParentName())->toBe('grandparent');
-    expect($grandparent->getParentName())->toBe(null);
-});

@@ -9,18 +9,11 @@ use Illuminate\Support\Collection;
 trait HasScenarios
 {
     /**
-     * All scenarios and their arguments (excluding inheritance)
+     * All scenarios and their arguments (excluding inheritance until story is registered)
      *
      * @var array<string,array>
      */
     protected array $scenarios = [];
-
-    /**
-     * All scenarios and their arguments (including inheritance)
-     * 
-     * @var array<string,array>
-     */
-    protected array $registeredScenarios = [];
 
     /**
      * Alias for setScenario()
@@ -113,7 +106,7 @@ r
 
     public function inheritScenarios(): void
     {
-        $this->scenarios($this->allScenarios());
+        $this->scenarios = $this->allScenarios();
     }
 
     /**
@@ -125,11 +118,11 @@ r
     {
         /** @var Story $this */
 
-        $this->registeredScenarios = Collection::make($this->allScenarios())
+        $this->scenarios = Collection::make($this->scenarios)
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->all();
 
-        foreach ($this->registeredScenarios as $data) {
+        foreach ($this->scenarios as $data) {
             /** @var Scenario $scenario */
             $scenario = $data['scenario'];
             /** @var array $args */
@@ -151,7 +144,7 @@ r
     {
         /** @var HasData|HasScenarios|HasName $this */
 
-        foreach ($this->registeredScenarios as $data) {
+        foreach ($this->scenarios as $data) {
             /** @var HasData|HasScenarios|HasName $this */
 
             /** @var Scenario $scenario */
@@ -173,7 +166,7 @@ r
     public function getNameFromScenarios(): ?string
     {
         // Just this level
-        $scenarios = Collection::make($this->registeredScenarios)
+        $scenarios = Collection::make($this->scenarios)
             ->pluck('scenario')
             ->map(fn (Scenario $scenario) => $scenario->getAppendName())
             ->filter();

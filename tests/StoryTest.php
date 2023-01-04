@@ -21,6 +21,10 @@ test('a storyboard with a single story can generate test cases with names', func
         ->task(fn () => null);
     
     $tests = $storyboard->allStories();
+    expect($tests)->toHaveCount(0);
+
+    $storyboard->stories(Story::make());
+    $tests = $storyboard->allStories();
 
     expect($tests)->toHaveCount(1)->toHaveKey('[Can] create something cool');
     expect($tests['[Can] create something cool'])->toBeInstanceOf(Story::class);
@@ -153,7 +157,7 @@ test('a story cannot accept children that are not story classes', function (stri
 ])->throws(InvalidStoryException::class, 'You must only provide Story classes to the stories() method.');
 
 test('a story can fetch its children stories via collection methods and property proxies', function () {
-    $story = Story::make()
+    $storyboard = Story::make()
         ->name('parent')
         ->can()
         ->check(fn () => null)
@@ -166,14 +170,20 @@ test('a story can fetch its children stories via collection methods and property
             ]),
         ]);
 
-    $stories = $story->storiesDirect;
+    // Register children shortcut 
+
+    $stories = $storyboard->storiesDirect;
+    foreach ($stories as $story) {
+        $story->register();
+    }
+
     expect($stories)->toBeInstanceOf(Collection::class)->toHaveCount(2);
     expect($stories->map(fn (Story $story) => $story->getName())->toArray())->toBe([
         'child 1',
         'child 2',
     ]);
 
-    $stories = $story->storiesAll;
+    $stories = $storyboard->storiesAll;
     expect($stories)->toBeInstanceOf(Collection::class)->toHaveCount(3);
     expect($stories->map(fn (Story $story) => $story->getName())->values()->toArray())->toBe([
         'child 1',
@@ -184,7 +194,7 @@ test('a story can fetch its children stories via collection methods and property
     // throws error
     $error = null;
     try {
-        $story->something_doesnt_exist;
+        $storyboard->something_doesnt_exist;
     } catch (\Throwable $error) {
     }
 
@@ -235,15 +245,19 @@ test('you can retrieve all registered scenarios for a story', function () {
             $child = Story::make('child')->scenario('scenario_2'),
         ]);
 
-    expect($child->registeredScenarios())->toBe([]);
+    expect($scenarios = $child->getScenarios())->toHaveCount(1);
 
+    expect($scenarios['scenario_2']['scenario']->getName())->toBe('scenario_2');
+    expect($scenarios['scenario_2']['arguments'])->toBe([]);
+
+    // Register all children to parent
     $stories = $story->storiesAll;
     expect($stories)->toHaveCount(1);
 
     /** @var Story $story */
     $story = $stories->first();
 
-    expect($scenarios = $story->registeredScenarios())->toHaveCount(2);
+    expect($scenarios = $story->getScenarios())->toHaveCount(2);
 
     expect($scenarios['scenario_1']['scenario']->getName())->toBe('scenario_1');
     expect($scenarios['scenario_1']['arguments'])->toBe([]);

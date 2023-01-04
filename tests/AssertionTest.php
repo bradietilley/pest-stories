@@ -22,5 +22,5 @@ test('a story must have at least one assertion checker', function () {
     foreach ($story->allStories() as $story) {
         $story->boot()->assert();
     }
-})->throws(AssertionCheckerNotFoundException::class, 'No "can" assertion checker was found for the story `[Can] parent child`');
+})->throws(AssertionCheckerNotFoundException::class, 'No "can" assertion checker was found for the story `parent child`');
 

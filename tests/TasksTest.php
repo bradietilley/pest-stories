@@ -168,7 +168,7 @@ test('a story must have at least one task', function () {
     $story = $all->first();
 
     $story->boot()->assert();
-})->throws(TaskNotSpecifiedException::class, 'No task was found for the story `[Can] parent child`');
+})->throws(TaskNotSpecifiedException::class, 'No task was found for the story `parent child`');
 
 test('all test callbacks can be inherited from parent story', function () {
     $ran = Collection::make([]);
@@ -284,7 +284,7 @@ test('you may create a story with an assertion and unset the assertion for a chi
         '[Can] parent child can implicit',
         '[Can] parent child can explicit',
         '[Cannot] parent child cannot explicit',
-        'parent child unset grandchild null implicit',
+        '[Can] parent child unset grandchild null implicit',
         '[Can] parent child unset grandchild can explicit',
         '[Cannot] parent child unset grandchild cannot explicit',
     ];
