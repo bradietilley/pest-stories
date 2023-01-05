@@ -29,7 +29,7 @@ trait HasCallbacks
     /**
      * Call the given closure with the given args
      */
-    public static function call($callback, array $arguments): mixed
+    public static function call(callable $callback, array $arguments): mixed
     {
         return static::getContainer()->call($callback, $arguments);
     }
@@ -37,7 +37,7 @@ trait HasCallbacks
     /**
      * Call the given closure (if provided) with the given args
      */
-    public static function callOptional(?Closure $callback, array $arguments = []): mixed
+    public static function callOptional(?callable $callback, array $arguments = []): mixed
     {
         if ($callback === null) {
             return null;

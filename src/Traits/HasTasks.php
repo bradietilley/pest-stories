@@ -275,7 +275,7 @@ trait HasTasks
      *
      * @requires Story
      */
-    public function assert(): void
+    public function assert(): self
     {
         /** @var Story $this */
 
@@ -288,10 +288,8 @@ trait HasTasks
                 // @codeCoverageIgnoreEnd
             }
             
-            return;
+            return $this;
         }
-
-        $this->can = $this->inheritFromParents('getCan');
 
         if ($this->can === null) {
             throw StoryBoardException::assertionNotFound($this);
@@ -314,6 +312,8 @@ trait HasTasks
 
             throw $e;
         }
+
+        return $this;
     }
 
     /**

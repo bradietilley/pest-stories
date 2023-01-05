@@ -19,7 +19,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 /**
  * @property-read Collection<int,Story> $storiesDirect
@@ -192,7 +194,7 @@ class Story
                 /** @var Story $story */
                 /** @var TestCase $this */
     
-                $story->setTest($this)->boot()->assert();
+                $story->setTest($this)->start()->end();
             },
         ];
 
@@ -269,6 +271,46 @@ class Story
         if (($can = $this->inheritProperty('can')) !== null) {
             $this->can($can);
         }
+    }
+
+    /**
+     * Start the test
+     */
+    public function start(): self
+    {
+        $this->boot();
+        $this->runCallback('setUp', [
+            'story' => $this,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * End the test
+     */
+    public function end(): self
+    {
+        $args = [
+            'story' => $this,
+        ];
+
+        try {
+            $this->assert();
+        } catch (Throwable $e) {
+            $args = array_replace($args, [
+                'e' => $e,
+                'exception' => $e,
+            ]);
+        }
+
+        $this->runCallback('tearDown', $args);
+
+        if (isset($e)) {
+            throw $e;
+        }
+
+        return $this;
     }
 
     /**
