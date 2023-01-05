@@ -128,6 +128,7 @@ trait HasTasks
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
 
+        $this->before($this->inheritFromParents('getBefore'));
         $this->after($this->inheritFromParents('getAfter'));
         
         $this->can = $this->inheritFromParents('getCan');
