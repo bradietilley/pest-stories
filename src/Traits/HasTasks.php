@@ -86,8 +86,16 @@ trait HasTasks
      */
     public function allTasks(): array
     {
+        $all = [];
+
         /** @var HasInheritance $this */
-        return $this->combineFromParents('getTasks');
+        foreach (array_reverse($this->getAncestors()) as $ancestor) {
+            foreach ($ancestor->getTasks() as $name => $args) {
+                $all[$name] = $args;
+            }
+        }
+
+        return $all;
     }
 
     public function inheritTasks(): void

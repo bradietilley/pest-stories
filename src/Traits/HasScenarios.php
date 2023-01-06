@@ -90,10 +90,21 @@ r
      */
     public function allScenarios(): array
     {
+        $all = [];
+
         /** @var HasInheritance $this */
-        return $this->combineFromParents('getScenarios');
+        foreach (array_reverse($this->getAncestors()) as $ancestor) {
+            foreach ($ancestor->getScenarios() as $name => $data) {
+                $all[$name] = $data;
+            }
+        }
+
+        return $all;
     }
 
+    /**
+     * Inherit all scenarios from this story's parent
+     */
     public function inheritScenarios(): void
     {
         $this->scenarios = $this->allScenarios();

@@ -48,6 +48,8 @@ trait HasCallbacks
 
     /**
      * Set a callback
+     * 
+     * @return $this
      */
     public function setCallback(string $name, ?Closure $callback): self
     {
