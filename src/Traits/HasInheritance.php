@@ -38,38 +38,6 @@ trait HasInheritance
         return $this;
     }
 
-    /**
-     * Combine all values from this current object, and from its parents.
-     */
-    public function combineFromParents(string $getterMethod): array
-    {
-        $instance = $this;
-        $all = Collection::make([]);
-
-        $instances = [];
-
-        while ($instance !== null) {
-            /** @var static $instance */
-            $instances[] = $instance;
-            $instance = $instance->getParent();
-        }
-
-        /** @var array<static> $instances */
-        $instances = array_reverse($instances);
-
-        foreach ($instances as $instance) {
-            $value = $instance->{$getterMethod}();
-
-            if (! is_iterable($value)) {
-                $value = [$value];
-            }
-
-            $all->push($value);
-        }
-
-        return $all->collapse()->all();
-    }
-
     public function inheritProperty(string $property, mixed $default = null): mixed
     {
         $instance = $this;
