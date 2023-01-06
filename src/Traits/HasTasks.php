@@ -21,13 +21,6 @@ trait HasTasks
      */
     protected array $tasks = [];
 
-    /**
-     * Tasks against this Story (including inheritance)
-     * 
-     * @var array<Task>
-     */
-    protected array $tasksRegistered = [];
-
     protected ?bool $can = null;
 
     /**
@@ -90,8 +83,8 @@ trait HasTasks
 
         /** @var HasInheritance $this */
         foreach (array_reverse($this->getAncestors()) as $ancestor) {
-            foreach ($ancestor->getTasks() as $name => $args) {
-                $all[$name] = $args;
+            foreach ($ancestor->getTasks() as $name => $task) {
+                $all[$name] = $task;
             }
         }
 
@@ -112,11 +105,11 @@ trait HasTasks
     {
         /** @var Story $this */
 
-        $this->tasksRegistered = Collection::make($this->tasks)
-            ->values()
+        $this->tasks = Collection::make($this->tasks)
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
-        foreach ($this->tasksRegistered as $task) {
+
+        foreach ($this->tasks as $task) {
             /** @var Task $task */
             $task->register($this, $this->getParameters());
         }
@@ -132,7 +125,7 @@ trait HasTasks
     public function bootTasks(): self
     {
         /** @var Story $this */
-        $tasks = $this->tasksRegistered;
+        $tasks = $this->tasks;
 
         if (empty($tasks)) {
             throw StoryBoardException::taskNotSpecified($this);

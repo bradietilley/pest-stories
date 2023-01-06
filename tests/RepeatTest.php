@@ -44,7 +44,6 @@ test('a scenario can be run multiple times', function () {
     ]);
 });
 
-
 test('a scenario can be run zero times', function () {
     $run = Collection::make();
    

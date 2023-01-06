@@ -53,4 +53,6 @@ function something()
 beforeEach(function () {
     Scenario::flush();
     Task::flush();
+    Story::flushIsolation();
+    StoryBoard::disableDatasets();
 });

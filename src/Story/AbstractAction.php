@@ -144,6 +144,8 @@ abstract class AbstractAction
      */
     public function register(Story $story, array $arguments = []): void
     {
+        $this->reset();
+
         $this->runCallback('register', $story->getParameters($arguments));
     }
 
@@ -201,5 +203,15 @@ abstract class AbstractAction
         }
 
         return $action;
+    }
+
+    /**
+     * Reset any properties modified by previous stories
+     */
+    public function reset(): self
+    {
+        $this->resetRepeater();
+
+        return $this;
     }
 }

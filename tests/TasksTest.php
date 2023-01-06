@@ -8,7 +8,7 @@ use BradieTilley\StoryBoard\Story\Task;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
-test('storyboard tasks are run when bootTaskss is run', function () {
+test('storyboard tasks are run when bootTasks is run', function () {
     $test = [
         'before' => [],
         'task' => [],

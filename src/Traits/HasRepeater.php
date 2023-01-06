@@ -60,4 +60,9 @@ trait HasRepeater
         // Continue repeating until repeats counter is repeatMax
         return ($this->repeatNum <= $this->repeatMax);
     }
+
+    public function resetRepeater(): void
+    {
+        $this->repeatNum = 0;
+    }
 }
