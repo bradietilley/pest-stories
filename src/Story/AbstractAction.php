@@ -7,6 +7,7 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
+use BradieTilley\StoryBoard\Traits\HasRepeater;
 use Closure;
 use Illuminate\Support\Str;
 
@@ -15,6 +16,7 @@ abstract class AbstractAction
     use HasName;
     use HasOrder;
     use HasCallbacks;
+    use HasRepeater;
 
     protected static array $stored = [];
 
@@ -152,13 +154,19 @@ abstract class AbstractAction
      */
     public function boot(Story $story, array $arguments = []): mixed
     {
-        $this->runCallback('boot', $story->getParameters($arguments));
+        $result = null;
 
-        if (! $this->hasCallback('generator')) {
-            throw static::generatorNotFound($this->getName());
+        while ($this->repeating()) {
+            $this->runCallback('boot', $story->getParameters($arguments));
+
+            if (! $this->hasCallback('generator')) {
+                throw static::generatorNotFound($this->getName());
+            }
+
+            $result = $this->runCallback('generator', $story->getParameters($arguments));
         }
 
-        return $this->runCallback('generator', $story->getParameters($arguments));
+        return $result;
     }
 
     /**
