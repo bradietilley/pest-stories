@@ -284,7 +284,8 @@ test('you may create a story with an assertion and unset the assertion for a chi
         '[Can] parent child can implicit',
         '[Can] parent child can explicit',
         '[Cannot] parent child cannot explicit',
-        '[Can] parent child unset grandchild null implicit',
+        // This should have no [Can]/[Cannot] as it was reset to have no assertion
+        'parent child unset grandchild null implicit',
         '[Can] parent child unset grandchild can explicit',
         '[Cannot] parent child unset grandchild cannot explicit',
     ];

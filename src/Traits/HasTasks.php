@@ -63,30 +63,12 @@ trait HasTasks
     }
 
     /**
-     * Get the Before callback
-     */
-    public function getBefore(): ?Closure
-    {
-        /** @var HasTasks|HasCallbacks $this */
-        return $this->getCallback('before');
-    }
-
-    /**
      * @return $this
      */
     public function after(?Closure $after): self
     {
         /** @var HasTasks|HasCallbacks $this */
         return $this->setCallback('after', $after);
-    }
-
-    /**
-     * Get the After callback
-     */
-    public function getAfter(): ?Closure
-    {
-        /** @var HasTasks|HasCallbacks $this */
-        return $this->getCallback('after');
     }
 
     /**
@@ -121,23 +103,11 @@ trait HasTasks
     public function registerTasks(): self
     {
         /** @var Story $this */
-        $tasks = $this->allTasks();
 
-        $this->tasksRegistered = Collection::make($tasks)
+        $this->tasksRegistered = Collection::make($this->tasks)
             ->values()
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
-
-        $this->before($this->inheritFromParents('getBefore'));
-        $this->after($this->inheritFromParents('getAfter'));
-        
-        $this->can = $this->inheritFromParents('getCan');
-        
-        $this->check(
-            can: $this->inheritFromParents('getCanCallback'),
-            cannot: $this->inheritFromParents('getCannotCallback'),
-        );
-
         foreach ($this->tasksRegistered as $task) {
             /** @var Task $task */
             $task->register($this, $this->getParameters());
@@ -237,37 +207,9 @@ trait HasTasks
     /**
      * Get the 'can' / 'cannot' flag for this story
      */
-    public function getCan(): ?bool
+    public function itCan(): ?bool
     {
         return $this->can;
-    }
-
-    /**
-     * Get the halt flag for the 'can' property.
-     */
-    public function getCanHalt(): bool
-    {
-        return $this->canHalt;
-    }
-
-    /**
-     * Get the callback that detmerines if the task passed
-     * when the story is expected to pass.
-     */
-    public function getCanCallback(): ?Closure
-    {
-        /** @var HasCallbacks|HasTasks $this */
-        return $this->getCallback('can');
-    }
-
-    /**
-     * Get the callback that detmerines if the task failed
-     * when the story is expected to fail.
-     */
-    public function getCannotCallback(): ?Closure
-    {
-        /** @var HasCallbacks|HasTasks $this */
-        return $this->getCallback('cannot');
     }
 
     /**

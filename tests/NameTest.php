@@ -2,6 +2,7 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
+use Illuminate\Support\Collection;
 
 test('a story can be given a name using different shortcuts', function () {
     $story = StoryBoard::make()
@@ -67,3 +68,75 @@ test('a storyboard will not prefix its story names with the parent name when dat
     StoryBoard::disableDatasets();
 });
 
+test('can inherit name from parents', function () {
+    $story = StoryBoard::make('parent')
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->stories([
+            $child1 = Story::make('child 1'),
+            Story::make('child 2')->stories([
+                $grandchild1 = Story::make('grandchild 1'),
+            ]),
+            Story::make()->stories([
+                $grandchild2 = Story::make('grandchild 2'),
+            ]),
+        ]);
+
+    // Disable datasets
+    StoryBoard::disableDatasets();
+
+    $story->storiesAll;
+
+    // Names should be what we're expecting
+    $name = Collection::make();
+    $name[] = $child1->getFullName();
+    $name[] = $grandchild1->getFullName();
+    $name[] = $grandchild2->getFullName();
+
+    expect($name->toArray())->toBe([
+        'parent child 1',
+        'parent child 2 grandchild 1',
+        'parent grandchild 2',
+    ]);
+
+    // Try inherit it again
+    $child1->inheritName();
+    $grandchild1->inheritName();
+    $grandchild2->inheritName();
+
+    // Names should be what we're expecting
+    $name = Collection::make();
+    $name[] = $child1->getFullName();
+    $name[] = $grandchild1->getFullName();
+    $name[] = $grandchild2->getFullName();
+
+    expect($name->toArray())->toBe([
+        'parent child 1',
+        'parent child 2 grandchild 1',
+        'parent grandchild 2',
+    ]);
+
+    // Enable datasets (should change the name)
+    StoryBoard::enableDatasets();
+
+    // Try inherit it again
+    $child1->inheritName();
+    $grandchild1->inheritName();
+    $grandchild2->inheritName();
+
+    // Names should be what we're expecting
+    $name = Collection::make();
+    $name[] = $child1->getFullName();
+    $name[] = $grandchild1->getFullName();
+    $name[] = $grandchild2->getFullName();
+
+    expect($name->toArray())->toBe([
+        'child 1',
+        'child 2 grandchild 1',
+        'grandchild 2',
+    ]);
+
+    // Disable datasets for remainder of tests
+    StoryBoard::disableDatasets();
+});

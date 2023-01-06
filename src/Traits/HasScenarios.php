@@ -82,16 +82,6 @@ r
     }
 
     /**
-     * Get a compiled list of all registered scenarios (including inheritance)
-
-     * @return array<string,Story|array> 
-     */
-    public function registeredScenarios(): array
-    {
-        return $this->registeredScenarios;
-    }
-
-    /**
      * Get all scenarios for this story, including those inherited from parents
      *
      * @requires HasInheritance

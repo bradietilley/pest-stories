@@ -58,7 +58,7 @@ abstract class StoryBoardException extends Exception
 
     public static function assertionCheckerNotFound(Story $story): AssertionCheckerNotFoundException
     {
-        $term = $story->getCan() ? 'can' : 'cannot';
+        $term = $story->itCan() ? 'can' : 'cannot';
 
         return new AssertionCheckerNotFoundException(
             sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),

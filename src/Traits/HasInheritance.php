@@ -39,47 +39,6 @@ trait HasInheritance
     }
 
     /**
-     * Get a value from this current object, or from its closest parent.
-
-     *
-     * @param  Closure|null  $inheritsWhen
-     *                        When null, the value will be inherited from the parent when the resolved value is not null
-     *                        When closure, the value will be inherited from the parent when this callback returns true
-     */
-    public function inheritFromParents(string $getterMethod, Closure|null $inheritsWhen = null, mixed $default = null): mixed
-    {
-        $instance = $this;
-
-        $haltGetterMethod = $getterMethod . 'Halt';
-        $haltGetterMethodExists = method_exists($this, $haltGetterMethod);
-
-        while ($instance !== null) {
-            /** @var static $instance */
-            $value = $instance->{$getterMethod}();
-            $passes = ($inheritsWhen instanceof Closure) ? $inheritsWhen($this, $value) : ($value !== null);
-
-            // If at first it fails (is null, etc), check to see if we should halt the lookup
-            if ($passes === false) {
-                // if the halt flag method exists (e.g. 'getCan' -> 'getCanHalt')
-                if ($haltGetterMethodExists) {
-                    // if the halt flag is true then we should take the value as-is, even if it's null.
-                    if ($instance->{$haltGetterMethod}() === true) {
-                        $passes = true;
-                    }
-                }
-            }
-
-            if ($passes === true) {
-                return $value;
-            }
-
-            $instance = $instance->getParent();
-        }
-
-        return $default;
-    }
-
-    /**
      * Combine all values from this current object, and from its parents.
      */
     public function combineFromParents(string $getterMethod): array
@@ -111,25 +70,21 @@ trait HasInheritance
         return $all->collapse()->all();
     }
 
-    public function inheritProperty(string $property, ?Closure $inheritsWhen = null, mixed $default = null): mixed
+    public function inheritProperty(string $property, mixed $default = null): mixed
     {
         $instance = $this;
 
         while ($instance !== null) {
             $value = $instance->getProperty($property);
+            $halts = $instance->getPropertyOptional($property . 'Halt', false);
 
-            if ($inheritsWhen === null) {
-                // Inherit when not null
+            if ($value === null && $halts) {
+                return null;
+            }
 
-                if ($value !== null) {
-                    return $value;
-                }
-            } else {
-                // Inherit when not closure returns true
-
-                if ($inheritsWhen($value)) {
-                    return $value;
-                }
+            // Inherit when not null
+            if ($value !== null) {
+                return $value;
             }
 
             $instance = $instance->getParent();
@@ -144,6 +99,14 @@ trait HasInheritance
     public function getProperty(string $property): mixed
     {
         return $this->{$property};
+    }
+
+    /**
+     * Get a property from this object
+     */
+    public function getPropertyOptional(string $property, mixed $default = null): mixed
+    {
+        return property_exists($this, $property) ? $this->getProperty($property) : $default;
     }
 
     /**

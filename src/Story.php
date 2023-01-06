@@ -194,7 +194,7 @@ class Story
                 /** @var Story $story */
                 /** @var TestCase $this */
     
-                $story->setTest($this)->start()->end();
+                $story->setTest($this)->run();
             },
         ];
 
@@ -274,26 +274,17 @@ class Story
     }
 
     /**
-     * Start the test
+     * Run the full test assertion (after setTest)
      */
-    public function start(): self
+    public function run(): self
     {
         $this->boot();
-        $this->runCallback('setUp', [
-            'story' => $this,
-        ]);
 
-        return $this;
-    }
-
-    /**
-     * End the test
-     */
-    public function end(): self
-    {
         $args = [
             'story' => $this,
         ];
+
+        $this->runCallback('setUp', $args);
 
         try {
             $this->assert();
