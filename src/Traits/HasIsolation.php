@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 trait HasIsolation
 {
-    protected static array $isolation = [];
+    protected static array $isolationStories = [];
 
     private ?string $isolationId = null;
 
@@ -15,7 +15,7 @@ trait HasIsolation
      */
     public static function flushIsolation(): void
     {
-        static::$isolation = [];
+        static::$isolationStories = [];
     }
 
     /**
@@ -25,11 +25,7 @@ trait HasIsolation
      */
     public function isolate(): self
     {
-        $isolationGroup = static::isolationGroup();
-        $isolationId = $this->isolationId();
-
-        static::$isolation[$isolationGroup] ??= [];
-        static::$isolation[$isolationGroup][] = $isolationId;
+        static::$isolationStories[] = $this->isolationId();
 
         return $this;
     }
@@ -39,31 +35,34 @@ trait HasIsolation
      */
     public function isolationEnabled(): bool
     {
-        $isolationGroup = static::isolationGroup();
+        return !empty(static::$isolationStories);
+    }
 
-        return !empty(static::$isolation[$isolationGroup]);
+    public function inheritIsolation(): void
+    {
+        /** @var self|HasInheritance $this */
+
+        foreach ($this->getAncestors() as $ancestor) {
+            if ($ancestor === $this) {
+                continue;
+            }
+
+            if ($ancestor->inIsolation()) {
+                $this->isolate();
+            }
+        }
     }
 
     /**
      * Is this instance in the isolation group?
-     * i.e. if the group has isolation enabled, should this instance run?
+     * i.e. should this instance run?
      * 
      * @requires HasInheritance
      */
     public function inIsolation(): bool
     {
         /** @var HasIsolation|HasInheritance $this */
-        $isolationGroup = static::isolationGroup();
-
-        $isolationParents = $this->combineFromParents('isolationId');
-
-        foreach ($isolationParents as $isolationId) {
-            if (in_array($isolationId, static::$isolation[$isolationGroup] ?? [])) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($this->isolationId(), static::$isolationStories);
     }
 
     /**
@@ -78,16 +77,8 @@ trait HasIsolation
     /**
      * Get a unique ID for this instance
      */
-    protected function isolationId(): string
+    public function isolationId(): string
     {
         return $this->isolationId ??= Str::random(64);
-    }
-
-    /**
-     * Get the group key to use to isolate this class.
-     */
-    protected static function isolationGroup(): string
-    {
-        return static::class;
     }
 }

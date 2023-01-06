@@ -120,16 +120,17 @@ class Story
      */
     public function register(): self
     {
-        if ($this->skipDueToIsolation()) {
-            return $this;
-        }
-
         if ($this->registered) {
             return $this;
         }
 
         $this->registered = true;
         $this->inherit();
+        
+        if ($this->skipDueToIsolation()) {
+            return $this;
+        }
+
         $this->registerScenarios();
         $this->registerTasks();
 
@@ -256,6 +257,12 @@ class Story
         }
 
         $this->inherited = true;
+        $this->inheritIsolation();
+
+        if ($this->skipDueToIsolation()) {
+            return $this;
+        }
+
         $this->inheritName();
         $this->inheritData();
         $this->inheritScenarios();
