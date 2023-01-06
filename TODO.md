@@ -25,8 +25,6 @@
     - Example: you want to quickly ctrl+c and ctrl+f to find the exact story, and/or to easily isolate it natively in pest/phpunit using `--filter="89c1b6a6d134"`
     - Should all prefixes be resolved first to find the longest one, and then have all other prefixes padded to match the same length?
 - Medium: Add `->repeat()` to actions to easily repeat the same code several times, for scenarios where you wish to test 429 errors, or something similar.
-- High: Add `->clone()` to duplicate the underlying action with a new randomised name, allowing for varying logic/naming/ordering without affecting the primary action.
-- High: Add `setUp` and `tearDown` methods to Story to allows for callbacks to be run before registration and after assertions respectively
 - Low: Allow no expectation (no can/cannot) -- default to can?
     - Concern: weakens integrity of tests by allowing tests to slip by the wayside.
 - High: Add bulk `->set()` support for variables
