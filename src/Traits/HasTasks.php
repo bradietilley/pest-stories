@@ -224,6 +224,7 @@ trait HasTasks
      * Run the assertions
      *
      * @requires Story
+     * @return $this
      */
     public function assert(): self
     {

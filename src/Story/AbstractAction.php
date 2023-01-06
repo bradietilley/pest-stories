@@ -27,6 +27,22 @@ abstract class AbstractAction
     }
 
     /**
+     * Generate a new name when cloned
+     */
+    public function __clone()
+    {
+        $this->__cloneName();
+    }
+
+    /**
+     * Clone this action into another action with the same callbacks, order and append name
+     */
+    public function clone(): static
+    {
+        return (clone $this);
+    }
+
+    /**
      * Set the generator
      * 
      * @return $this 

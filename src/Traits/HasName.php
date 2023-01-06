@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
+use Illuminate\Support\Str;
 
 /**
  * @property ?string $name
@@ -11,6 +12,11 @@ use BradieTilley\StoryBoard\StoryBoard;
 trait HasName
 {
     protected array $fullName = [];
+
+    public function __cloneName(): void
+    {
+        $this->name = Str::random(32);
+    }
 
     /**
      * Alias for setName()
