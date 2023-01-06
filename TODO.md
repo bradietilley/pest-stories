@@ -27,6 +27,4 @@
 - Medium: Add `->repeat()` to actions to easily repeat the same code several times, for scenarios where you wish to test 429 errors, or something similar.
 - Low: Allow no expectation (no can/cannot) -- default to can?
     - Concern: weakens integrity of tests by allowing tests to slip by the wayside.
-- High: Add bulk `->set()` support for variables
-    - If key is array, then recursively set
 - Medium: Add `->timeout(int $seconds)` to control a maximum amount of time a test should take to execute 
