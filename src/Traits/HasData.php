@@ -12,8 +12,14 @@ trait HasData
     /**
      * Set a variable or scenario result
      */
-    public function setData(string $key, mixed $value): static
+    public function setData(string|array $key, mixed $value = null): static
     {
+        if (is_array($key)) {
+            $this->data = array_replace($this->data, $key);
+
+            return $this;
+        }
+
         $this->data[$key] = $value;
 
         return $this;
@@ -46,7 +52,7 @@ trait HasData
     /**
      * Alias for ::setData($key, $value)
      */
-    public function set(string $key, mixed $value): static
+    public function set(string|array $key, mixed $value = null): static
     {
         return $this->setData($key, $value);
     }
