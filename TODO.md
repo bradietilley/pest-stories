@@ -24,7 +24,6 @@
     - Useful when the dev wishes to have each test prefixed with a unique identifier (e.g. issue code, client support ticket, etc)
     - Example: you want to quickly ctrl+c and ctrl+f to find the exact story, and/or to easily isolate it natively in pest/phpunit using `--filter="89c1b6a6d134"`
     - Should all prefixes be resolved first to find the longest one, and then have all other prefixes padded to match the same length?
-- Medium: Add `->repeat()` to actions to easily repeat the same code several times, for scenarios where you wish to test 429 errors, or something similar.
 - Low: Allow no expectation (no can/cannot) -- default to can?
     - Concern: weakens integrity of tests by allowing tests to slip by the wayside.
 - Medium: Add `->timeout(int $seconds)` to control a maximum amount of time a test should take to execute 
