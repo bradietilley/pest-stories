@@ -153,7 +153,9 @@ class Timer
     public function run()
     {
         if ($this->alreadyRun('run')) {
+            // @codeCoverageIgnoreStart
             return;
+            // @codeCoverageIgnoreEnd
         }
 
         pcntl_signal(SIGALRM, function ($signal) {
