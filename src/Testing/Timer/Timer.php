@@ -20,6 +20,8 @@ class Timer
     
     private ?int $timeRemaining = null;
 
+    private ?Throwable $exception = null;
+
     public function __construct(
         Closure $callback,
         ?Closure $timedout = null,
@@ -130,11 +132,18 @@ class Timer
         return $this;
     }
 
+    /**
+     * Start recording the time
+     */
     private function start(): void
     {
         $this->start = $this->getCurrentMicroseconds();
     }
 
+    /**
+     * Finish recording the time, and calculate the
+     * time taken to execute the task
+     */
     private function end(): void
     {
         $this->end = $this->getCurrentMicroseconds();
@@ -142,6 +151,9 @@ class Timer
         $this->recordTime();
     }
 
+    /**
+     * Get the current time in microseconds
+     */
     private function getCurrentMicroseconds(): int
     {
         return (int) (microtime(true) * 1000000);
@@ -198,6 +210,7 @@ class Timer
             $response = $this->runCallback('finished', $args);
         } catch (TimerUpException $e) {
             $this->end();
+            $this->exception = $e;
 
             $result = TimerResult::TIMED_OUT;
 
@@ -214,14 +227,10 @@ class Timer
             }
         } catch (Throwable $e) {
             $this->end();
+            $this->exception = $e;
 
             $result = TimerResult::FAILED;
             $args['exit'] = $result;
-
-            // Stop timer (get seconds remaining)
-            $remain = pcntl_alarm(0);
-            // Record the time taken to execute
-            $this->timeTaken = $this->timeout - $remain;
 
             $this->runCallback('errored', $args);
         }
@@ -292,5 +301,13 @@ class Timer
     public function getEnd(): ?int
     {
         return $this->end;
+    }
+
+    /**
+     * Get the exception that was thrown in the task, if any
+     */
+    public function getException(): ?Throwable
+    {
+        return $this->exception;
     }
 }

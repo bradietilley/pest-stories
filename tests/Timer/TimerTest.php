@@ -3,6 +3,7 @@
 use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
+use Illuminate\Support\Collection;
 
 test('timer unit can convert between units', function () {
     /**
@@ -84,3 +85,35 @@ test('timer will rethrow a TimerUpException if thrown within the timedOut callba
 
     $timer->run();
 })->throws(ExampleExtendedTimerUpException::class);
+
+test('timer can rethrow throwables if thrown within the primary callback', function (bool $rethrow) {
+    $timer = Timer::make(
+        callback: function () {
+            throw new InvalidArgumentException('Test invalid arg');
+        },
+        rethrow: $rethrow,
+        timeout: 1
+    );
+
+    
+    try {
+        $timer->run();
+        
+        if ($rethrow) {
+            $this->fail('rethrowing means the invalid arg exception should have been thrown');
+        } else {
+            expect($timer->getException())->not()->toBeNull();
+        }
+    } catch (InvalidArgumentException $e) {
+        expect($timer->getException())->not()->toBeNull();
+
+        if (! $rethrow) {
+            $this->fail('not rethrowing = exception should not be thrown');
+        }
+
+        expect($e->getMessage())->toBe('Test invalid arg');
+    }
+})->with([
+    'rethrow enabled' => true,
+    'rethrow disabled' => false,
+]);
