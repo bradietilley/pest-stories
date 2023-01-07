@@ -135,7 +135,9 @@ class Story
         }
 
         if ($this->alreadyRun('register')) {
+            // @codeCoverageIgnoreStart
             return $this;
+            // @codeCoverageIgnoreEnd
         }
 
         $this->registerScenarios();
@@ -158,7 +160,9 @@ class Story
         }
 
         if ($this->alreadyRun('boot')) {
+            // @codeCoverageIgnoreStart
             return $this;
+            // @codeCoverageIgnoreEnd
         }
 
         $this->bootScenarios();
@@ -259,7 +263,9 @@ class Story
     public function inherit(): self
     {
         if ($this->alreadyRun('inherited')) {
+            // @codeCoverageIgnoreStart
             return $this;
+            // @codeCoverageIgnoreEnd
         }
 
         $this->inheritIsolation();
@@ -290,11 +296,8 @@ class Story
     {
         try {
             if ($this->timeoutEnabled && $this->timeout > 0) {
-                $timer = Timer::make(fn () => $this->fullRun());
-    
-                $timer->rethrow();
-                $timer->timeout($this->timeout, TimerUnit::MICROSECOND);
-                $timer->run();
+                $this->timer = $this->createTimer(fn () => $this->fullRun());
+                $this->timer->run();
             } else {
                 $this->fullRun();
             }
@@ -310,7 +313,12 @@ class Story
                 message: $message,
             );
 
+            /**
+             * Fallback to rethrowing the exception
+             */
+            // @codeCoverageIgnoreStart
             throw $e;
+            // @codeCoverageIgnoreEnd
         }
 
         return $this;

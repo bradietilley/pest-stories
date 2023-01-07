@@ -1,10 +1,112 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\StoryBoard;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\ExpectationFailedException;
+
+test('a story can be given a timeout and it will yield the correct timeout', function () {
+    $tests = [
+        // Seconds
+        [
+            'timeout' => 1,
+            'unit' => TimerUnit::SECOND,
+            'micro' => 1000000,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 1.01,
+            'unit' => TimerUnit::SECOND,
+            'micro' => 1010000,
+            'pcntl' => 2,
+        ],
+        [
+            'timeout' => 1.999,
+            'unit' => TimerUnit::SECOND,
+            'micro' => 1999000,
+            'pcntl' => 2,
+        ],
+        [
+            'timeout' => 0.1,
+            'unit' => TimerUnit::SECOND,
+            'micro' => 100000,
+            'pcntl' => 1,
+        ],
+        // Milliseconds
+        [
+            'timeout' => 1,
+            'unit' => TimerUnit::MILLISECOND,
+            'micro' => 1000,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 10.5,
+            'unit' => TimerUnit::MILLISECOND,
+            'micro' => 10500,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 999,
+            'unit' => TimerUnit::MILLISECOND,
+            'micro' => 999000,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 1000,
+            'unit' => TimerUnit::MILLISECOND,
+            'micro' => 1000000,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 1001,
+            'unit' => TimerUnit::MILLISECOND,
+            'micro' => 1001000,
+            'pcntl' => 2,
+        ],
+        // Microseconds
+        [
+            'timeout' => 1,
+            'unit' => TimerUnit::MICROSECOND,
+            'micro' => 1,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 10,
+            'unit' => TimerUnit::MICROSECOND,
+            'micro' => 10,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 999,
+            'unit' => TimerUnit::MICROSECOND,
+            'micro' => 999,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 200000,
+            'unit' => TimerUnit::MICROSECOND,
+            'micro' => 200000,
+            'pcntl' => 1,
+        ],
+        [
+            'timeout' => 1000001,
+            'unit' => TimerUnit::MICROSECOND,
+            'micro' => 1000001,
+            'pcntl' => 2,
+        ],
+    ];
+
+    foreach ($tests as $test) {
+        $story = Story::make('timeout test')->timeout($test['timeout'], $test['unit']);
+        expect($story->getTimeoutMicroseconds())->toBe($test['micro']);
+
+        $timer = $story->createTimer(fn () => null);
+        expect($timer->getAlarmTimeout())->toBe($test['pcntl']);
+    }
+
+});
 
 test('a story with a timeout will pass if it does not reach the timeout', function () {
     $ran = Collection::make();
@@ -114,5 +216,55 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
      */
     expect($ran->all())->toBe([
         'test',
+    ]);
+});
+
+test('a timeout can be inherited from parents with no timeout override on children', function () {
+    $ran = Collection::make();
+
+    $story = StoryBoard::make('parent')
+        ->can()
+        ->check(fn () => null)
+        ->task(function (Story $story) use ($ran) {
+            usleep(20002);
+
+            $ran[] = $story->getName();
+        })
+        ->timeout(0.001)
+        ->stories([
+            $child1 = Story::make('child 1 inherit 0.001 timeout'),
+            $child2 = Story::make('child 2 override 0.002 timeout')->timeout(0.002),
+            $child3 = Story::make('child 3 override without timeout')->noTimeout(),
+            Story::make('child 4 override no timeout')->noTimeout()->stories([
+                $child4 = Story::make('child 4a'),
+            ]),
+        ]);
+    
+    $story->storiesAll;
+
+    try {
+        $child1->run();
+        $this->fail('Story should have timed out');
+    } catch (ExpectationFailedException $e) {
+        expect($e->getMessage())
+            ->toStartWith('Failed asserting that this task would complete in less than 0.001 seconds.');
+    }
+
+    try {
+        $child2->run();
+        $this->fail('Story should have timed out');
+    } catch (ExpectationFailedException $e) {
+        expect($e->getMessage())
+            ->toStartWith('Failed asserting that this task would complete in less than 0.002 seconds.');
+    }
+
+    $child3->run();
+    $child4->run();
+
+    expect($ran->toArray())->toBe([
+        'child 1 inherit 0.001 timeout',
+        'child 2 override 0.002 timeout',
+        'child 3 override without timeout',
+        'child 4a',
     ]);
 });

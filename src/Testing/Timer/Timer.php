@@ -174,7 +174,8 @@ class Timer
 
         try {
             // Start timer
-            pcntl_alarm($this->getAlarmTimeout());
+            $timeout = $this->getAlarmTimeout();
+            pcntl_alarm($timeout);
             
             // Run task that may take a while
             $this->start();
@@ -230,11 +231,6 @@ class Timer
         }
 
         return $response;
-    }
-
-    public function __destruct()
-    {
-        $this->run();
     }
 
     /**

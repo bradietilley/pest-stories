@@ -2,13 +2,18 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
+use Closure;
+use Throwable;
 
 trait HasTimeout
 {
     protected ?int $timeout = null;
 
     protected ?bool $timeoutEnabled = null; 
+
+    private ?Timer $timer = null;
 
     /**
      * Set a timeout for this story.
@@ -54,10 +59,42 @@ trait HasTimeout
 
             // If the child/parent has explicitly stated a timeout then set the timeout and return
             if ($enabled === true) {
-                $this->timeout($level->getProperty('timeout'));
+                $this->timeout(
+                    timeout: $level->getProperty('timeout'),
+                    unit: TimerUnit::MICROSECOND,
+                );
 
                 return;
             }
         }
+    }
+
+    /**
+     * Get the timeout (in microseconds)
+     */
+    public function getTimeoutMicroseconds(): int
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * Get the timer used for this story
+     */
+    public function getTimer(): ?Timer
+    {
+        return $this->timer;
+    }
+
+    /**
+     * Create a timer for this story
+     */
+    public function createTimer(Closure $callback): Timer
+    {
+        $timer = Timer::make($callback);
+    
+        $timer->rethrow();
+        $timer->timeout($this->getTimeoutMicroseconds(), TimerUnit::MICROSECOND);
+
+        return $timer;
     }
 }
