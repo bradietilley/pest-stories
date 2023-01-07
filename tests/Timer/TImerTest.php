@@ -1,6 +1,8 @@
 <?php
 
+use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 
 test('timer unit can convert between units', function () {
     /**
@@ -68,3 +70,17 @@ test('timer unit can format the label for various times', function () {
         ->and(TimerUnit::MICROSECOND->format(2))->toBe('2 microseconds')
         ->and(TimerUnit::MICROSECOND->format(2.1))->toBe('2.1 microseconds');
 });
+
+class ExampleExtendedTimerUpException extends TimerUpException
+{
+}
+
+test('timer will rethrow a TimerUpException if thrown within the timedOut callback', function () {
+    $timer = Timer::make(fn () => usleep(5001))
+        ->timeout(5000, TimerUnit::MICROSECOND)
+        ->timedout(function (Timer $timer, $e) {
+            throw new ExampleExtendedTimerUpException($timer);
+        });
+
+    $timer->run();
+})->throws(ExampleExtendedTimerUpException::class);
