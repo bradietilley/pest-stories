@@ -290,13 +290,15 @@ class Story
     public function run(): self
     {
         try {
-            $timer = Timer::make(
-                callback: fn () => $this->fullRun(),
-            );
-
-            $timer->rethrow();
-            $timer->timeout($this->timeout, TimerUnit::MICROSECOND);
-            $timer->run();
+            if ($this->timeoutEnabled && $this->timeout > 0) {
+                $timer = Timer::make(fn () => $this->fullRun());
+    
+                $timer->rethrow();
+                $timer->timeout($this->timeout, TimerUnit::MICROSECOND);
+                $timer->run();
+            } else {
+                $this->fullRun();
+            }
         } catch (TimerUpException $e) {
             $taken = $e->getTimeTaken();
             $timeout = $e->getTimeout();
