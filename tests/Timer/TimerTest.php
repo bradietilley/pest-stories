@@ -117,3 +117,46 @@ test('timer can rethrow throwables if thrown within the primary callback', funct
     'rethrow enabled' => true,
     'rethrow disabled' => false,
 ]);
+
+test('a timer that fails calls the errored and after callback', function () {
+    $ran = Collection::make();
+
+    Timer::make(
+        function () use ($ran) {
+            $ran[] = 'callback';
+
+            throw new InvalidArgumentException('test error');
+        },
+        errored: fn () => $ran[] = 'errored',
+        timedout: fn () => $ran[] = 'timedout',
+        after: fn () => $ran[] = 'after',
+        rethrow: false,
+    )->run();
+
+    expect($ran->toArray())->toBe([
+        'callback',
+        'errored',
+        'after',
+    ]);
+});
+
+test('a timer that times out calls the timedout and after callback', function () {
+    $ran = Collection::make();
+
+    Timer::make(
+        function () use ($ran) {
+            $ran[] = 'callback';
+            usleep(1001);
+        },
+        errored: fn () => $ran[] = 'errored',
+        timedout: fn () => $ran[] = 'timedout',
+        after: fn () => $ran[] = 'after',
+        rethrow: false,
+    )->timeout(0.001)->run();
+
+    expect($ran->toArray())->toBe([
+        'callback',
+        'timedout',
+        'after',
+    ]);
+});
