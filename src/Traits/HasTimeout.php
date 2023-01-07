@@ -2,21 +2,24 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
+
 trait HasTimeout
 {
-    protected ?int $timeout = null; 
+    protected ?int $timeout = null;
+
     protected ?bool $timeoutEnabled = null; 
 
     /**
-     * Set a timeout for this story
+     * Set a timeout for this story.
+     * Any value under 1 millisecond will set to 1 millisecond.
      * 
-     * @param int $timeout in seconds
      * @return $this 
      */
-    public function timeout(int $timeout): self
+    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): self
     {
         $this->timeoutEnabled = true;
-        $this->timeout = max(1, $timeout);
+        $this->timeout = $unit->toMicroseconds($timeout, $unit);
 
         return $this;
     }

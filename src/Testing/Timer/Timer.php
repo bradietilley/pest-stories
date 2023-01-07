@@ -12,7 +12,13 @@ class Timer
 
     private bool $ran = false;
     
+    private ?int $start = null;
+    
+    private ?int $end = null;
+    
     private ?int $timeTaken = null;
+    
+    private ?int $timeRemaining = null;
 
     public function __construct(
         Closure $callback,
@@ -22,7 +28,11 @@ class Timer
         ?Closure $after = null,
         private int $timeout = 60,
         private bool $rethrow = true,
+        TimerUnit $unit = TimerUnit::SECOND,
     ) {
+        // Convert the timeout (potentially seconds) to microseconds
+        $this->timeout($timeout, $unit);
+
         $this->setCallback('callback', $callback);
         $this->setCallback('timedout', $timedout);
         $this->setCallback('finished', $finished);
@@ -44,11 +54,12 @@ class Timer
     }
 
     /**
-     * Specify the timeout before the callback should be aborted.
+     * Specify the timeout before the callback should be aborted in one of several
+     * units (seconds, milliseconds, microseconds)
      */
-    public function timeout(int $timeout): self
+    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): self
     {
-        $this->timeout = max(1, $timeout);
+        $this->timeout = $unit->toMicroseconds($timeout);
 
         return $this;
     }
@@ -119,6 +130,23 @@ class Timer
         return $this;
     }
 
+    private function start(): void
+    {
+        $this->start = $this->getCurrentMicroseconds();
+    }
+
+    private function end(): void
+    {
+        $this->end = $this->getCurrentMicroseconds();
+
+        $this->recordTime();
+    }
+
+    private function getCurrentMicroseconds(): int
+    {
+        return (int) (microtime(true) * 1000000);
+    }
+
     /**
      * Run the timeout-bound callback
      */
@@ -148,18 +176,19 @@ class Timer
 
         try {
             // Start timer
-            pcntl_alarm($this->timeout);
-
+            pcntl_alarm($this->getAlarmTimeout());
+            
             // Run task that may take a while
+            $this->start();
             $this->runCallback('callback');
+            $this->end();
 
-            // Stop timer (get seconds remaining)
-            $remain = pcntl_alarm(0);
-            // Record the time taken to execute
-            $this->timeTaken = $this->timeout - $remain;
+            // Stop timer
+            pcntl_alarm(0);
 
-            // Temp BC
-            $args['seconds'] = $remain;
+            if ($this->getTimeRemaining() < 0) {
+                throw new TimerUpException($this);
+            }
 
             // Successful exit
             $args['exit'] = $result;
@@ -167,8 +196,7 @@ class Timer
             // Run finished callback
             $response = $this->runCallback('finished', $args);
         } catch (TimerUpException $e) {
-            // Record the time taken to execute
-            $this->timeTaken = $this->timeout;
+            $this->end();
 
             $result = TimerResult::TIMED_OUT;
 
@@ -184,6 +212,8 @@ class Timer
                 $this->rethrow();
             }
         } catch (Throwable $e) {
+            $this->end();
+
             $result = TimerResult::FAILED;
             $args['exit'] = $result;
 
@@ -210,7 +240,7 @@ class Timer
     }
 
     /**
-     * Get the amount of time specified as the maximum (timeout)
+     * Get the amount of time (microseconds) specified as the maximum (timeout)
      */
     public function getTimeout(): int
     {
@@ -218,7 +248,16 @@ class Timer
     }
 
     /**
-     * Get the amount of time it had taken to complete the callback
+     * Record the time taken and remaining
+     */
+    private function recordTime(): void
+    {
+        $this->timeTaken = (int) ($this->end - $this->start);
+        $this->timeRemaining = (int) ($this->timeout - $this->timeTaken);
+    }
+
+    /**
+     * Get the amount of time (microseconds) it had taken to complete the callback
      */
     public function getTimeTaken(): ?int
     {
@@ -226,10 +265,20 @@ class Timer
     }
 
     /**
-     * Get the amount of time left remaining after completing the callback
+     * Get the amount of time left remaining (microseconds) after completing the callback
      */
     public function getTimeRemaining(): ?int
     {
-        return $this->getTimeout() - $this->getTimeTaken();
+        return $this->timeRemaining;
+    }
+
+    /**
+     * Get the specified timeout as seconds (e.g. for pcntl alarm).
+     * 
+     * Always rounded up.
+     */
+    public function getAlarmTimeout(): int
+    {
+        return ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
     }
 }

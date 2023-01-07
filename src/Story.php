@@ -5,6 +5,7 @@ namespace BradieTilley\StoryBoard;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Testing\Timer\Timer;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
@@ -23,6 +24,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -290,29 +292,22 @@ class Story
         try {
             $timer = Timer::make(
                 callback: fn () => $this->fullRun(),
-                rethrow: true,
-                timeout: $this->timeoutEnabled ? $this->timeout : 0,
             );
+
+            $timer->rethrow();
+            $timer->timeout($this->timeout, TimerUnit::MICROSECOND);
             $timer->run();
         } catch (TimerUpException $e) {
-            $test = $this->getTest();
-            
             $taken = $e->getTimeTaken();
             $timeout = $e->getTimeout();
             $timeoutFormatted = $e->getTimeoutFormatted();
             $message = "Failed asserting that this task would complete in less than {$timeoutFormatted}.";
 
-            if ($test) {
-                $test->assertLessThanOrEqual(
-                    expected: $timeout,
-                    actual: $taken,
-                    message: $message,
-                );
-
-                $test->fail($message);
-            } else {
-                expect($taken)->toBeLessThanOrEqual($timeout);
-            }
+            Assert::assertLessThanOrEqual(
+                expected: $timeout,
+                actual: $taken,
+                message: $message,
+            );
 
             throw $e;
         }

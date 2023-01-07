@@ -77,10 +77,8 @@ class TimerUpException extends Exception
      */
     private function getSecondsFormatted(int $value): string
     {
-        return sprintf(
-            '%d second%s',
-            $value,
-            ($value === 1) ? '' : 's',
+        return TimerUnit::SECOND->format(
+            TimerUnit::MICROSECOND->toSeconds($value),
         );
     }
 }
