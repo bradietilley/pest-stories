@@ -127,11 +127,13 @@ test('a timer that fails calls the errored and after callback', function () {
 
             throw new InvalidArgumentException('test error');
         },
-        errored: fn () => $ran[] = 'errored',
-        timedout: fn () => $ran[] = 'timedout',
-        after: fn () => $ran[] = 'after',
         rethrow: false,
-    )->run();
+    )
+        ->finished(fn () => $ran[] = 'finished')
+        ->errored(fn () => $ran[] = 'errored')
+        ->timedout(fn () => $ran[] = 'timedout')
+        ->after(fn () => $ran[] = 'after')
+        ->run();
 
     expect($ran->toArray())->toBe([
         'callback',
@@ -148,15 +150,41 @@ test('a timer that times out calls the timedout and after callback', function ()
             $ran[] = 'callback';
             usleep(1001);
         },
-        errored: fn () => $ran[] = 'errored',
-        timedout: fn () => $ran[] = 'timedout',
-        after: fn () => $ran[] = 'after',
         rethrow: false,
-    )->timeout(0.001)->run();
+    )
+        ->timeout(0.001)
+        ->finished(fn () => $ran[] = 'finished')
+        ->errored(fn () => $ran[] = 'errored')
+        ->timedout(fn () => $ran[] = 'timedout')
+        ->after(fn () => $ran[] = 'after')
+        ->run();
 
     expect($ran->toArray())->toBe([
         'callback',
         'timedout',
+        'after',
+    ]);
+});
+
+test('a timer that passes calls the finished callback', function () {
+    $ran = Collection::make();
+
+    Timer::make(
+        function () use ($ran) {
+            $ran[] = 'callback';
+        },
+        rethrow: false,
+    )
+        ->timeout(1)
+        ->finished(fn () => $ran[] = 'finished')
+        ->errored(fn () => $ran[] = 'errored')
+        ->timedout(fn () => $ran[] = 'timedout')
+        ->after(fn () => $ran[] = 'after')
+        ->run();
+
+    expect($ran->toArray())->toBe([
+        'callback',
+        'finished',
         'after',
     ]);
 });
