@@ -3,15 +3,15 @@
 namespace BradieTilley\StoryBoard\Testing\Timer;
 
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
+use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
 use Throwable;
 
 class Timer
 {
     use HasCallbacks;
+    use RunOnce;
 
-    private bool $ran = false;
-    
     private ?int $start = null;
     
     private ?int $end = null;
@@ -152,11 +152,9 @@ class Timer
      */
     public function run()
     {
-        if ($this->ran) {
+        if ($this->alreadyRun('run')) {
             return;
         }
-
-        $this->ran = true;
 
         pcntl_signal(SIGALRM, function ($signal) {
             throw new TimerUpException($this);

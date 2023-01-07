@@ -18,6 +18,7 @@ use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
+use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -48,6 +49,7 @@ class Story
     use HasTasks;
     use HasTimeout;
     use Macroable;
+    use RunOnce;
 
     public readonly int $id;
 
@@ -126,14 +128,13 @@ class Story
      */
     public function register(): self
     {
-        if ($this->registered) {
+        $this->inherit();
+            
+        if ($this->skipDueToIsolation()) {
             return $this;
         }
 
-        $this->registered = true;
-        $this->inherit();
-        
-        if ($this->skipDueToIsolation()) {
+        if ($this->alreadyRun('register')) {
             return $this;
         }
 
@@ -156,11 +157,10 @@ class Story
             return $this;
         }
 
-        if ($this->booted) {
+        if ($this->alreadyRun('boot')) {
             return $this;
         }
-        
-        $this->booted = true;
+
         $this->bootScenarios();
         $this->bootTasks();
 
@@ -258,11 +258,10 @@ class Story
 
     public function inherit(): self
     {
-        if ($this->inherited) {
+        if ($this->alreadyRun('inherited')) {
             return $this;
         }
 
-        $this->inherited = true;
         $this->inheritIsolation();
 
         if ($this->skipDueToIsolation()) {
