@@ -6,6 +6,7 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\Task;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;

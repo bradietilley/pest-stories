@@ -4,6 +4,8 @@ namespace BradieTilley\StoryBoard;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
+use BradieTilley\StoryBoard\Testing\Timer\Timer;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
@@ -14,6 +16,7 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasScenarios;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTasks;
+use BradieTilley\StoryBoard\Traits\HasTimeout;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -41,6 +44,7 @@ class Story
     use HasScenarios;
     use HasStories;
     use HasTasks;
+    use HasTimeout;
     use Macroable;
 
     public readonly int $id;
@@ -269,6 +273,7 @@ class Story
         $this->inheritTasks();
         $this->inheritAssertions();
         $this->inheritCallbacks();
+        $this->inheritTimeout();
 
         return $this;
     }
@@ -280,10 +285,45 @@ class Story
         }
     }
 
+    public function run(): self
+    {
+        try {
+            $timer = Timer::make(
+                callback: fn () => $this->fullRun(),
+                rethrow: true,
+                timeout: $this->timeoutEnabled ? $this->timeout : 0,
+            );
+            $timer->run();
+        } catch (TimerUpException $e) {
+            $test = $this->getTest();
+            
+            $taken = $e->getTimeTaken();
+            $timeout = $e->getTimeout();
+            $timeoutFormatted = $e->getTimeoutFormatted();
+            $message = "Failed asserting that this task would complete in less than {$timeoutFormatted}.";
+
+            if ($test) {
+                $test->assertLessThanOrEqual(
+                    expected: $timeout,
+                    actual: $taken,
+                    message: $message,
+                );
+
+                $test->fail($message);
+            } else {
+                expect($taken)->toBeLessThanOrEqual($timeout);
+            }
+
+            throw $e;
+        }
+
+        return $this;
+    }
+
     /**
      * Run the full test assertion (after setTest)
      */
-    public function run(): self
+    public function fullRun(): self
     {
         $this->boot();
 
