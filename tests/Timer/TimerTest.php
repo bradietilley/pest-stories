@@ -86,6 +86,18 @@ test('timer will rethrow a TimerUpException if thrown within the timedOut callba
     $timer->run();
 })->throws(ExampleExtendedTimerUpException::class);
 
+test('timer will a TimerUpException with the timer used', function () {
+    $timer = Timer::make(fn () => usleep(1001))->timeout(0.001);
+    
+    try {
+        $timer->run();
+
+        $this->fail();
+    } catch (TimerUpException $e) {
+        expect($e->getTimer())->toBe($timer);
+    }
+});
+
 test('timer can rethrow throwables if thrown within the primary callback', function (bool $rethrow) {
     $timer = Timer::make(
         callback: function () {
@@ -127,8 +139,8 @@ test('a timer that fails calls the errored and after callback', function () {
 
             throw new InvalidArgumentException('test error');
         },
-        rethrow: false,
     )
+        ->dontRethrow()
         ->finished(fn () => $ran[] = 'finished')
         ->errored(fn () => $ran[] = 'errored')
         ->timedout(fn () => $ran[] = 'timedout')

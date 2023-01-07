@@ -35,40 +35,12 @@ class TimerUpException extends Exception
     }
 
     /**
-     * Get the amount of time left remaining after completing the callback
-     */
-    public function getTimeRemaining(): int
-    {
-        return $this->timer->getTimeRemaining();
-    }
-
-    /**
      * Get the amount of time specified as the maximum, formatted as "x seconds"
      */
     public function getTimeoutFormatted(): string
     {
         return $this->getSecondsFormatted(
             value: $this->getTimeout(),
-        );
-    }
-
-    /**
-     * Get the amount of time it had taken, formatted as "x seconds"
-     */
-    public function getTimeTakenFormatted(): string
-    {
-        return $this->getSecondsFormatted(
-            value: $this->getTimeTaken(),
-        );
-    }
-
-    /**
-     * Get the amount of time left remaining, formatted as "x seconds"
-     */
-    public function getTimeRemainingFormatted(): string
-    {
-        return $this->getSecondsFormatted(
-            value: $this->getTimeRemaining(),
         );
     }
 

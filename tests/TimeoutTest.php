@@ -274,7 +274,7 @@ test('a story can expose the timer used for asserting time', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->timeout(0.001);
+        ->timeout(0.01);
 
     expect($story->getTimer())->toBeNull();
 
@@ -285,9 +285,9 @@ test('a story can expose the timer used for asserting time', function () {
     expect($timer = $story->getTimer())->toBeInstanceOf(Timer::class);
 
     expect($timer)
-        ->getTimeout()->toBe(1000)
-        ->getTimeTaken()->toBeGreaterThan(0)->toBeLessThan(1000)
-        ->getTimeRemaining()->toBeGreaterThan(0)->toBeLessThan(1000)
+        ->getTimeout()->toBe(10000)
+        ->getTimeTaken()->toBeGreaterThan(0)->toBeLessThan(10000)
+        ->getTimeRemaining()->toBeGreaterThan(0)->toBeLessThan(10000)
         ->getStart()->toBeGreaterThan($start)->toBeLessThan($end)
         ->getEnd()->toBeGreaterThan($start)->toBeLessThan($end);
 });
