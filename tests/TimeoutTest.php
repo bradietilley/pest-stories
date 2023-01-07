@@ -2,8 +2,8 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
+use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
-use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -267,4 +267,27 @@ test('a timeout can be inherited from parents with no timeout override on childr
         'child 3 override without timeout',
         'child 4a',
     ]);
+});
+
+test('a story can expose the timer used for asserting time', function () {
+    $story = Story::make('timed test')
+        ->can()
+        ->task(fn () => null)
+        ->check(fn () => null)
+        ->timeout(0.001);
+
+    expect($story->getTimer())->toBeNull();
+
+    $start = microtime(true) * 1000000;
+    $story->run();
+    $end = microtime(true) * 1000000;
+
+    expect($timer = $story->getTimer())->toBeInstanceOf(Timer::class);
+
+    expect($timer)
+        ->getTimeout()->toBe(1000)
+        ->getTimeTaken()->toBeGreaterThan(0)->toBeLessThan(1000)
+        ->getTimeRemaining()->toBeGreaterThan(0)->toBeLessThan(1000)
+        ->getStart()->toBeGreaterThan($start)->toBeLessThan($end)
+        ->getEnd()->toBeGreaterThan($start)->toBeLessThan($end);
 });

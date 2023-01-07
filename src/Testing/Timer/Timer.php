@@ -275,4 +275,20 @@ class Timer
     {
         return ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
     }
+
+    /**
+     * Get the microtime that this task started
+     */
+    public function getStart(): ?int
+    {
+        return $this->start;
+    }
+
+    /**
+     * Get the microtime that this task finished
+     */
+    public function getEnd(): ?int
+    {
+        return $this->end;
+    }
 }
