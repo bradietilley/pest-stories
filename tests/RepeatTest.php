@@ -61,3 +61,22 @@ test('a scenario can be run zero times', function () {
         'task',
     ]);
 });
+
+test('a scenario can opt to not repeat (run once)', function () {
+    $run = Collection::make();
+   
+    Scenario::make('something')->as(fn () => $run[] = 'scenario')->dontRepeat();
+    
+    StoryBoard::make('story')
+        ->can()
+        ->check(fn () => null)
+        ->task(fn () => $run[] = 'task')
+        ->scenario('something')
+        ->boot()
+        ->assert();
+    
+    expect($run->toArray())->toBe([
+        'scenario',
+        'task',
+    ]);
+});
