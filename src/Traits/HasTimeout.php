@@ -16,7 +16,7 @@ trait HasTimeout
      * 
      * @return $this 
      */
-    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): self
+    public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): self
     {
         $this->timeoutEnabled = true;
         $this->timeout = $unit->toMicroseconds($timeout, $unit);

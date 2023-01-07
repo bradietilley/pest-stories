@@ -17,7 +17,7 @@ enum TimerUnit: string
         };
     }
 
-    public function toUnit(int $value, TimerUnit $unit): int|float
+    public function toUnit(int|float $value, TimerUnit $unit): int|float
     {
         $fromFactor = $this->factor(); // e.g. 1000000
         $toFactor = $unit->factor(); // e.g. 1
@@ -38,9 +38,9 @@ enum TimerUnit: string
     /**
      * Standardise the given value to microseconds
      */
-    public function toMicroseconds(int $value): int
+    public function toMicroseconds(int|float $value): int
     {
-        return $this->toUnit($value, self::MICROSECOND);
+        return (int) $this->toUnit($value, self::MICROSECOND);
     }
 
     /**
@@ -48,18 +48,23 @@ enum TimerUnit: string
      */
     public function toSeconds(int $value): float
     {
-        return $this->toUnit($value, self::SECOND);
+        return (float) $this->toUnit($value, self::SECOND);
     }
 
     public function format(int|float $value): string
     {
         $whole = floor($value) === ceil($value);
         $one = ($value === 1) || ($value === 1.0);
+        $value = ($whole) ? (int) $value : $value;
 
+        if (! $whole) {
+            $value = number_format($value, 6, '.', '');
+            $value = rtrim($value, '.0');
+        }
 
         return sprintf(
             '%s %s%s',
-            ($whole) ? (int) $value : $value,
+            $value,
             $this->label(),
             ($one) ? '' : 's',
         );
