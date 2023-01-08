@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use Throwable;
 
@@ -11,7 +12,7 @@ trait HasTimeout
 {
     protected ?int $timeout = null;
 
-    protected ?bool $timeoutEnabled = null; 
+    protected ?bool $timeoutEnabled = null;
 
     private ?Timer $timer = null;
 
@@ -94,6 +95,10 @@ trait HasTimeout
     
         $timer->rethrow();
         $timer->timeout($this->getTimeoutMicroseconds(), TimerUnit::MICROSECOND);
+        $timer->timedout(fn (TimerUpException $e) => $this->runTearDown([
+            'e' => $e,
+            'exception' => $e,
+        ]));
 
         return $timer;
     }

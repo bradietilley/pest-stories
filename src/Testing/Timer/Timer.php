@@ -230,7 +230,10 @@ class Timer
             $this->exception = $e;
 
             $result = TimerResult::FAILED;
+            
             $args['exit'] = $result;
+            $args['e'] = $e;
+            $args['exception'] = $e;
 
             $this->runCallback('errored', $args);
         }

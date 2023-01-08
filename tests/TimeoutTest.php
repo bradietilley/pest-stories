@@ -291,3 +291,26 @@ test('a story can expose the timer used for asserting time', function () {
         ->getStart()->toBeGreaterThan($start)->toBeLessThan($end)
         ->getEnd()->toBeGreaterThan($start)->toBeLessThan($end);
 });
+
+test('a story cut short by a timeout will still run tearDown', function () {
+    $ran = Collection::make();
+
+    $story = Story::make('timed test')
+        ->can()
+        ->task(fn () => usleep(1000001))
+        ->check(fn () => null)
+        ->tearDown(fn () => $ran [] = 'tearDown')
+        ->timeout(1);
+
+    try {
+        $story->run();
+
+        $this->fail();
+    } catch (ExpectationFailedException $e) {
+        //
+    }
+
+    expect($ran->toArray())->toBe([
+        'tearDown',
+    ]);
+});

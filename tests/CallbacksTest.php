@@ -1,7 +1,6 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a story can have a before callback', function () {
@@ -144,4 +143,33 @@ test('a story can have a tearDown callback', function () {
         //
     }
     expect($ran)->toHaveCount(1)->first()->toBe('tearDown:test error');
+});
+
+test('you cannot setup or teardown a story more than once', function () {
+    $ran = Collection::make();
+
+    $story = Story::make()
+        ->setUp(fn () => $ran[] = 'setUp')
+        ->tearDown(fn () => $ran[] = 'tearDown');
+
+    $reflection = new ReflectionClass($story);
+
+    $runSetUp = $reflection->getMethod('runSetUp');
+    $runSetUp->setAccessible(true);
+    
+    $runTearDown = $reflection->getMethod('runTearDown');
+    $runTearDown->setAccessible(true);
+    
+    // Run twice
+    $runSetUp->invoke($story);
+    $runSetUp->invoke($story);
+     
+    // Run twice
+    $runTearDown->invoke($story);
+    $runTearDown->invoke($story);
+
+    expect($ran->toArray())->toBe([
+        'setUp',
+        'tearDown',
+    ]);
 });

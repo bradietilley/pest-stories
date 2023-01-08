@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Story;
 use Closure;
 use Illuminate\Container\Container;
 use InvalidArgumentException;
@@ -63,6 +64,10 @@ trait HasCallbacks
      */
     public function runCallback(string $name, array $args = []): mixed
     {
+        if (! isset($args['story']) && ($this instanceof Story)) {
+            $args['story'] = $this;
+        }
+
         return static::callOptional($this->getCallback($name), $args);
     }
 

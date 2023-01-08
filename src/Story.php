@@ -26,7 +26,9 @@ use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use SebastianBergmann\RecursionContext\InvalidArgumentException as RecursionContextInvalidArgumentException;
 use Throwable;
 
 /**
@@ -260,6 +262,9 @@ class Story
         return self::$testFunction;
     }
 
+    /**
+     * Inherit all properties that are inheritable 
+     */
     public function inherit(): self
     {
         if ($this->alreadyRun('inherited')) {
@@ -285,6 +290,9 @@ class Story
         return $this;
     }
 
+    /**
+     * Inherit assertions from ancestord
+     */
     protected function inheritAssertions(): void
     {
         if (($can = $this->inheritProperty('can')) !== null) {
@@ -292,6 +300,9 @@ class Story
         }
     }
 
+    /**
+     * Run this story from start to finish
+     */
     public function run(): self
     {
         try {
@@ -325,28 +336,49 @@ class Story
     }
 
     /**
+     * Run the setUp callback
+     */
+    private function runSetUp(): void
+    {
+        if ($this->alreadyRun('setUp')) {
+            return;
+        }
+
+        $this->runCallback('setUp', $this->getParameters());
+    }
+
+    /**
+     * Run the tearDown callback
+     */
+    private function runTearDown(array $args = []): void
+    {
+        if ($this->alreadyRun('tearDown')) {
+            return;
+        }
+
+        $this->runCallback('tearDown', $args);
+    }
+
+    /**
      * Run the full test assertion (after setTest)
      */
     public function fullRun(): self
     {
         $this->boot();
+        $this->runSetUp();
 
-        $args = [
-            'story' => $this,
-        ];
-
-        $this->runCallback('setUp', $args);
+        $args = [];
 
         try {
             $this->assert();
         } catch (Throwable $e) {
-            $args = array_replace($args, [
+            $args = [
                 'e' => $e,
                 'exception' => $e,
-            ]);
+            ];
         }
 
-        $this->runCallback('tearDown', $args);
+        $this->runTearDown($args);
 
         if (isset($e)) {
             throw $e;
