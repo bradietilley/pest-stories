@@ -10,22 +10,29 @@
 
 A task (`BradieTilley\StoryBoard\Story\Task`) and scenario (`BradieTilley\StoryBoard\Story\Scenario`) are both actions (`BradieTilley\StoryBoard\Story\AbstractAction`).
 
-Each story must have at least one task *(subject to change in future releases)* and may have multiple tasks or scenarios.
+Each story has multiple actions (at least one Task) that build a situation where you test a result of your application.
 
 **Tasks**
 
-Tasks are designed to return a single result, which occurs after all scenarios are booted. Example of what a task may be:
-- "fetch me api endpoint" which returns the result of the /me API endpoint
+Tasks are designed to return a single result, although don't have to, which occurs after all scenarios are booted. Example of what a task may be:
+
+- "fetch the me api endpoint"
+    - this would return the result of the /me API endpoint
 
 **Scenarios**
 
 Scenarios are designed to bootstrap and seed an environment based on (often-reusable) scenarios. Examples of scenarios may be:
 
-- "as admin" which would create/fetch an admin and act as them,
-- "without email verified" which would fetch the authorised user and unset the email verification timestamp simulating a pending email verification,
-- "without permission" which would accept permission(s) that the authorised user should get stripped of.
+- "as admin"
+    - this would create/fetch an admin and act as them
+- "without email verified"
+    - this would fetch the authorised user and unset the email verification timestamp simulating a pending email verification
+- "without permission"
+    - this scenario would allow arguments (permission(s)) that the authorised user should get stripped of
 
-Scenarios are almost synonymous with Tasks, except Scenarios have a `variable` property which allows for you to return a value that is then accessible later in the Story object (see [Data / Variables](/docs/stories/data-variables.md)).
+**Similarities**
+
+Scenarios are almost synonymous with Tasks, except Scenarios have a `variable` property which allows for you to return a value that is then accessible later in the Story object (see [Data / Variables](/docs/stories/data-variables.md) for how you may access these variables elsewhere). Tasks do not have a variable, instead the returned value is accessible in the assertion checker as the variable `$result`.
 
 **Workflow**
 
