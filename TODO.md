@@ -26,4 +26,3 @@
     - Should all prefixes be resolved first to find the longest one, and then have all other prefixes padded to match the same length?
 - Low: Allow no expectation (no can/cannot) -- default to can?
     - Concern: weakens integrity of tests by allowing tests to slip by the wayside.
-- Medium: Add `->timeout(int $seconds)` to control a maximum amount of time a test should take to execute 
