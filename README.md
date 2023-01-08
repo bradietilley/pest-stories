@@ -12,6 +12,11 @@ Composer, how else?
 composer require bradietilley/pest-storyboard
 ```
 
+### Documentation
+
+Read the available documentation [here](/docs/documentation.md).
+
+
 ### Usage
 
 Example of 'basic' usage:
