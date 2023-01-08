@@ -12,7 +12,7 @@ test('macros can be added to stories', function () {
     });
 
     Story::macro('asAdmin', function () {
-        return $this->scenario('as_role', [ 'role' => 'admin', ]);
+        return $this->scenario('as_role', ['role' => 'admin']);
     });
 
     expect($data->all())->toBe([]);

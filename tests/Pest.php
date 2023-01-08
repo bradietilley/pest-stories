@@ -24,7 +24,6 @@
 |
 */
 
-use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\Story\Task;

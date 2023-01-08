@@ -13,11 +13,11 @@ class Timer
     use RunOnce;
 
     private ?int $start = null;
-    
+
     private ?int $end = null;
-    
+
     private ?int $timeTaken = null;
-    
+
     private ?int $timeRemaining = null;
 
     private ?Throwable $exception = null;
@@ -50,8 +50,7 @@ class Timer
         ?Closure $after = null,
         int $timeout = 60,
         bool $rethrow = true,
-    ): self
-    {
+    ): self {
         return new self(...func_get_args());
     }
 
@@ -190,7 +189,7 @@ class Timer
             // Start timer
             $timeout = $this->getAlarmTimeout();
             pcntl_alarm($timeout);
-            
+
             // Run task that may take a while
             $this->start();
             $this->runCallback('callback');
@@ -205,7 +204,7 @@ class Timer
 
             // Successful exit
             $args['exit'] = $result;
-            
+
             // Run finished callback
             $response = $this->runCallback('finished', $args);
         } catch (TimerUpException $e) {
@@ -230,7 +229,7 @@ class Timer
             $this->exception = $e;
 
             $result = TimerResult::FAILED;
-            
+
             $args['exit'] = $result;
             $args['e'] = $e;
             $args['exception'] = $e;
@@ -282,7 +281,7 @@ class Timer
 
     /**
      * Get the specified timeout as seconds (e.g. for pcntl alarm).
-     * 
+     *
      * Always rounded up.
      */
     public function getAlarmTimeout(): int

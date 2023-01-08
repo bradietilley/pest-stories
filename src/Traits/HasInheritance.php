@@ -2,9 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use Closure;
-use Illuminate\Support\Collection;
-
 trait HasInheritance
 {
     /**
@@ -44,7 +41,7 @@ trait HasInheritance
 
         while ($instance !== null) {
             $value = $instance->getProperty($property);
-            $halts = $instance->getPropertyOptional($property . 'Halt', false);
+            $halts = $instance->getPropertyOptional($property.'Halt', false);
 
             if ($value === null && $halts) {
                 return null;
@@ -79,7 +76,7 @@ trait HasInheritance
 
     /**
      * Get all ancestors starting with $this (child) ending with the grand parent
-     * 
+     *
      * @return array<static>
      */
     public function getAncestors(): array

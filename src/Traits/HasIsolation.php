@@ -20,8 +20,8 @@ trait HasIsolation
 
     /**
      * Add this instance to the list of isolated classes to run
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function isolate(): self
     {
@@ -35,13 +35,12 @@ trait HasIsolation
      */
     public function isolationEnabled(): bool
     {
-        return !empty(static::$isolationStories);
+        return ! empty(static::$isolationStories);
     }
 
     public function inheritIsolation(): void
     {
         /** @var self|HasInheritance $this */
-
         foreach ($this->getAncestors() as $ancestor) {
             if ($ancestor === $this) {
                 continue;
@@ -56,7 +55,7 @@ trait HasIsolation
     /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
-     * 
+     *
      * @requires HasInheritance
      */
     public function inIsolation(): bool

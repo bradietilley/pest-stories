@@ -45,7 +45,7 @@ r
 
     /**
      * Alias for setScenarios()
-     * 
+     *
      * @return $this
      */
     public function scenarios(iterable $scenarios): self
@@ -112,13 +112,12 @@ r
 
     /**
      * Resolve all scenarios that are inherited
-     * 
+     *
      * @return $this
      */
     public function registerScenarios(): self
     {
         /** @var Story $this */
-
         $this->scenarios = Collection::make($this->scenarios)
             ->sortBy(fn (array $data) => $data['scenario']->getOrder())
             ->all();
@@ -139,12 +138,12 @@ r
      * Boot all registered scenarios for this test.
      *
      * @requires HasInheritance
+     *
      * @return $this
      */
     public function bootScenarios(): self
     {
         /** @var HasData|HasScenarios|HasName $this */
-
         foreach ($this->scenarios as $data) {
             /** @var HasData|HasScenarios|HasName $this */
 

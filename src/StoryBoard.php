@@ -10,13 +10,13 @@ class StoryBoard extends Story
      * Flag to enable datasets where the parent StoryBoard
      * becomes a Pest test case and all children stories
      * become dataset entries.
-     * 
+     *
      * False example:
      *      <parent test> <child test> <grandchild test>
-     * 
+     *
      * True example:
      *      <parent test> with dataset "<child test> <grandchild test>"
-     * 
+     *
      * @var bool
      */
     protected static bool $datasetsEnabled = false;

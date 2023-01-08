@@ -19,7 +19,7 @@ class TimerUpException extends Exception
     }
 
     /**
-     * Get the amount of time specified as the maximum (timeout) 
+     * Get the amount of time specified as the maximum (timeout)
      */
     public function getTimeout(): int
     {

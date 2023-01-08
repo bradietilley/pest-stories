@@ -6,7 +6,6 @@ use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
-use Throwable;
 
 trait HasTimeout
 {
@@ -19,8 +18,8 @@ trait HasTimeout
     /**
      * Set a timeout for this story.
      * Any value under 1 millisecond will set to 1 millisecond.
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): self
     {
@@ -32,7 +31,7 @@ trait HasTimeout
 
     /**
      * Remove the timeout for this story
-     * 
+     *
      * @return $this
      */
     public function noTimeout(): self
@@ -49,7 +48,6 @@ trait HasTimeout
     public function inheritTimeout(): void
     {
         /** @var HasInheritance|self $this */
-
         foreach ($this->getAncestors() as $level) {
             $enabled = $level->getProperty('timeoutEnabled');
 
@@ -92,7 +90,7 @@ trait HasTimeout
     public function createTimer(Closure $callback): Timer
     {
         $timer = Timer::make($callback);
-    
+
         $timer->rethrow();
         $timer->timeout($this->getTimeoutMicroseconds(), TimerUnit::MICROSECOND);
         $timer->timedout(fn (TimerUpException $e) => $this->runTearDown([

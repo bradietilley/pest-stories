@@ -105,7 +105,6 @@ test('a story can be given a timeout and it will yield the correct timeout', fun
         $timer = $story->createTimer(fn () => null);
         expect($timer->getAlarmTimeout())->toBe($test['pcntl']);
     }
-
 });
 
 test('a story with a timeout will pass if it does not reach the timeout', function () {
@@ -178,7 +177,7 @@ test('a story with a timeout will fail if it reaches the timeout (milliseconds; 
 
     /**
      * Story is not killed by the pcntl signal; so 'test' is appended to $ran.
-     * 
+     *
      * 0.1 seconds is rounded to 1 second. If story takes longer than 1 second, it would be killed.
      */
     expect($ran->all())->toBe([
@@ -211,7 +210,7 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
 
     /**
      * Story is not killed by the pcntl signal; so 'test' is appended to $ran.
-     * 
+     *
      * 0.1 seconds is rounded to 1 second. If story takes longer than 1 second, it would be killed.
      */
     expect($ran->all())->toBe([
@@ -239,7 +238,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
                 $child4 = Story::make('child 4a'),
             ]),
         ]);
-    
+
     $story->storiesAll;
 
     try {
@@ -299,7 +298,7 @@ test('a story cut short by a timeout will still run tearDown', function () {
         ->can()
         ->task(fn () => usleep(1000001))
         ->check(fn () => null)
-        ->tearDown(fn () => $ran [] = 'tearDown')
+        ->tearDown(fn () => $ran[] = 'tearDown')
         ->timeout(1);
 
     try {

@@ -78,8 +78,8 @@ trait HasName
     public function getFullName(): string
     {
         $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
-        
-        return $this->fullName[$datasetKey] ?? $this->getName(); 
+
+        return $this->fullName[$datasetKey] ?? $this->getName();
     }
 
     public function getLevelName(): string

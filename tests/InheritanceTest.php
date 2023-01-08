@@ -32,4 +32,3 @@ test('inheritance can check existence parent', function () {
         ->and($child->hasParent())->toBeTrue()
         ->and($parent->hasParent())->toBeFalse();
 });
-

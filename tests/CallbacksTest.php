@@ -12,7 +12,7 @@ test('a story can have a before callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->before(fn (Story $story) => $ran[] = 'before:' . $story->getName())
+        ->before(fn (Story $story) => $ran[] = 'before:'.$story->getName())
         ->run();
     expect($ran)->toHaveCount(1)->first()->toBe('before:parent');
 
@@ -24,7 +24,7 @@ test('a story can have a before callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->before(fn (Story $story) => $ran[] = 'before:' . $story->getName())
+        ->before(fn (Story $story) => $ran[] = 'before:'.$story->getName())
         ->stories([
             Story::make('child'),
         ])
@@ -42,7 +42,7 @@ test('a story can have a after callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->after(fn (Story $story) => $ran[] = 'after:' . $story->getName())
+        ->after(fn (Story $story) => $ran[] = 'after:'.$story->getName())
         ->run();
     expect($ran)->toHaveCount(1)->first()->toBe('after:parent');
 
@@ -54,7 +54,7 @@ test('a story can have a after callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->after(fn (Story $story) => $ran[] = 'after:' . $story->getName())
+        ->after(fn (Story $story) => $ran[] = 'after:'.$story->getName())
         ->stories([
             Story::make('child'),
         ])
@@ -72,7 +72,7 @@ test('a story can have a setUp callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->setUp(fn (Story $story) => $ran[] = 'setUp:' . $story->getName())
+        ->setUp(fn (Story $story) => $ran[] = 'setUp:'.$story->getName())
         ->run();
     expect($ran)->toHaveCount(1)->first()->toBe('setUp:parent');
 
@@ -84,7 +84,7 @@ test('a story can have a setUp callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->setUp(fn (Story $story) => $ran[] = 'setUp:' . $story->getName())
+        ->setUp(fn (Story $story) => $ran[] = 'setUp:'.$story->getName())
         ->stories([
             Story::make('child'),
         ])
@@ -102,7 +102,7 @@ test('a story can have a tearDown callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->tearDown(fn (Story $story) => $ran[] = 'tearDown:' . $story->getName())
+        ->tearDown(fn (Story $story) => $ran[] = 'tearDown:'.$story->getName())
         ->run();
     expect($ran)->toHaveCount(1)->first()->toBe('tearDown:parent');
 
@@ -114,7 +114,7 @@ test('a story can have a tearDown callback', function () {
         ->can()
         ->task(fn () => null)
         ->check(fn () => null)
-        ->tearDown(fn (Story $story) => $ran[] = 'tearDown:' . $story->getName())
+        ->tearDown(fn (Story $story) => $ran[] = 'tearDown:'.$story->getName())
         ->stories([
             Story::make('child'),
         ])
@@ -131,13 +131,13 @@ test('a story can have a tearDown callback', function () {
             ->can()
             ->task(fn () => null)
             ->check(fn () => throw new InvalidArgumentException('test error'))
-            ->tearDown(fn (Story $story, Throwable $e) => $ran[] = 'tearDown:' . $e->getMessage())
+            ->tearDown(fn (Story $story, Throwable $e) => $ran[] = 'tearDown:'.$e->getMessage())
             ->stories([
                 Story::make('child'),
             ])
             ->storiesAll
             ->each(fn (Story $story) => $story->run());
-        
+
         $this->fail();
     } catch (Throwable $e) {
         //
@@ -156,14 +156,14 @@ test('you cannot setup or teardown a story more than once', function () {
 
     $runSetUp = $reflection->getMethod('runSetUp');
     $runSetUp->setAccessible(true);
-    
+
     $runTearDown = $reflection->getMethod('runTearDown');
     $runTearDown->setAccessible(true);
-    
+
     // Run twice
     $runSetUp->invoke($story);
     $runSetUp->invoke($story);
-     
+
     // Run twice
     $runTearDown->invoke($story);
     $runTearDown->invoke($story);

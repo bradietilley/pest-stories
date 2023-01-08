@@ -5,7 +5,6 @@ namespace BradieTilley\StoryBoard\Traits;
 use BradieTilley\StoryBoard\Story;
 use Closure;
 use Illuminate\Container\Container;
-use InvalidArgumentException;
 
 trait HasCallbacks
 {
@@ -49,13 +48,13 @@ trait HasCallbacks
 
     /**
      * Set a callback
-     * 
+     *
      * @return $this
      */
     public function setCallback(string $name, ?Closure $callback): self
     {
         $this->registeredCallbacks[$name] = $callback;
-        
+
         return $this;
     }
 

@@ -8,7 +8,7 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use Closure;
 
 /**
- * @method static self make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null) 
+ * @method static self make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null)
  */
 class Scenario extends AbstractAction
 {
@@ -53,7 +53,7 @@ class Scenario extends AbstractAction
 
     /**
      * Set the name of the variable
-     * 
+     *
      * @return $this;
      */
     public function variable(string $variable): self

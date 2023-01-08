@@ -9,22 +9,22 @@ test('order of everything is as expected', function () {
     $data = Collection::make();
 
     Task::make('task')
-        ->as(fn () => $data[] = "task run")
-        ->registering(fn () => $data[] = "task register")
-        ->booting(fn () => $data[] = "task boot");
+        ->as(fn () => $data[] = 'task run')
+        ->registering(fn () => $data[] = 'task register')
+        ->booting(fn () => $data[] = 'task boot');
 
     Scenario::make('scenario')
-        ->as(fn () => $data[] = "scenario run")
-        ->registering(fn () => $data[] = "scenario register")
-        ->booting(fn () => $data[] = "scenario boot");
+        ->as(fn () => $data[] = 'scenario run')
+        ->registering(fn () => $data[] = 'scenario register')
+        ->booting(fn () => $data[] = 'scenario boot');
 
     $story = StoryBoard::make()
         ->can()
-        ->before(fn () => $data[] = "task before")
+        ->before(fn () => $data[] = 'task before')
         ->task('task')
         ->scenario('scenario')
-        ->after(fn () => $data[] = "task after")
-        ->check(fn () => $data[] = "assert run");
+        ->after(fn () => $data[] = 'task after')
+        ->check(fn () => $data[] = 'assert run');
 
     $story->boot()->assert();
 

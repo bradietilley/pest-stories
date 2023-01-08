@@ -25,15 +25,14 @@ test('a result given from a story can be referenced in the checkers', function (
         ->check(
             function (Story $story) use ($ran, $randomStringsClone) {
                 $ran[] = "can:{$story->getName()}";
-    
+
                 expect($story->getResult()->hasValue())->toBeTrue();
                 expect($story->getResult()->getValue())->toBe($randomStringsClone->first());
                 expect($story->getResult()->getError())->toBeNull();
-
             },
             function (Story $story) use ($ran, $randomStringsClone) {
                 $ran[] = "cannot:{$story->getName()}";
-    
+
                 expect($story->getResult()->hasValue())->toBeTrue();
                 expect($story->getResult()->getValue())->toBe($randomStringsClone->first());
                 expect($story->getResult()->getError())->toBeNull();
@@ -61,7 +60,7 @@ test('a result given from a story can be referenced in the checkers', function (
             Story::make('can')->can(),
             Story::make('cannot')->cannot(),
         ]);
-    
+
     foreach ($story->allStories() as $story) {
         $story->boot()->assert();
 
@@ -94,7 +93,7 @@ test('when an error occurs during a callback, the result of the story contains a
         ->task(fn () => ($throwsIn === 'after') ? throw new \Exception('Dummy Test Exception via after') : null)
         ->check(fn () => ($throwsIn === 'check') ? throw new \Exception('Dummy Test Exception via check') : null)
         ->can();
-    
+
     try {
         $story->boot();
         $story->assert();
@@ -102,10 +101,10 @@ test('when an error occurs during a callback, the result of the story contains a
     }
 
     $result = $story->getResult();
-    
+
     expect($result)->errored()->toBeTrue()
         ->and($result->getError())->not()->toBeNull()
-        ->and($result->getError())->getMessage()->toBe('Dummy Test Exception via ' . $throwsIn);
+        ->and($result->getError())->getMessage()->toBe('Dummy Test Exception via '.$throwsIn);
 })->with([
     'before',
     'task',
@@ -119,7 +118,7 @@ test('checkers can inject the raw result as an argument', function () {
     Story::make()
         ->name('tester')
         ->task(fn () => 1234567890)
-        // main thing is $result is an int, not Result object 
+        // main thing is $result is an int, not Result object
         ->check(fn (int $result) => $results[] = $result)
         ->can()
         ->boot()

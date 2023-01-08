@@ -2,13 +2,13 @@
 
 namespace BradieTilley\StoryBoard\Story;
 
-use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TaskGeneratorNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\TaskNotFoundException;
 use Closure;
 
 /**
- * @method static self make(string $name, ?Closure $generator = null, ?int $order = null) 
+ * @method static self make(string $name, ?Closure $generator = null, ?int $order = null)
  */
 class Task extends AbstractAction
 {

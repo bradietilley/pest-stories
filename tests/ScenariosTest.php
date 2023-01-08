@@ -276,7 +276,6 @@ test('scenarios that are missing a generator throw an exception when booted', fu
     $story->boot();
 })->throws(ScenarioGeneratorNotFoundException::class, 'The `something_cool` scenario generator callback could not be found.');
 
-
 test('a story with the multiple scenarios of the same variable will use the last/most-child one', function () {
     Scenario::make('location_1')->as(fn () => '1')->variable('location')->order(1);
     Scenario::make('location_2')->as(fn () => '2')->variable('location')->order(1);
@@ -288,10 +287,10 @@ test('a story with the multiple scenarios of the same variable will use the last
     Story::make()
         ->scenario('location_1')
         ->can()
-        ->before(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
-        ->task(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
-        ->after(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
-        ->check(fn (Story $story, string $location) => $data[] = $story->getName() . ':' . $location)
+        ->before(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
+        ->task(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
+        ->after(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
+        ->check(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
         ->stories([
             // Test inheritance
             Story::make('1'),
@@ -338,7 +337,7 @@ test('can set multiple scenarios of multiple types in a single function', functi
             Scenario::make('new_object')->as(fn ($arg = 'noarg') => $ran[] = "new_object:{$arg}"),
             'old_object',
             fn ($arg = 'noarg') => $ran[] = "inline:{$arg}",
-            'old_object2' => [ 'arg' => 'works', ],
+            'old_object2' => ['arg' => 'works'],
         ])
         ->can()
         ->check(fn () => null)
@@ -415,12 +414,12 @@ test('scenario flush forgets all registered scenarios', function () {
 
 test('a scenario may have a custom registering and booting callback', function () {
     $data = Collection::make();
-    
+
     Scenario::make('event_scenario')
         ->as(fn () => $data[] = 'generating')
         ->registering(fn () => $data[] = 'registering')
         ->booting(fn () => $data[] = 'booting');
-    
+
     $story = Story::make('events test')
         ->scenario('event_scenario')
         ->can()

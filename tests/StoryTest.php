@@ -19,7 +19,7 @@ test('a storyboard with a single story can generate test cases with names', func
         ->can()
         ->check(fn () => null)
         ->task(fn () => null);
-    
+
     $tests = $storyboard->allStories();
     expect($tests)->toHaveCount(0);
 
@@ -170,7 +170,7 @@ test('a story can fetch its children stories via collection methods and property
             ]),
         ]);
 
-    // Register children shortcut 
+    // Register children shortcut
 
     $stories = $storyboard->storiesDirect;
     foreach ($stories as $story) {
@@ -217,8 +217,8 @@ test('stories can append child stories in various ways', function () {
     $storyG = Story::make('story_g');
     $storyH = Story::make('story_h');
 
-    $story->stories($storyA, $storyB, [ $storyC, $storyD ]);
-    $story->stories([ $storyE, $storyF ], $storyG, [ $storyH ]);
+    $story->stories($storyA, $storyB, [$storyC, $storyD]);
+    $story->stories([$storyE, $storyF], $storyG, [$storyH]);
 
     expect($story->storiesAll->keys()->toArray())->toBe([
         '[Can] parent story_a',

@@ -22,7 +22,7 @@ abstract class AbstractAction
 
     public function __construct(
         protected string $name,
-        ?Closure $generator = null,
+        ?Closure $generator,
         protected int $order,
     ) {
         $this->setCallback('generator', $generator);
@@ -41,13 +41,13 @@ abstract class AbstractAction
      */
     public function clone(): static
     {
-        return (clone $this);
+        return clone $this;
     }
 
     /**
      * Set the generator
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function as(Closure $generator): self
     {
@@ -56,8 +56,8 @@ abstract class AbstractAction
 
     /**
      * Set a callback when this action is registering
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function registering(Closure $callback): self
     {
@@ -66,8 +66,8 @@ abstract class AbstractAction
 
     /**
      * Set a callback when this action is booting
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function booting(Closure $callback): self
     {
@@ -123,9 +123,10 @@ abstract class AbstractAction
 
     /**
      * Fetch a action from the registrar
-     * 
-     * @throws StoryBoardException
+     *
      * @return static
+     *
+     * @throws StoryBoardException
      */
     public static function fetch(string $name): static
     {
@@ -151,7 +152,7 @@ abstract class AbstractAction
 
     /**
      * Boot this action for the given story
-     * 
+     *
      * @throws StoryBoardException
      */
     public function boot(Story $story, array $arguments = []): mixed

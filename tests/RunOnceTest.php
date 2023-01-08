@@ -3,7 +3,7 @@
 use BradieTilley\StoryBoard\Traits\RunOnce;
 
 test('an object with RunOnce trait will not run the same function twice', function () {
-    $class = new class ()
+    $class = new class()
     {
         use RunOnce;
 

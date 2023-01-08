@@ -6,6 +6,7 @@ trait RunOnce
 {
     /**
      * Container of already-run
+     *
      * @var array
      */
     private array $runOnce = [];

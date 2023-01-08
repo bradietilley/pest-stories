@@ -1,10 +1,8 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Scenario;
 use BradieTilley\StoryBoard\StoryBoard;
-use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 
 $data = collect([

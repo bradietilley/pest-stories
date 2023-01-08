@@ -34,7 +34,7 @@ test('a story can isolate itself and prevent other stories from running', functi
     }
 
     expect($runs->toArray())->toBe($expect);
-    
+
     Story::flushIsolation();
 })->with([
     'A',
@@ -134,6 +134,6 @@ test('multiple stories can be isolated and all isolated stories will run', funct
         'parent child 3 child 3c child 3c1',
         'parent child 3 child 3c child 3c2',
     ]);
-    
+
     Story::flushIsolation();
 });

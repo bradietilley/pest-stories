@@ -2,7 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -39,7 +38,6 @@ trait HasPerformer
         $this->user = $user;
 
         /** @var HasPerformer|HasCallbacks $this */
-
         if (static::hasStaticCallback('actingAs')) {
             static::runStaticCallback('actingAs', $this->getParameters());
         } else {
@@ -49,7 +47,7 @@ trait HasPerformer
                 auth()->logout();
             }
         }
-        
+
         return $this;
     }
 

@@ -10,11 +10,11 @@ test('timer unit can convert between units', function () {
      * Second -> Second
      * Second -> Millisecond
      * Second -> Microsecond
-     * 
+     *
      * Millisecond -> Second
      * Millisecond -> Millisecond
      * Millisecond -> Microsecond
-     * 
+     *
      * Microsecond -> Second
      * Microsecond -> Millisecond
      * Microsecond -> Microsecond
@@ -49,7 +49,6 @@ test('timer unit can convert between units', function () {
     /**
      * Additional tests involving floats
      */
-
     expect(TimerUnit::MILLISECOND->toUnit(1, TimerUnit::SECOND))->toBe(0.001);
     expect(TimerUnit::MILLISECOND->toUnit(2, TimerUnit::SECOND))->toBe(0.002);
 
@@ -88,7 +87,7 @@ test('timer will rethrow a TimerUpException if thrown within the timedOut callba
 
 test('timer will a TimerUpException with the timer used', function () {
     $timer = Timer::make(fn () => usleep(1001))->timeout(0.001);
-    
+
     try {
         $timer->run();
 
@@ -107,10 +106,9 @@ test('timer can rethrow throwables if thrown within the primary callback', funct
         timeout: 1
     );
 
-    
     try {
         $timer->run();
-        
+
         if ($rethrow) {
             $this->fail('rethrowing means the invalid arg exception should have been thrown');
         } else {

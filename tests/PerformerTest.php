@@ -68,13 +68,13 @@ if (! class_exists('PestStoryBoardPerformerAuthenticatable')) {
 
 if (! class_exists('PestStoryBoardPerformerAuthFaker')) {
     class PestStoryBoardPerformerAuthFaker
-    {   
+    {
         protected static ?Authenticatable $user = null;
 
         public function login(Authenticatable $user): self
         {
             static::$user = $user;
-            
+
             return $this;
         }
 
@@ -101,7 +101,7 @@ if (! class_exists('PestStoryBoardPerformerAuthFaker')) {
  * It shouldn't exist in pest-storyboard dev so what we'll do
  * is proxy calls to auth() to a fake auth class.
  */
-if (!function_exists('auth')) {
+if (! function_exists('auth')) {
     function auth(): PestStoryBoardPerformerAuthFaker
     {
         return new PestStoryBoardPerformerAuthFaker();
@@ -161,7 +161,7 @@ test('when performer setUser method is run, the user is logged in', function () 
 });
 
 test('a custom actingAs callback may be specified to replace the standard auth login method', function () {
-    // Set to function we control 
+    // Set to function we control
     $login = Collection::make([]);
 
     // Sanity check
@@ -200,7 +200,7 @@ test('a custom actingAs callback may be specified to replace the standard auth l
     expect(auth()->check())->toBeFalse();
     // But will be logged in
     expect($login)->toHaveCount(1);
-    
+
     // Reset
     auth()->logout();
     Story::actingAs(null);
@@ -219,7 +219,6 @@ test('passing null to setUser method will log out the current user', function ()
         ->name('auth test')
         ->user($user);
 
-        
     // Should be logged in
     expect($story->user)->toBe($user);
     expect(auth()->check())->toBeTrue();

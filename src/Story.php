@@ -4,8 +4,6 @@ namespace BradieTilley\StoryBoard;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
-use BradieTilley\StoryBoard\Testing\Timer\Timer;
-use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
@@ -24,11 +22,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
-use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException as RecursionContextInvalidArgumentException;
 use Throwable;
 
 /**
@@ -74,8 +69,8 @@ class Story
 
     /**
      * Proxy certain property getters to methods
-     * 
-     * @param string $name
+     *
+     * @param  string  $name
      * @return mixed
      */
     public function __get($name)
@@ -125,13 +120,13 @@ class Story
 
     /**
      * Register this story scenarios and tasks
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function register(): self
     {
         $this->inherit();
-            
+
         if ($this->skipDueToIsolation()) {
             return $this;
         }
@@ -206,7 +201,6 @@ class Story
             function () use ($story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
-    
                 $story->setTest($this)->run();
             },
         ];
@@ -243,7 +237,8 @@ class Story
     /**
      * Set the name of the function that powers the testing. Default: `test`
 
-     * @throws TestFunctionNotFoundException 
+     *
+     * @throws TestFunctionNotFoundException
      */
     public static function setTestFunction(string $function = 'test'): void
     {
@@ -263,7 +258,7 @@ class Story
     }
 
     /**
-     * Inherit all properties that are inheritable 
+     * Inherit all properties that are inheritable
      */
     public function inherit(): self
     {
@@ -398,7 +393,8 @@ class Story
     /**
      * Register a callback to run when the test the teared down
      */
-    public function tearDown(?Closure $callback): self{
+    public function tearDown(?Closure $callback): self
+    {
         return $this->setCallback('tearDown', $callback);
     }
 }

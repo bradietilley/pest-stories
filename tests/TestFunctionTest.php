@@ -23,7 +23,7 @@ if (! class_exists('PestStoryBoardTestFunction')) {
             ];
         }
 
-        function with(string|array $dataset): self
+        public function with(string|array $dataset): self
         {
             global $testExecutions;
 
@@ -37,7 +37,8 @@ if (! class_exists('PestStoryBoardTestFunction')) {
     }
 }
 
-function test_alternative(string $description, Closure $callback) {
+function test_alternative(string $description, Closure $callback)
+{
     return new PestStoryBoardTestFunction($description, $callback);
 }
 
@@ -46,7 +47,7 @@ test('storyboard test function will call upon the pest test function for each st
     Story::setTestFunction('test_alternative');
     // clean slate
     $testExecutions->forget($testExecutions->keys()->toArray());
-    
+
     if ($datasetEnabled) {
         StoryBoard::enableDatasets();
     } else {
@@ -75,7 +76,7 @@ test('storyboard test function will call upon the pest test function for each st
             '[Can] child c1',
             '[Can] child c2',
         ];
-        
+
         expect($testExecutions)->toHaveCount(2);
         $testExecutions = $testExecutions->pluck('value', 'type');
         expect($testExecutions)->toHaveKeys([

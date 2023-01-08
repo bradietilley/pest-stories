@@ -6,7 +6,6 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\Task;
-use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
@@ -17,7 +16,7 @@ trait HasTasks
 
     /**
      * Tasks against this Story (excluding inheritance)
-     * 
+     *
      * @var array<Task>
      */
     protected array $tasks = [];
@@ -28,7 +27,7 @@ trait HasTasks
      * Flag that indicates that inheritance must halt at
      * this story in the 'family tree'. If '$can' is 'null'
      * here on this Story, we should not look any further.
-     * 
+     *
      * Set to true when noAssertion() is run. This will override
      * a parent can/cannot and reset it back to null for this
      * story and its children.
@@ -99,13 +98,12 @@ trait HasTasks
 
     /**
      * @requires Story
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function registerTasks(): self
     {
         /** @var Story $this */
-
         $this->tasks = Collection::make($this->tasks)
             ->sortBy(fn (Task $task) => $task->getOrder())
             ->all();
@@ -131,7 +129,7 @@ trait HasTasks
         if (empty($tasks)) {
             throw StoryBoardException::taskNotSpecified($this);
         }
-        
+
         $result = $this->getResult();
 
         try {
@@ -218,12 +216,12 @@ trait HasTasks
      * Run the assertions
      *
      * @requires Story
+     *
      * @return $this
      */
     public function assert(): self
     {
         /** @var Story $this */
-
         if ($this->skipDueToIsolation()) {
             $test = $this->getTest();
 
@@ -232,7 +230,7 @@ trait HasTasks
                 $test->markTestSkipped('Isolation Mode Enabled');
                 // @codeCoverageIgnoreEnd
             }
-            
+
             return $this;
         }
 
@@ -250,7 +248,7 @@ trait HasTasks
             $args = array_replace($this->getParameters(), [
                 'result' => $this->result ? $this->result->getValue() : null,
             ]);
-            
+
             $this->runCallback($callback, $args);
         } catch (Throwable $e) {
             $this->getResult()->setError($e);
