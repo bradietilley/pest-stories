@@ -17,7 +17,7 @@ beforeEach(function () {
 test('a storyboard with a single story can generate test cases with names', function () {
     $storyboard = StoryBoard::make('create something cool')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => null);
 
     $tests = $storyboard->allStories();
@@ -34,7 +34,7 @@ test('a storyboard with multiple stories can generate test cases with names', fu
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => null)
         ->stories([
             Story::make('as admin')->action('as_admin')->can(),
@@ -56,7 +56,7 @@ test('a storyboard with multiple nested stories can generate test cases with nam
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => null)
         ->stories([
             Story::make('as admin')->action('as_admin')->stories([
@@ -86,7 +86,7 @@ test('a story with multiple nested stories can collate required actions', functi
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action('allows_creation')
         ->stories([
             Story::make('as admin')->action('as_admin')->stories([
@@ -159,7 +159,7 @@ test('a story can fetch its children stories via collection methods and property
     $storyboard = Story::make()
         ->name('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => null)
         ->stories([
             Story::make('child 1'),
@@ -204,7 +204,7 @@ test('a story can fetch its children stories via collection methods and property
 test('stories can append child stories in various ways', function () {
     $story = StoryBoard::make('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => null);
 
     $storyA = Story::make('story_a');
@@ -237,7 +237,7 @@ test('you can retrieve all registered actions for a story', function () {
 
     $story = StoryBoard::make('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action('action_1')
         ->stories([
             $child = Story::make('child')->action('action_2'),

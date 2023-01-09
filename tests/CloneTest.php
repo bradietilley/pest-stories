@@ -19,7 +19,7 @@ test('you can add a cloned action to a story', function () {
 
     $story = StoryBoard::make('a story')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action($action2)
         ->boot()
         ->perform();

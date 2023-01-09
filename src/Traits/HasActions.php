@@ -240,7 +240,7 @@ r
         /**
      * @return $this
      */
-    public function check(Closure $can = null, Closure $cannot = null): self
+    public function assert(Closure $can = null, Closure $cannot = null): self
     {
         /** @var HasCallbacks|HasTasks $this */
         $this->setCallback('can', $can);

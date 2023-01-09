@@ -115,7 +115,7 @@ test('a story with a timeout will pass if it does not reach the timeout', functi
         ->action(function () use (&$ran) {
             $ran[] = 'test';
         })
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->timeout(10)
         ->run();
 
@@ -134,7 +134,7 @@ test('a story with a timeout will fail if it reaches the timeout (seconds; via a
 
             $ran[] = 'test';
         })
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->timeout(1);
 
     try {
@@ -163,7 +163,7 @@ test('a story with a timeout will fail if it reaches the timeout (milliseconds; 
 
             $ran[] = 'test';
         })
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->timeout(0.01);
 
     try {
@@ -196,7 +196,7 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
 
             $ran[] = 'test';
         })
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->timeout(0.00001);
 
     try {
@@ -223,7 +223,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
 
     $story = StoryBoard::make('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(function (Story $story) use ($ran) {
             usleep(20002);
 
@@ -272,7 +272,7 @@ test('a story can expose the timer used for asserting time', function () {
     $story = Story::make('timed test')
         ->can()
         ->action(fn () => null)
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->timeout(0.01);
 
     expect($story->getTimer())->toBeNull();
@@ -297,7 +297,7 @@ test('a story cut short by a timeout will still run tearDown', function () {
     $story = Story::make('timed test')
         ->can()
         ->action(fn () => usleep(1000001))
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->tearDown(fn () => $ran[] = 'tearDown')
         ->timeout(1);
 

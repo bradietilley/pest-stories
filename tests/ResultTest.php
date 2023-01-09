@@ -22,7 +22,7 @@ test('a result given from a story can be referenced in the checkers', function (
             expect($story->getResult()->getValue())->toBeNull();
             expect($story->getResult()->getError())->toBeNull();
         })
-        ->check(
+        ->assert(
             function (Story $story) use ($ran, $randomStringsClone) {
                 $ran[] = "can:{$story->getName()}";
 
@@ -91,7 +91,7 @@ test('when an error occurs during a callback, the result of the story contains a
         ->before(fn () => ($throwsIn === 'before') ? throw new \Exception('Dummy Test Exception via before') : null)
         ->action(fn () => ($throwsIn === 'action') ? throw new \Exception('Dummy Test Exception via action') : null)
         ->after(fn () => ($throwsIn === 'after') ? throw new \Exception('Dummy Test Exception via after') : null)
-        ->check(fn () => ($throwsIn === 'check') ? throw new \Exception('Dummy Test Exception via check') : null)
+        ->assert(fn () => ($throwsIn === 'check') ? throw new \Exception('Dummy Test Exception via check') : null)
         ->can();
 
     try {
@@ -119,7 +119,7 @@ test('checkers can inject the raw result as an argument', function () {
         ->name('tester')
         ->action(fn () => 1234567890)
         // main thing is $result is an int, not Result object
-        ->check(fn (int $result) => $results[] = $result)
+        ->assert(fn (int $result) => $results[] = $result)
         ->can()
         ->boot()
         ->perform();

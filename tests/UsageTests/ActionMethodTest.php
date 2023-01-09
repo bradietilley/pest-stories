@@ -22,7 +22,7 @@ function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
             ($level === 1),
             fn (Story $story) => $story->action('action_1')->name("{$story->getName()}#"),
         )
-        ->check(
+        ->assert(
             fn (Story $story) => $names[] = $story->getTestName(),
             fn (Story $story) => $names[] = 'cannot',
         )
@@ -160,7 +160,7 @@ test('action ordering is as per the actions pre-defined orders', function () {
 
     $story = Story::make()
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action('c')
         ->actions([
             'd' => [],

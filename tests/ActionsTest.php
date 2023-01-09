@@ -18,7 +18,7 @@ test('a storyboard with multiple nested stories can collate required actions', f
 
     $storyboard = StoryBoard::make()
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->name('create something cool')
         ->action('allows_creation')
         ->stories([
@@ -147,7 +147,7 @@ test('action variables are made accessible to the check() callback', function ()
         ->name('do something')
         ->action('as_admin')
         ->action('as_blocked')
-        ->check(function ($role, $blocked) use (&$data) {
+        ->assert(function ($role, $blocked) use (&$data) {
             $data['check_role'] = $role;
             $data['check_blocked'] = $blocked;
         });
@@ -226,7 +226,7 @@ test('actions can offer to append their name to the story name', function () {
     $story = StoryBoard::make()
         ->name('parent name')
         ->can()
-        ->check(fn () => true)
+        ->assert(fn () => true)
         ->stories([
             Story::make('existing name')->action('test_a'), // parent name existing name
             Story::make('existing name')->action('test_b'), // parent name existing name custom name
@@ -257,7 +257,7 @@ test('actions that are missing a generator throw an exception when booted', func
 
     $story = Story::make()
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action('something_cooler')
         ->action('something_cool');
 
@@ -277,7 +277,7 @@ test('a story with the multiple actions of the same variable will use the last/m
     Story::make()
         ->action('location_1')
         ->can()
-        ->check(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
+        ->assert(fn (Story $story, string $location) => $data[] = $story->getName().':'.$location)
         ->stories([
             // Test inheritance
             Story::make('1'),
@@ -315,7 +315,7 @@ test('can set multiple actions of multiple types in a single function', function
             'old_object2' => ['arg' => 'works'],
         ])
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->boot()
         ->perform();
 
@@ -371,7 +371,7 @@ test('a action may have a custom registering and booting callback', function () 
     $story = Story::make('events test')
         ->action('event_action')
         ->can()
-        ->check(fn () => null);
+        ->assert(fn () => null);
 
     expect($data->toArray())->toBe([]);
 
@@ -392,7 +392,7 @@ test('a action may have a custom registering and booting callback', function () 
 
 test('a story must have at least one task', function () {
     $story = Story::make()
-        ->check(fn () => true)
+        ->assert(fn () => true)
         ->can()
         ->name('parent')
         ->stories(

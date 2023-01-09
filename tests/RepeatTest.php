@@ -11,7 +11,7 @@ test('an action can be run once', function () {
 
     StoryBoard::make('story')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
@@ -30,7 +30,7 @@ test('an action can be run multiple times', function () {
 
     StoryBoard::make('story')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
@@ -51,7 +51,7 @@ test('an action can be run zero times', function () {
 
     StoryBoard::make('story')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
@@ -69,7 +69,7 @@ test('an action can opt to not repeat (run once)', function () {
 
     StoryBoard::make('story')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()

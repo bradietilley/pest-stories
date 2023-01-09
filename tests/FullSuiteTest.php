@@ -77,7 +77,7 @@ $story = StoryBoard::make()
         $data['actions'] = $actions;
         $data['testcase'] = get_class($test);
     })
-    ->check(
+    ->assert(
         function (Story $story) use (&$data) {
             $data['can'] = $story->getTestName();
 

@@ -7,7 +7,7 @@ use BradieTilley\StoryBoard\Story;
 test('a story must have at least one assertion', function () {
     $story = Story::make()
         ->action(fn () => null)
-        ->check(fn () => true)
+        ->assert(fn () => true)
         ->name('parent')
         ->stories([
             Story::make('child'),

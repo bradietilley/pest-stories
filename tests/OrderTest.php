@@ -17,7 +17,7 @@ test('order of everything is as expected', function () {
         ->before(fn () => $data[] = 'action before')
         ->action('action')
         ->after(fn () => $data[] = 'action after')
-        ->check(fn () => $data[] = 'assert run');
+        ->assert(fn () => $data[] = 'assert run');
 
     $story->boot()->perform();
 

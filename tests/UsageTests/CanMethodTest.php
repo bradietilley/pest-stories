@@ -12,7 +12,7 @@ function createStoryBoardForCanMethod(int $level, &$names): StoryBoard
             fn (Story $story) => $story->can()->name("{$story->getName()}#"),
         )
         ->action(fn () => true)
-        ->check(
+        ->assert(
             fn (Story $story) => $names[] = $story->getTestName(),
             fn (Story $story) => $names[] = 'cannot',
         )

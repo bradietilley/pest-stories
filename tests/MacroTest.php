@@ -19,7 +19,7 @@ test('macros can be added to stories', function () {
 
     Story::make()
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->asAdmin()
         ->boot();
 

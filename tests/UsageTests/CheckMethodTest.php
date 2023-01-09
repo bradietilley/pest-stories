@@ -10,7 +10,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
         ->can()
         ->when(
             ($level === 1),
-            fn (Story $story) => $story->check(
+            fn (Story $story) => $story->assert(
                 can: fn () => $names[] = 'can_1',
                 cannot: fn () => $names[] = 'cannot_1',
             )->name("{$story->getName()}#"),
@@ -21,7 +21,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                 ->name('foo')
                 ->when(
                     ($level === 2),
-                    fn (Story $story) => $story->check(
+                    fn (Story $story) => $story->assert(
                         can: fn () => $names[] = 'can_2a',
                         cannot: fn () => $names[] = 'cannot_2a',
                     )->name("{$story->getName()}#"),
@@ -31,7 +31,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                         ->name('one')
                         ->when(
                             ($level === 3),
-                            fn (Story $story) => $story->check(
+                            fn (Story $story) => $story->assert(
                                 can: fn () => $names[] = 'can_3a',
                                 cannot: fn () => $names[] = 'cannot_3a',
                             )->name("{$story->getName()}#"),
@@ -40,7 +40,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                         ->name('two')
                         ->when(
                             ($level === 3),
-                            fn (Story $story) => $story->check(
+                            fn (Story $story) => $story->assert(
                                 can: fn () => $names[] = 'can_3b',
                                 cannot: fn () => $names[] = 'cannot_3b',
                             )->name("{$story->getName()}#"),
@@ -50,7 +50,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                 ->name('bar')
                 ->when(
                     ($level === 2),
-                    fn (Story $story) => $story->check(
+                    fn (Story $story) => $story->assert(
                         can: fn () => $names[] = 'can_2b',
                         cannot: fn () => $names[] = 'cannot_2b',
                     )->name("{$story->getName()}#"),
@@ -60,7 +60,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                         ->name('one')
                         ->when(
                             ($level === 3),
-                            fn (Story $story) => $story->check(
+                            fn (Story $story) => $story->assert(
                                 can: fn () => $names[] = 'can_3c',
                                 cannot: fn () => $names[] = 'cannot_3c',
                             )->name("{$story->getName()}#"),
@@ -69,7 +69,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                         ->name('two')
                         ->when(
                             ($level === 3),
-                            fn (Story $story) => $story->check(
+                            fn (Story $story) => $story->assert(
                                 can: fn () => $names[] = 'can_3d',
                                 cannot: fn () => $names[] = 'cannot_3d',
                             )->name("{$story->getName()}#"),

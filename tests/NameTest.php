@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 test('a story can be given a name using different shortcuts', function () {
     $story = StoryBoard::make()
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->stories([
             Story::make('do something basic'),
             Story::make()->view('App\Models\Brand'),
@@ -39,7 +39,7 @@ test('a story can be named during the make static constructor', function () {
 test('a storyboard will not prefix its story names with the parent name when dataset mode is enabled', function () {
     $story = StoryBoard::make('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->stories([
             Story::make('child 1'),
             Story::make('child 2'),
@@ -69,7 +69,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
 test('can inherit name from parents', function () {
     $story = StoryBoard::make('parent')
         ->can()
-        ->check(fn () => null)
+        ->assert(fn () => null)
         ->stories([
             $child1 = Story::make('child 1'),
             Story::make('child 2')->stories([

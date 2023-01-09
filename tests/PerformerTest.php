@@ -137,7 +137,7 @@ test('when performer setUser method is run, the user is logged in', function () 
             $users[] = $story->getUser();
             $users[] = $user;
         })
-        ->check(function (Story $story, $user) use ($users) {
+        ->assert(function (Story $story, $user) use ($users) {
             $users[] = $story->getUser();
             $users[] = $user;
         })
@@ -189,7 +189,7 @@ test('a custom actingAs callback may be specified to replace the standard auth l
         ->name('auth test')
         ->action('use_some_user')
         ->can()
-        ->check(fn () => null);
+        ->assert(fn () => null);
 
     // Creating a story doesn't mean it gets run
     expect(auth()->check())->toBeFalse();

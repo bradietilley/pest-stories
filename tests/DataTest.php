@@ -32,7 +32,7 @@ test('the story data can shared easily amongst callbacks', function () {
             $list[] = 'c';
             $story->set('list', $list);
         })
-        ->check(function (Story $story) {
+        ->assert(function (Story $story) {
             expect($story->has('list'))->toBeTrue();
 
             $list = $story->get('list', []);
