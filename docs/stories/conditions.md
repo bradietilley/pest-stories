@@ -7,6 +7,6 @@ Stories use Laravel's `\Illuminate\Support\Traits\Conditionable` trait, meaning 
 ```php
 StoryBoard::make()
     ->name('do something')
-    ->when($boolCondition, fn (Story $story) => $story->scenario('some_scenario'))
+    ->when($boolCondition, fn (Story $story) => $story->action('some_action'))
     ->test();
 ```

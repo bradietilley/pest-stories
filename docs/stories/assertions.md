@@ -4,7 +4,7 @@
 
 All your Pest `expect` and phpunit `assert` calls should be done in the story's assertion `check()` method.
 
-The `check()` method accepts two callbacks, one for each [Expectation](/docs/stories/expectations.md), i.e. `can` and `cannot`. Of course there will be scenarios were you're testing things that don't fit this model of can/cannot, and as such you'll find yourself just using the `can` assertion check and have it contain your complex assertions.
+The `check()` method accepts two callbacks, one for each [Expectation](/docs/stories/expectations.md), i.e. `can` and `cannot`. Of course there will be situations were you're testing things that don't fit this model of can/cannot, and as such you'll find yourself just using the `can` assertion check and have it contain your complex assertions.
 
 Rudimentary Example:
 
@@ -16,7 +16,7 @@ Story::make('write a post')
     )
     ->task('create_post_api_request')
     ->stories([
-        Story::make()->scenario('as_admin')->can(),
-        Story::make()->scenario('as_user')->cannot(),
+        Story::make()->action('as_admin')->can(),
+        Story::make()->action('as_user')->cannot(),
     ]);
 ```

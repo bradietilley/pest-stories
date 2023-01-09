@@ -112,7 +112,7 @@ abstract class AbstractAction
     }
 
     /**
-     * Get an exception for scenario/task not found
+     * Get an exception for action not found
      */
     abstract protected static function notFound(string $name): StoryBoardException;
 

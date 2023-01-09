@@ -5,13 +5,13 @@
 All actions MUST have a "generator" which is a callback that is executed when the action is booted for a given story. The generator can be provided in two ways:
 
 ```php
-Scenario::make('as_admin', function () {
+Action::make('as_admin', function () {
     // sign in to admin
 });
 
 // or
 
-Scenario::make('as_admin')->as(function () {
+Action::make('as_admin')->as(function () {
     // sign in to admin
 });
 ```

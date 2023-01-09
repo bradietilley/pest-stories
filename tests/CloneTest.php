@@ -1,27 +1,26 @@
 <?php
 
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
-test('you can clone a scenario and it will have a different identifier', function () {
-    $scenario1 = Scenario::make('something_common')->as(fn () => null);
-    $scenario2 = $scenario1->clone();
+test('you can clone a action and it will have a different identifier', function () {
+    $action1 = Action::make('something_common')->as(fn () => null);
+    $action2 = $action1->clone();
 
-    expect($scenario1->getName())->not()->toBe($scenario2->getName());
+    expect($action1->getName())->not()->toBe($action2->getName());
 });
 
-test('you can add a cloned scenario to a story', function () {
+test('you can add a cloned action to a story', function () {
     $data = Collection::make();
 
-    $scenario1 = Scenario::make('something_common')->as(fn () => $data[] = 'something_common')->appendName('old name');
-    $scenario2 = $scenario1->clone()->as(fn () => $data[] = 'something_not_so_common')->appendName('new name');
+    $action1 = Action::make('something_common')->as(fn () => $data[] = 'something_common')->appendName('old name');
+    $action2 = $action1->clone()->as(fn () => $data[] = 'something_not_so_common')->appendName('new name');
 
     $story = StoryBoard::make('a story')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
-        ->scenario($scenario2)
+        ->action($action2)
         ->boot()
         ->assert();
 

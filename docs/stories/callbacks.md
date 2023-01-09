@@ -2,7 +2,7 @@
 
 ### Story Callbacks
 
-Inside storyboard there are many closure driven callbacks, such as Action (scenario and task) generators and registering/booting callbacks, story `before()` and `after()` callbacks, assertion `check()` callback, and even the `::actingAs()` callback.
+Inside storyboard there are many closure driven callbacks, such as Action (action and task) generators and registering/booting callbacks, story `before()` and `after()` callbacks, assertion `check()` callback, and even the `::actingAs()` callback.
 
 Under the hood, all closure driven callbacks utilise Laravel's container dependency injection, and each closure driven callback will have access to each variable you have set against the story.
 
@@ -17,7 +17,7 @@ Note: There are a handful of variable names you will not be able to dependency i
 Examples:
 
 ```php
-Scenario::make('a_scenario')->as(function (int $a, int $b) {
+Action::make('an_action')->as(function (int $a, int $b) {
     echo $a; // 1
     echo $b; // 2
 });
@@ -28,8 +28,8 @@ Task::make('a_task')->as(function (int $a, int $b) {
 });
 
 Story::make()
-    ->scenario('a_scenario')
-    ->scenario(function (int $a, int $b) {
+    ->action('an_action')
+    ->action(function (int $a, int $b) {
         echo $a; // 1
         echo $b; // 2
     })
@@ -60,10 +60,10 @@ Story::make()
     ->set('b', 2);
 ```
 
-As mentioned in the [Action](/docs/actions.md) docs, each Scenario has a variable property, which defaults to the Scenario's name. The result of the Scenario generator (callback) is passed into the Story's variable data container via the `variable` key and can be later referenced using that key.
+As mentioned in the [Action](/docs/actions.md) docs, each Action has a variable property, which defaults to the Action's name. The result of the Action generator (callback) is passed into the Story's variable data container via the `variable` key and can be later referenced using that key.
 
 ```php
-Scenario::make('as_admin')
+Action::make('as_admin')
     ->as(function (Story $story) {
         $story->user(createAdmin());
 
@@ -72,7 +72,7 @@ Scenario::make('as_admin')
     ->variable('role')
     ->appendName();
 
-Scenario::make('as_customer')
+Action::make('as_customer')
     ->as(function (Story $story) {
         $story->user(createCustomer());
 
@@ -81,7 +81,7 @@ Scenario::make('as_customer')
     ->variable('role')
     ->appendName();
 
-Scenario::make('blocked')
+Action::make('blocked')
     ->as(fn (Story $story) => $story->user->block())
     ->appendName();
 
@@ -103,10 +103,10 @@ Story::make('event log created when user is modified')
     })
     ->can()
     ->stories([
-        Story::make()->scenario('as_admin'),
-        Story::make()->scenario('as_admin')->scenario('blocked'),
-        Story::make()->scenario('as_customer'),
-        Story::make()->scenario('as_customer')->scenario('blocked'),
+        Story::make()->action('as_admin'),
+        Story::make()->action('as_admin')->action('blocked'),
+        Story::make()->action('as_customer'),
+        Story::make()->action('as_customer')->action('blocked'),
     ]);
 
 /**

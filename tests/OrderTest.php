@@ -1,42 +1,32 @@
 <?php
 
-use BradieTilley\StoryBoard\Story\Scenario;
-use BradieTilley\StoryBoard\Story\Task;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('order of everything is as expected', function () {
     $data = Collection::make();
 
-    Task::make('task')
-        ->as(fn () => $data[] = 'task run')
-        ->registering(fn () => $data[] = 'task register')
-        ->booting(fn () => $data[] = 'task boot');
-
-    Scenario::make('scenario')
-        ->as(fn () => $data[] = 'scenario run')
-        ->registering(fn () => $data[] = 'scenario register')
-        ->booting(fn () => $data[] = 'scenario boot');
+    Action::make('action')
+        ->as(fn () => $data[] = 'action run')
+        ->registering(fn () => $data[] = 'action register')
+        ->booting(fn () => $data[] = 'action boot');
 
     $story = StoryBoard::make()
         ->can()
-        ->before(fn () => $data[] = 'task before')
-        ->task('task')
-        ->scenario('scenario')
-        ->after(fn () => $data[] = 'task after')
+        ->before(fn () => $data[] = 'action before')
+        ->action('action')
+        ->after(fn () => $data[] = 'action after')
         ->check(fn () => $data[] = 'assert run');
 
     $story->boot()->assert();
 
     expect($data->toArray())->toBe([
-        'scenario register',
-        'task register',
-        'scenario boot',
-        'scenario run',
-        'task before',
-        'task boot',
-        'task run',
-        'task after',
+        'action register',
+        'action before',
+        'action boot',
+        'action run',
+        'action after',
         'assert run',
     ]);
 });

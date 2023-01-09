@@ -112,7 +112,7 @@ test('a story with a timeout will pass if it does not reach the timeout', functi
 
     Story::make('timed test')
         ->can()
-        ->task(function () use (&$ran) {
+        ->action(function () use (&$ran) {
             $ran[] = 'test';
         })
         ->check(fn () => null)
@@ -129,7 +129,7 @@ test('a story with a timeout will fail if it reaches the timeout (seconds; via a
 
     $story = Story::make('timed test')
         ->can()
-        ->task(function () use ($ran) {
+        ->action(function () use ($ran) {
             sleep(2);
 
             $ran[] = 'test';
@@ -143,7 +143,7 @@ test('a story with a timeout will fail if it reaches the timeout (seconds; via a
         $this->fail('Story should have timed out');
     } catch (ExpectationFailedException $e) {
         expect($e->getMessage())
-            ->toStartWith('Failed asserting that this task would complete in less than 1 second.');
+            ->toStartWith('Failed asserting that this story would complete in less than 1 second.');
     }
 
     /**
@@ -157,7 +157,7 @@ test('a story with a timeout will fail if it reaches the timeout (milliseconds; 
 
     $story = Story::make('timed test')
         ->can()
-        ->task(function () use ($ran) {
+        ->action(function () use ($ran) {
             // 0.01s = 10ms = 10,000 microseconds, so usleep for 10,001
             usleep(10001);
 
@@ -172,7 +172,7 @@ test('a story with a timeout will fail if it reaches the timeout (milliseconds; 
         $this->fail('Story should have timed out');
     } catch (ExpectationFailedException $e) {
         expect($e->getMessage())
-            ->toStartWith('Failed asserting that this task would complete in less than 0.01 seconds.');
+            ->toStartWith('Failed asserting that this story would complete in less than 0.01 seconds.');
     }
 
     /**
@@ -190,7 +190,7 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
 
     $story = Story::make('timed test')
         ->can()
-        ->task(function () use ($ran) {
+        ->action(function () use ($ran) {
             // 0.00001s = 10 microseconds, so usleep for 11
             usleep(11);
 
@@ -205,7 +205,7 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
         $this->fail('Story should have timed out');
     } catch (ExpectationFailedException $e) {
         expect($e->getMessage())
-            ->toStartWith('Failed asserting that this task would complete in less than 0.00001 seconds.');
+            ->toStartWith('Failed asserting that this story would complete in less than 0.00001 seconds.');
     }
 
     /**
@@ -224,7 +224,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
     $story = StoryBoard::make('parent')
         ->can()
         ->check(fn () => null)
-        ->task(function (Story $story) use ($ran) {
+        ->action(function (Story $story) use ($ran) {
             usleep(20002);
 
             $ran[] = $story->getName();
@@ -246,7 +246,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
         $this->fail('Story should have timed out');
     } catch (ExpectationFailedException $e) {
         expect($e->getMessage())
-            ->toStartWith('Failed asserting that this task would complete in less than 0.001 seconds.');
+            ->toStartWith('Failed asserting that this story would complete in less than 0.001 seconds.');
     }
 
     try {
@@ -254,7 +254,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
         $this->fail('Story should have timed out');
     } catch (ExpectationFailedException $e) {
         expect($e->getMessage())
-            ->toStartWith('Failed asserting that this task would complete in less than 0.002 seconds.');
+            ->toStartWith('Failed asserting that this story would complete in less than 0.002 seconds.');
     }
 
     $child3->run();
@@ -271,7 +271,7 @@ test('a timeout can be inherited from parents with no timeout override on childr
 test('a story can expose the timer used for asserting time', function () {
     $story = Story::make('timed test')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->timeout(0.01);
 
@@ -296,7 +296,7 @@ test('a story cut short by a timeout will still run tearDown', function () {
 
     $story = Story::make('timed test')
         ->can()
-        ->task(fn () => usleep(1000001))
+        ->action(fn () => usleep(1000001))
         ->check(fn () => null)
         ->tearDown(fn () => $ran[] = 'tearDown')
         ->timeout(1);

@@ -7,10 +7,10 @@ Stories use Laravel's `\Illuminate\Support\Traits\Macroable` trait, meaning you 
 ```php
 Story::macro('asAdmin', function () {
     /** @var Story $this */
-    $this->scenario(function (Story $story) {
+    $this->action(function (Story $story) {
         $story->user(createAdmin());
 
-        echo "Scenario run";
+        echo "Action run";
     });
     
     echo "Macro run";
@@ -34,5 +34,5 @@ Output:
 ```
 Macro run
 Story created
-Scenario run
+Action run
 ```

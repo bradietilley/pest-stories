@@ -4,7 +4,7 @@
 
 A `StoryBoard` should be used as the highest level story, with `Story` for _all_ children and grandchildren, but this is not enforced as there's little-to-no difference between a StoryBoard and a Story.
 
-You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the scenarios, tasks and assertions are not executed.
+You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the actions, tasks and assertions are not executed.
 
 Example:
 
@@ -32,9 +32,9 @@ StoryBoard::make('create something')
     ->can()
     ->task(fn () => null)
     ->stories([
-        Story::make('with a')->scenario('a'),
-        Story::make('with b')->scenario('b'),
-        Story::make('with c')->scenario('c'),
+        Story::make('with a')->action('a'),
+        Story::make('with b')->action('b'),
+        Story::make('with c')->action('c'),
     ])
     ->test();
 
@@ -58,15 +58,15 @@ Story::make()->task(function (Story $story, TestCase $test) {
 
 **Story Registration + Boot**
 
-1: The story is registered, which involves scenario and task registration.
+1: The story is registered, which involves action and task registration.
 
-2: Each scenario invokes its optional `->registering()` callback, if specified.
+2: Each action invokes its optional `->registering()` callback, if specified.
 
 3: Each task invokes its optional `->registering()` callback, if specified.
 
-4: The story is then booted, which involves scenario and task booting.
+4: The story is then booted, which involves action and task booting.
 
-5: Each scenario invokes its optional `->booting()` callback, if specified, then immediately invokes its [Generator](/docs/actions.md#generators). 
+5: Each action invokes its optional `->booting()` callback, if specified, then immediately invokes its [Generator](/docs/actions.md#generators). 
 
 6: Before tasks are booted, the story invokes its optional `->before()` callback, if specified.
 
@@ -86,16 +86,16 @@ Task::make('task')
     ->registering(fn () => echo "task register")
     ->booting(fn () => echo "task boot");
 
-Scenario::make('scenario')
-    ->as(fn () => echo "scenario run")
-    ->registering(fn () => echo "scenario register")
-    ->booting(fn () => echo "scenario boot");
+Action::make('action')
+    ->as(fn () => echo "action run")
+    ->registering(fn () => echo "action register")
+    ->booting(fn () => echo "action boot");
 
 StoryBoard::make()
     ->can()
     ->before(fn () => echo "task before")
     ->task('task')
-    ->scenario('scenario')
+    ->action('action')
     ->after(fn () => echo "task after")
     ->check(fn () => echo "assert run")
     ->test();
@@ -104,10 +104,10 @@ StoryBoard::make()
 Output would be:
 
 ```
-scenario register
+action register
 task register
-scenario boot
-scenario run
+action boot
+action run
 task before
 task boot
 task run

@@ -7,8 +7,8 @@ use Illuminate\Support\Collection;
 test('a story can isolate itself and prevent other stories from running', function (string $story) {
     $runs = collect();
 
-    $storyA = Story::make('A')->task(fn () => $runs[] = 'A')->check(fn () => true)->can();
-    $storyB = Story::make('B')->task(fn () => $runs[] = 'B')->check(fn () => true)->can();
+    $storyA = Story::make('A')->action(fn () => $runs[] = 'A')->check(fn () => true)->can();
+    $storyB = Story::make('B')->action(fn () => $runs[] = 'B')->check(fn () => true)->can();
 
     if ($story === 'A') {
         $storyA->isolate();
@@ -48,7 +48,7 @@ test('a story can isolate itself and allow its children to also run', function (
     $stories = StoryBoard::make()
         ->can()
         ->name('parent')
-        ->task(fn (Story $story) => $ran[] = $story->getFullName())
+        ->action(fn (Story $story) => $ran[] = $story->getFullName())
         ->check(fn () => true)
         ->stories([
             Story::make('child 1')->stories([
@@ -90,7 +90,7 @@ test('multiple stories can be isolated and all isolated stories will run', funct
     $stories = StoryBoard::make()
         ->can()
         ->name('parent')
-        ->task(fn (Story $story) => $ran[] = $story->getFullName())
+        ->action(fn (Story $story) => $ran[] = $story->getFullName())
         ->check(fn () => true)
         ->stories([
             Story::make('child 1')->stories([

@@ -25,8 +25,7 @@
 */
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\Scenario;
-use BradieTilley\StoryBoard\Story\Task;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 
 expect()->extend('toBeOne', function () {
@@ -50,8 +49,7 @@ function something()
 }
 
 beforeEach(function () {
-    Scenario::flush();
-    Task::flush();
+    Action::flush();
     Story::flushIsolation();
     StoryBoard::disableDatasets();
 });

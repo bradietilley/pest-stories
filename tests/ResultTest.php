@@ -45,8 +45,8 @@ test('a result given from a story can be referenced in the checkers', function (
             expect($story->getResult()->getValue())->toBe($randomStringsClone->first());
             expect($story->getResult()->getError())->toBeNull();
         })
-        ->task(function (Story $story) use ($ran, $randomStrings) {
-            $ran[] = "task:{$story->getName()}";
+        ->action(function (Story $story) use ($ran, $randomStrings) {
+            $ran[] = "action:{$story->getName()}";
 
             $result = $randomStrings->shift();
 
@@ -75,11 +75,11 @@ test('a result given from a story can be referenced in the checkers', function (
      */
     expect($ran->toArray())->toBe([
         'before:can',
-        'task:can',
+        'action:can',
         'after:can',
         'can:can',
         'before:cannot',
-        'task:cannot',
+        'action:cannot',
         'after:cannot',
         'cannot:cannot',
     ]);
@@ -89,8 +89,8 @@ test('when an error occurs during a callback, the result of the story contains a
     $story = Story::make()
         ->name('tester')
         ->before(fn () => ($throwsIn === 'before') ? throw new \Exception('Dummy Test Exception via before') : null)
-        ->task(fn () => ($throwsIn === 'task') ? throw new \Exception('Dummy Test Exception via task') : null)
-        ->task(fn () => ($throwsIn === 'after') ? throw new \Exception('Dummy Test Exception via after') : null)
+        ->action(fn () => ($throwsIn === 'action') ? throw new \Exception('Dummy Test Exception via action') : null)
+        ->after(fn () => ($throwsIn === 'after') ? throw new \Exception('Dummy Test Exception via after') : null)
         ->check(fn () => ($throwsIn === 'check') ? throw new \Exception('Dummy Test Exception via check') : null)
         ->can();
 
@@ -107,7 +107,7 @@ test('when an error occurs during a callback, the result of the story contains a
         ->and($result->getError())->getMessage()->toBe('Dummy Test Exception via '.$throwsIn);
 })->with([
     'before',
-    'task',
+    'action',
     'after',
     'check',
 ]);
@@ -117,7 +117,7 @@ test('checkers can inject the raw result as an argument', function () {
 
     Story::make()
         ->name('tester')
-        ->task(fn () => 1234567890)
+        ->action(fn () => 1234567890)
         // main thing is $result is an int, not Result object
         ->check(fn (int $result) => $results[] = $result)
         ->can()

@@ -1,82 +1,82 @@
 <?php
 
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
-test('a scenario can be run once', function () {
+test('an action can be run once', function () {
     $run = Collection::make();
 
-    Scenario::make('something')->as(fn () => $run[] = 'scenario');
+    Action::make('something')->as(fn () => $run[] = 'action');
 
     StoryBoard::make('story')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => $run[] = 'task')
-        ->scenario('something')
+        ->action(fn () => $run[] = 'action2')
+        ->action('something')
         ->boot()
         ->assert();
 
     expect($run->toArray())->toBe([
-        'scenario',
-        'task',
+        'action',
+        'action2',
     ]);
 });
 
-test('a scenario can be run multiple times', function () {
+test('an action can be run multiple times', function () {
     $run = Collection::make();
 
-    Scenario::make('something')->as(fn () => $run[] = 'scenario')->repeat(3);
+    Action::make('something')->as(fn () => $run[] = 'action')->repeat(3);
 
     StoryBoard::make('story')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => $run[] = 'task')
-        ->scenario('something')
+        ->action(fn () => $run[] = 'action2')
+        ->action('something')
         ->boot()
         ->assert();
 
     expect($run->toArray())->toBe([
-        'scenario',
-        'scenario',
-        'scenario',
-        'task',
+        'action',
+        'action',
+        'action',
+        'action2',
     ]);
 });
 
-test('a scenario can be run zero times', function () {
+test('an action can be run zero times', function () {
     $run = Collection::make();
 
-    Scenario::make('something')->as(fn () => $run[] = 'scenario')->repeat(0);
+    Action::make('something')->as(fn () => $run[] = 'action')->repeat(0);
 
     StoryBoard::make('story')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => $run[] = 'task')
-        ->scenario('something')
+        ->action(fn () => $run[] = 'action2')
+        ->action('something')
         ->boot()
         ->assert();
 
     expect($run->toArray())->toBe([
-        'task',
+        'action2',
     ]);
 });
 
-test('a scenario can opt to not repeat (run once)', function () {
+test('an action can opt to not repeat (run once)', function () {
     $run = Collection::make();
 
-    Scenario::make('something')->as(fn () => $run[] = 'scenario')->dontRepeat();
+    Action::make('something')->as(fn () => $run[] = 'action')->dontRepeat();
 
     StoryBoard::make('story')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => $run[] = 'task')
-        ->scenario('something')
+        ->action(fn () => $run[] = 'action2')
+        ->action('something')
         ->boot()
         ->assert();
 
     expect($run->toArray())->toBe([
-        'scenario',
-        'task',
+        'action',
+        'action2',
     ]);
 });

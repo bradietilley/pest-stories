@@ -2,27 +2,27 @@
 
 ### Action Test Name
 
-By default, actions don't modify the name of a Story, so when you specify a story with a name and a scenario or task, only the story name gets printed.
+By default, actions don't modify the name of a Story, so when you specify a story with a name and a action or task, only the story name gets printed.
 
-However, you may opt to suffix a bit of text to the Story name whenever the scenario or task is added. This can be achieved via the `appendName()` method in one of two ways:
+However, you may opt to suffix a bit of text to the Story name whenever the action or task is added. This can be achieved via the `appendName()` method in one of two ways:
 
 ```php
 // Use the action name (in sentence case without underscores)
-Scenario::make('as_admin')->appendName();
+Action::make('as_admin')->appendName();
 
 // Use a custom name
-Scenario::make('without_2fa')->appendName('without Two-Factor');
+Action::make('without_2fa')->appendName('without Two-Factor');
 
 // Example name inheritance:
 Story::make('create something')
     ->can()
     ->task(fn () => null)
     ->stories([
-        Story::make()->scenario('as_admin'),
-        Story::make()->scenario('as_admin')->scenario('without_2fa'),
+        Story::make()->action('as_admin'),
+        Story::make()->action('as_admin')->action('without_2fa'),
 
-        Story::make('very cool')->scenario('as_admin'),
-        Story::make('very cool')->scenario('as_admin')->scenario('without_2fa'),
+        Story::make('very cool')->action('as_admin'),
+        Story::make('very cool')->action('as_admin')->action('without_2fa'),
     ]);
 
 /**
@@ -35,4 +35,4 @@ Story::make('create something')
  */
 ```
 
-Note: You may utilise this feature only when the scenario is instantiated as an instance (at some point), such as when you `Task::make()` or even `new Scenario()` -- even when you reference the action by name in the story. It will not work when using closure actions like `->scenario(fn () => doSomething())` or `->task(fn () => doSomething())`
+Note: You may utilise this feature only when the action is instantiated as an instance (at some point), such as when you `Task::make()` or even `new Action()` -- even when you reference the action by name in the story. It will not work when using closure actions like `->action(fn () => doSomething())` or `->task(fn () => doSomething())`

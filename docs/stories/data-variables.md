@@ -22,7 +22,7 @@ This can be achieved via the `get()` and `getData()` methods. Example:
 ```php
 Story::make()
     ->task(fn (Story $story, TestCase $test) => $test->post('/users/', $story->get('payload')))
-    ->scenario('as_admin')
+    ->action('as_admin')
     ->cannot()
     ->check(
         cannot: function (Story $story, TestCase $test) {

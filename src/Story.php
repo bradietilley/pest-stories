@@ -12,9 +12,8 @@ use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
-use BradieTilley\StoryBoard\Traits\HasScenarios;
+use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasStories;
-use BradieTilley\StoryBoard\Traits\HasTasks;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
 use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
@@ -41,9 +40,8 @@ class Story
     use HasInheritance;
     use HasIsolation;
     use HasPerformer;
-    use HasScenarios;
+    use HasActions;
     use HasStories;
-    use HasTasks;
     use HasTimeout;
     use Macroable;
     use RunOnce;
@@ -119,7 +117,7 @@ class Story
     }
 
     /**
-     * Register this story scenarios and tasks
+     * Register this story actions
      *
      * @return $this
      */
@@ -137,14 +135,13 @@ class Story
             // @codeCoverageIgnoreEnd
         }
 
-        $this->registerScenarios();
-        $this->registerTasks();
+        $this->registerActions();
 
         return $this;
     }
 
     /**
-     * Boot the story scenarios and tasks
+     * Boot (and register) the story and its actions
      *
      * @return $this
      */
@@ -162,8 +159,7 @@ class Story
             // @codeCoverageIgnoreEnd
         }
 
-        $this->bootScenarios();
-        $this->bootTasks();
+        $this->bootActions();
 
         return $this;
     }
@@ -276,8 +272,7 @@ class Story
 
         $this->inheritName();
         $this->inheritData();
-        $this->inheritScenarios();
-        $this->inheritTasks();
+        $this->inheritActions();
         $this->inheritAssertions();
         $this->inheritCallbacks();
         $this->inheritTimeout();
@@ -311,7 +306,7 @@ class Story
             $taken = $e->getTimeTaken();
             $timeout = $e->getTimeout();
             $timeoutFormatted = $e->getTimeoutFormatted();
-            $message = "Failed asserting that this task would complete in less than {$timeoutFormatted}.";
+            $message = "Failed asserting that this story would complete in less than {$timeoutFormatted}.";
 
             Assert::assertLessThanOrEqual(
                 expected: $timeout,

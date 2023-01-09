@@ -2,6 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Exceptions;
 
-class TaskNotFoundException extends StoryBoardException
+class ActionNotFoundException extends StoryBoardException
 {
 }

@@ -1,7 +1,7 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -109,7 +109,7 @@ if (! function_exists('auth')) {
 }
 
 test('when performer setUser method is run, the user is logged in', function () {
-    Scenario::make('use_some_user')->as(function (Story $story) {
+    Action::make('use_some_user')->as(function (Story $story) {
         $user = new PestStoryBoardPerformerAuthenticatable(
             ++PestStoryBoardPerformerAuthenticatable::$lastId,
         );
@@ -124,13 +124,12 @@ test('when performer setUser method is run, the user is logged in', function () 
 
     $story = Story::make()
         ->name('auth test')
-        ->scenario('use_some_user')
+        ->action('use_some_user')
         ->can()
-        ->before(function (Story $story, $user) use ($users) {
+        ->before(function (Story $story) use ($users) {
             $users[] = $story->getUser();
-            $users[] = $user;
         })
-        ->task(function (Story $story, $user) use ($users) {
+        ->action(function (Story $story, $user) use ($users) {
             $users[] = $story->getUser();
             $users[] = $user;
         })
@@ -144,9 +143,13 @@ test('when performer setUser method is run, the user is logged in', function () 
         })
         ->boot()
         ->assert();
+        
+    // 2x each of the 4 callbacks, only one for before
+    expect($users)->toHaveCount(7);
 
-    // 2x each of the 4 callbacks
-    expect($users)->toHaveCount(8);
+    // 2x each of the 3 callbacks (excl before)
+    $users = $users->filter();
+    expect($users)->toHaveCount(6);
 
     $users = $users->unique();
     expect($users)->toHaveCount(1);
@@ -174,7 +177,7 @@ test('a custom actingAs callback may be specified to replace the standard auth l
     expect(auth()->check())->toBeFalse();
     expect($login)->toHaveCount(0);
 
-    Scenario::make('use_some_user')->as(function (Story $story) {
+    Action::make('use_some_user')->as(function (Story $story) {
         $user = new PestStoryBoardPerformerAuthenticatable(
             ++PestStoryBoardPerformerAuthenticatable::$lastId,
         );
@@ -184,16 +187,15 @@ test('a custom actingAs callback may be specified to replace the standard auth l
 
     $story = Story::make()
         ->name('auth test')
-        ->scenario('use_some_user')
+        ->action('use_some_user')
         ->can()
-        ->task(fn () => null)
         ->check(fn () => null);
 
     // Creating a story doesn't mean it gets run
     expect(auth()->check())->toBeFalse();
     expect($login)->toHaveCount(0);
 
-    // Booting and asserting means the scenario (and thus actingAs callback) is run
+    // Booting and asserting means the action (and thus actingAs callback) is run
     $story->boot()->assert();
 
     // Unlike previous test, auth()->check() should be false as there was no acting as logic

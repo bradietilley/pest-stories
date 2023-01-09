@@ -90,7 +90,7 @@ class Timer
     }
 
     /**
-     * Register callback to run when the task passes, fails or is timedout
+     * Register callback to run when the callback passes, fails or is timedout
      */
     public function after(?Closure $after): self
     {
@@ -141,7 +141,7 @@ class Timer
 
     /**
      * Finish recording the time, and calculate the
-     * time taken to execute the task
+     * time taken to execute the callback
      */
     private function end(): void
     {
@@ -190,7 +190,7 @@ class Timer
             $timeout = $this->getAlarmTimeout();
             pcntl_alarm($timeout);
 
-            // Run task that may take a while
+            // Run a callback that may take a while
             $this->start();
             $this->runCallback('callback');
             $this->end();
@@ -290,7 +290,7 @@ class Timer
     }
 
     /**
-     * Get the microtime that this task started
+     * Get the microtime that this callback started
      */
     public function getStart(): ?int
     {
@@ -298,7 +298,7 @@ class Timer
     }
 
     /**
-     * Get the microtime that this task finished
+     * Get the microtime that this callback finished
      */
     public function getEnd(): ?int
     {
@@ -306,7 +306,7 @@ class Timer
     }
 
     /**
-     * Get the exception that was thrown in the task, if any
+     * Get the exception that was thrown in the callback, if any
      */
     public function getException(): ?Throwable
     {

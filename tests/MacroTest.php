@@ -1,18 +1,18 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use Illuminate\Support\Collection;
 
 test('macros can be added to stories', function () {
     $data = Collection::make([]);
 
-    Scenario::make('as_role', function (string $role) use ($data) {
+    Action::make('as_role', function (string $role) use ($data) {
         $data[] = "role:{$role}";
     });
 
     Story::macro('asAdmin', function () {
-        return $this->scenario('as_role', ['role' => 'admin']);
+        return $this->action('as_role', ['role' => 'admin']);
     });
 
     expect($data->all())->toBe([]);
@@ -20,7 +20,6 @@ test('macros can be added to stories', function () {
     Story::make()
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
         ->asAdmin()
         ->boot();
 

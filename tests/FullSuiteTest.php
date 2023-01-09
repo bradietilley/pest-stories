@@ -1,93 +1,80 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 use PHPUnit\Framework\TestCase;
 
 $data = collect([
-    'shared_scenario' => null,
-    'scenario' => null,
-    'tasks' => [],
+    'shared_action' => null,
+    'actions' => null,
     'can' => null,
     'cannot' => null,
 ]);
 
 /**
- * Callback to assert the data is correctly updated (indicating all scenarios and tasks were run)
+ * Callback to assert the data is correctly updated (indicating all actions and actions were run)
  */
 function expectTestSuiteRun(&$data): void
 {
-    expect($data['shared_scenario'])->toBe('1')
-        ->and($data['scenario'])->toBe('3')
+    expect($data['shared_action'])->toBe('1')
+        ->and($data['action'])->toBe('3')
         ->and($data['can'])->toBe('[Can] full suite test with child one')
         ->and($data['cannot'])->toBe('[Cannot] full suite test with child two')
-        ->and($data['testcase'])->toBe('P\\Tests\\FullSuiteTest')
-        ->and($data['tasks'])->toBeArray()->toHaveCount(2)
-        ->and($data['tasks'][0])->toBe([
-            'shared' => 1,
-            'scenario' => 2,
-            'story' => '[Can] full suite test with child one',
-        ])
-        ->and($data['tasks'][1])->toBe([
-            'shared' => 1,
-            'scenario' => 3,
-            'story' => '[Cannot] full suite test with child two',
-        ]);
+        ->and($data['testcase'])->toBe('P\\Tests\\FullSuiteTest');
 
     // reset
     $data = collect([
-        'shared_scenario' => null,
-        'scenario' => null,
-        'tasks' => [],
+        'shared_action' => null,
+        'action' => null,
         'can' => null,
         'cannot' => null,
     ]);
 }
 
 /**
- * Test Scenario to be executed during Story boot
+ * Test Action to be executed during Story boot
  */
-Scenario::make('shared_scenario', function () use (&$data) {
-    $data['shared_scenario'] = '1';
+Action::make('shared_action', function () use (&$data) {
+    $data['shared_action'] = '1';
 
     return 1;
 }, 'shared');
 
 /**
- * Test Scenario to be executed during Story boot
+ * Test Action to be executed during Story boot
  */
-Scenario::make('scenario_one', function () use (&$data) {
-    $data['scenario'] = '2';
+Action::make('action_one', function () use (&$data) {
+    $data['action'] = '2';
 
     return 2;
-}, 'scenario');
+}, 'action');
 
 /**
- * Test Scenario to be executed during Story boot
+ * Test Action to be executed during Story boot
  */
-Scenario::make('scenario_two', function () use (&$data) {
-    $data['scenario'] = '3';
+Action::make('action_two', function () use (&$data) {
+    $data['action'] = '3';
 
     return 3;
-}, 'scenario');
+}, 'action');
 
 /**
- * Create a storyboard with a shared scenario and two child tests
+ * Create a storyboard with a shared action and two child tests
  */
 $story = StoryBoard::make()
     ->name('full suite test')
-    ->scenario('shared_scenario')
+    ->action('shared_action')
     ->before(fn () => null)
-    ->task(function (Story $story, TestCase $test, $shared, $scenario) use (&$data) {
-        $tasks = $data['tasks'];
-        $tasks[] = [
+    ->action(function (Story $story, TestCase $test, $shared, $action) use (&$data) {
+        $actions = $data['actions'];
+        $actions[] = [
             'shared' => $shared,
-            'scenario' => $scenario,
+            'action' => $action,
             'story' => $story->getTestName(),
         ];
 
-        $data['tasks'] = $tasks;
+        $data['actions'] = $actions;
         $data['testcase'] = get_class($test);
     })
     ->check(
@@ -105,11 +92,11 @@ $story = StoryBoard::make()
     ->stories([
         Story::make()
             ->name('with child one')
-            ->scenario('scenario_one')
+            ->action('action_one')
             ->can(),
         Story::make()
             ->name('with child two')
-            ->scenario('scenario_two')
+            ->action('action_two')
             ->cannot(),
     ])
     ->test();

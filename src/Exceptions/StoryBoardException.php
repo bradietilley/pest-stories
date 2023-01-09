@@ -7,45 +7,32 @@ use Exception;
 
 abstract class StoryBoardException extends Exception
 {
-    public static function scenarioNotFound(string $scenario): ScenarioNotFoundException
+    public static function actionNotFound(string $action): ActionNotFoundException
     {
-        return new ScenarioNotFoundException(
-            sprintf('The `%s` scenario could not be found.', $scenario),
+        return new ActionNotFoundException(
+            sprintf('The `%s` action could not be found.', $action),
         );
     }
 
-    public static function scenarioGeneratorNotFound(string $scenario): ScenarioGeneratorNotFoundException
+    public static function actionGeneratorNotFound(string $action): ActionGeneratorNotFoundException
     {
-        return new ScenarioGeneratorNotFoundException(
-            sprintf('The `%s` scenario generator callback could not be found.', $scenario),
+        return new ActionGeneratorNotFoundException(
+            sprintf('The `%s` action generator callback could not be found.', $action),
         );
     }
 
-    public static function taskNotFound(string $task): TaskNotFoundException
+    public static function actionNotSpecified(Story $story): ActionNotSpecifiedException
     {
-        return new TaskNotFoundException(
-            sprintf('The `%s` task could not be found.', $task),
+        return new ActionNotSpecifiedException(
+            sprintf('No action was found for the story `%s`', $story->getFullName()),
         );
     }
 
-    public static function taskGeneratorNotFound(string $task): TaskGeneratorNotFoundException
-    {
-        return new TaskGeneratorNotFoundException(
-            sprintf('The `%s` task generator callback could not be found.', $task),
-        );
-    }
 
     public static function invalidStory(): InvalidStoryException
     {
         return new InvalidStoryException(
             'You must only provide Story classes to the stories() method.',
-        );
-    }
-
-    public static function taskNotSpecified(Story $story): TaskNotSpecifiedException
-    {
-        return new TaskNotSpecifiedException(
-            sprintf('No task was found for the story `%s`', $story->getFullName()),
         );
     }
 

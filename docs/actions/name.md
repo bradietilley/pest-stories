@@ -7,6 +7,12 @@
 All actions MUST have a name, which is provided when the action is created.
 
 ```php
-Scenario::make('as_admin');
-Task::make('do_something');
+Action::make('as_admin');
+
+$action = new Action('do_something');
+$action->store();
+
+Story::make()
+    ->action('as_admin')
+    ->action('do_something');
 ```

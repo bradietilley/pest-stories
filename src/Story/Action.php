@@ -2,15 +2,15 @@
 
 namespace BradieTilley\StoryBoard\Story;
 
-use BradieTilley\StoryBoard\Exceptions\ScenarioGeneratorNotFoundException;
-use BradieTilley\StoryBoard\Exceptions\ScenarioNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\ActionGeneratorNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\ActionNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use Closure;
 
 /**
  * @method static self make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null)
  */
-class Scenario extends AbstractAction
+class Action extends AbstractAction
 {
     protected string $variable;
 
@@ -28,19 +28,19 @@ class Scenario extends AbstractAction
     }
 
     /**
-     * Scenario not found
+     * Action not found
      */
-    protected static function notFound(string $name): ScenarioNotFoundException
+    protected static function notFound(string $name): ActionNotFoundException
     {
-        return StoryBoardException::scenarioNotFound($name);
+        return StoryBoardException::actionNotFound($name);
     }
 
     /**
      * Generator not found
      */
-    protected static function generatorNotFound(string $name): ScenarioGeneratorNotFoundException
+    protected static function generatorNotFound(string $name): ActionGeneratorNotFoundException
     {
-        return StoryBoardException::scenarioGeneratorNotFound($name);
+        return StoryBoardException::actionGeneratorNotFound($name);
     }
 
     /**
@@ -64,7 +64,7 @@ class Scenario extends AbstractAction
     }
 
     /**
-     * Append the name of this scenario to the tests
+     * Append the name of this action to the tests
      *
      * @return $this
      */

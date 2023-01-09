@@ -2,23 +2,23 @@
 
 use BradieTilley\StoryBoard\Exceptions\InvalidStoryException;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\Scenario;
+use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 beforeEach(function () {
-    Scenario::make('allows_creation', fn () => true);
-    Scenario::make('as_admin', fn () => true);
-    Scenario::make('as_customer', fn () => true);
-    Scenario::make('as_unblocked', fn () => true);
-    Scenario::make('as_blocked', fn () => true);
+    Action::make('allows_creation', fn () => true);
+    Action::make('as_admin', fn () => true);
+    Action::make('as_customer', fn () => true);
+    Action::make('as_unblocked', fn () => true);
+    Action::make('as_blocked', fn () => true);
 });
 
 test('a storyboard with a single story can generate test cases with names', function () {
     $storyboard = StoryBoard::make('create something cool')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null);
+        ->action(fn () => null);
 
     $tests = $storyboard->allStories();
     expect($tests)->toHaveCount(0);
@@ -35,10 +35,10 @@ test('a storyboard with multiple stories can generate test cases with names', fu
         ->name('create something cool')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->stories([
-            Story::make('as admin')->scenario('as_admin')->can(),
-            Story::make('as customer')->scenario('as_customer')->cannot(),
+            Story::make('as admin')->action('as_admin')->can(),
+            Story::make('as customer')->action('as_customer')->cannot(),
         ]);
 
     $tests = $storyboard->allStories();
@@ -57,15 +57,15 @@ test('a storyboard with multiple nested stories can generate test cases with nam
         ->name('create something cool')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->stories([
-            Story::make('as admin')->scenario('as_admin')->stories([
-                Story::make('if not blocked')->scenario('as_unblocked')->can(),
-                Story::make('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as admin')->action('as_admin')->stories([
+                Story::make('if not blocked')->action('as_unblocked')->can(),
+                Story::make('if blocked')->action('as_blocked')->cannot(),
             ]),
-            Story::make('as customer')->scenario('as_customer')->stories([
-                Story::make('if not blocked')->scenario('as_unblocked')->cannot(),
-                Story::make('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as customer')->action('as_customer')->stories([
+                Story::make('if not blocked')->action('as_unblocked')->cannot(),
+                Story::make('if blocked')->action('as_blocked')->cannot(),
             ]),
         ]);
 
@@ -82,21 +82,20 @@ test('a storyboard with multiple nested stories can generate test cases with nam
     expect($tests)->toHaveKeys($expectedKeys);
 });
 
-test('a story with multiple nested stories can collate required scenarios', function () {
+test('a story with multiple nested stories can collate required actions', function () {
     $storyboard = StoryBoard::make()
         ->name('create something cool')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
-        ->scenario('allows_creation')
+        ->action('allows_creation')
         ->stories([
-            Story::make('as admin')->scenario('as_admin')->stories([
-                Story::make('if not blocked')->scenario('as_unblocked')->can(),
-                Story::make('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as admin')->action('as_admin')->stories([
+                Story::make('if not blocked')->action('as_unblocked')->can(),
+                Story::make('if blocked')->action('as_blocked')->cannot(),
             ]),
-            Story::make('as customer')->scenario('as_customer')->stories([
-                Story::make('if not blocked')->scenario('as_unblocked')->cannot(),
-                Story::make('if blocked')->scenario('as_blocked')->cannot(),
+            Story::make('as customer')->action('as_customer')->stories([
+                Story::make('if not blocked')->action('as_unblocked')->cannot(),
+                Story::make('if blocked')->action('as_blocked')->cannot(),
             ]),
         ]);
 
@@ -127,9 +126,9 @@ test('a story with multiple nested stories can collate required scenarios', func
     $actual = [];
 
     foreach ($tests as $key => $story) {
-        $scenarios = array_keys($story->allScenarios());
+        $actions = array_keys($story->allActions());
 
-        $actual[$key] = $scenarios;
+        $actual[$key] = $actions;
     }
 
     expect($actual)->toBe($expect);
@@ -140,8 +139,8 @@ test('a story cannot accept children that are not story classes', function (stri
         'string' => [
             'test',
         ],
-        'scenario' => [
-            Scenario::make('test', fn () => true),
+        'action' => [
+            Action::make('test', fn () => true),
         ],
         'mixed' => [
             Story::make('test'),
@@ -152,7 +151,7 @@ test('a story cannot accept children that are not story classes', function (stri
     StoryBoard::make()->stories($stories);
 })->with([
     'when given string' => 'string',
-    'when given scenario' => 'scenario',
+    'when given action' => 'action',
     'when given a story and a string' => 'mixed',
 ])->throws(InvalidStoryException::class, 'You must only provide Story classes to the stories() method.');
 
@@ -161,7 +160,7 @@ test('a story can fetch its children stories via collection methods and property
         ->name('parent')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->stories([
             Story::make('child 1'),
             Story::make('child 2')->stories([
@@ -206,7 +205,7 @@ test('stories can append child stories in various ways', function () {
     $story = StoryBoard::make('parent')
         ->can()
         ->check(fn () => null)
-        ->task(fn () => null);
+        ->action(fn () => null);
 
     $storyA = Story::make('story_a');
     $storyB = Story::make('story_b');
@@ -232,23 +231,22 @@ test('stories can append child stories in various ways', function () {
     ]);
 });
 
-test('you can retrieve all registered scenarios for a story', function () {
-    Scenario::make('scenario_1')->as(fn () => null);
-    Scenario::make('scenario_2')->as(fn () => null);
+test('you can retrieve all registered actions for a story', function () {
+    Action::make('action_1')->as(fn () => null);
+    Action::make('action_2')->as(fn () => null);
 
     $story = StoryBoard::make('parent')
         ->can()
-        ->task(fn () => null)
         ->check(fn () => null)
-        ->scenario('scenario_1')
+        ->action('action_1')
         ->stories([
-            $child = Story::make('child')->scenario('scenario_2'),
+            $child = Story::make('child')->action('action_2'),
         ]);
 
-    expect($scenarios = $child->getScenarios())->toHaveCount(1);
+    expect($actions = $child->getActions())->toHaveCount(1);
 
-    expect($scenarios['scenario_2']['scenario']->getName())->toBe('scenario_2');
-    expect($scenarios['scenario_2']['arguments'])->toBe([]);
+    expect($actions['action_2']['action']->getName())->toBe('action_2');
+    expect($actions['action_2']['arguments'])->toBe([]);
 
     // Register all children to parent
     $stories = $story->storiesAll;
@@ -257,11 +255,11 @@ test('you can retrieve all registered scenarios for a story', function () {
     /** @var Story $story */
     $story = $stories->first();
 
-    expect($scenarios = $story->getScenarios())->toHaveCount(2);
+    expect($actions = $story->getActions())->toHaveCount(2);
 
-    expect($scenarios['scenario_1']['scenario']->getName())->toBe('scenario_1');
-    expect($scenarios['scenario_1']['arguments'])->toBe([]);
+    expect($actions['action_1']['action']->getName())->toBe('action_1');
+    expect($actions['action_1']['arguments'])->toBe([]);
 
-    expect($scenarios['scenario_2']['scenario']->getName())->toBe('scenario_2');
-    expect($scenarios['scenario_2']['arguments'])->toBe([]);
+    expect($actions['action_2']['action']->getName())->toBe('action_2');
+    expect($actions['action_2']['arguments'])->toBe([]);
 });

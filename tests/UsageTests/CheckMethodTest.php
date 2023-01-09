@@ -15,7 +15,7 @@ function createStoryBoardForCheckTest(int $level, &$names): StoryBoard
                 cannot: fn () => $names[] = 'cannot_1',
             )->name("{$story->getName()}#"),
         )
-        ->task(fn () => true)
+        ->action(fn () => true)
         ->stories([
             Story::make()
                 ->name('foo')

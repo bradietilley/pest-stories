@@ -2,12 +2,12 @@
 
 ### Story Users
 
-By default when a story is run the session is unauthenticated. You may authenticate a user via the `user()` or `setUser` methods for a story. Authentication is immediately performed when `user()` is run, so this is best done via scenarios or tasks which are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information.
+By default when a story is run the session is unauthenticated. You may authenticate a user via the `user()` or `setUser` methods for a story. Authentication is immediately performed when `user()` is run, so this is best done via actions or tasks which are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information.
 
 Example:
 
 ```php
-Scenario::make('as_admin', function (Story $story) {
+Action::make('as_admin', function (Story $story) {
     $story->user(User::factory()->create([
         'is_admin' => true,
     ]));
@@ -40,15 +40,15 @@ Story::actingAs(function (Story $story, Authenticatable $user) {
     }
 });
 
-Scenario::make('as_admin')->as(fn (Story $story) => $story->user(createAdmin()));
-Scenario::make('session')->variable('auth')->as(fn () => 'session')->appendName('via session');
-Scenario::make('passport')->variable('auth')->as(fn () => 'passport')->appendName('via passport');
+Action::make('as_admin')->as(fn (Story $story) => $story->user(createAdmin()));
+Action::make('session')->variable('auth')->as(fn () => 'session')->appendName('via session');
+Action::make('passport')->variable('auth')->as(fn () => 'passport')->appendName('via passport');
 
 Task::make('logout')->as(fn (TestCase $test) => $test->post('/logout'));
 
 Story::make('logout successfully')
     ->can()
-    ->scenario('as_admin')
+    ->action('as_admin')
     ->task('logout')
     ->before(
         fn () => expect(auth()->check())->toBeTrue(),
@@ -57,8 +57,8 @@ Story::make('logout successfully')
         fn () => expect(auth()->check())->toBeFalse(),
     )
     ->stories([
-        Story::make()->scenario('session'),
-        Story::make()->scenario('passport'),
+        Story::make()->action('session'),
+        Story::make()->action('passport'),
     ]);
 
 /**

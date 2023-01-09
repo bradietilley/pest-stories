@@ -57,7 +57,7 @@ test('storyboard test function will call upon the pest test function for each st
     StoryBoard::make()
         ->name('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->stories([
             Story::make('child a'),

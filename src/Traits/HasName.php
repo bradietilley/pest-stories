@@ -87,10 +87,10 @@ trait HasName
         $name = $this->getName();
 
         /**
-         * Append names from scenarios (where scenarios opt to `->appendName()`)
+         * Append names from actions (where actions opt to `->appendName()`)
          */
-        if (method_exists($this, 'getNameFromScenarios')) {
-            $name = "{$name} {$this->getNameFromScenarios()}";
+        if (method_exists($this, 'getNameFromActions')) {
+            $name = "{$name} {$this->getNameFromActions()}";
         }
 
         $name = trim($name);

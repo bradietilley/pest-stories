@@ -75,13 +75,13 @@ $b->getTestName(); // [Cannot] parent child 2
 
 **Names from actions**
 
-When you apply an [Action](/docs/actions.md) such as a scenario or task [to a story](/docs/stories/actions.md), it can offer a suffix to the story's full name.
+When you apply an [Action](/docs/actions.md) [to a story](/docs/stories/actions.md), it can offer a suffix to the story's full name.
 
 Example:
 
 ```php
-Scenario::make('as_admin')->appendName();
-Story::make('do something')->can()->scenario('as_admin');
+Action::make('as_admin')->appendName();
+Story::make('do something')->can()->action('as_admin');
 
 // Full Name: '[Can] do something as admin'
 ```

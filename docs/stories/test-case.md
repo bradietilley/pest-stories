@@ -8,7 +8,7 @@ Example:
 
 ```php
 $story = Story::make()->task(function (TestCase $test) {
-    // Have access in tasks, scenarios, assertions (checks)
+    // Have access in actions, assertions (checks)
 });
 
 // Don't have access before testing

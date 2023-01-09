@@ -10,8 +10,8 @@ test('a story can have a before callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
         ->check(fn () => null)
+        ->action(fn () => null)
         ->before(fn (Story $story) => $ran[] = 'before:'.$story->getName())
         ->run();
     expect($ran)->toHaveCount(1)->first()->toBe('before:parent');
@@ -22,8 +22,8 @@ test('a story can have a before callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
         ->check(fn () => null)
+        ->action(fn () => null)
         ->before(fn (Story $story) => $ran[] = 'before:'.$story->getName())
         ->stories([
             Story::make('child'),
@@ -40,7 +40,7 @@ test('a story can have a after callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->after(fn (Story $story) => $ran[] = 'after:'.$story->getName())
         ->run();
@@ -52,7 +52,7 @@ test('a story can have a after callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->after(fn (Story $story) => $ran[] = 'after:'.$story->getName())
         ->stories([
@@ -70,7 +70,7 @@ test('a story can have a setUp callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->setUp(fn (Story $story) => $ran[] = 'setUp:'.$story->getName())
         ->run();
@@ -82,7 +82,7 @@ test('a story can have a setUp callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->setUp(fn (Story $story) => $ran[] = 'setUp:'.$story->getName())
         ->stories([
@@ -100,7 +100,7 @@ test('a story can have a tearDown callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->tearDown(fn (Story $story) => $ran[] = 'tearDown:'.$story->getName())
         ->run();
@@ -112,7 +112,7 @@ test('a story can have a tearDown callback', function () {
     $ran = Collection::make();
     Story::make('parent')
         ->can()
-        ->task(fn () => null)
+        ->action(fn () => null)
         ->check(fn () => null)
         ->tearDown(fn (Story $story) => $ran[] = 'tearDown:'.$story->getName())
         ->stories([
@@ -129,7 +129,7 @@ test('a story can have a tearDown callback', function () {
         $ran = Collection::make();
         Story::make('parent')
             ->can()
-            ->task(fn () => null)
+            ->action(fn () => null)
             ->check(fn () => throw new InvalidArgumentException('test error'))
             ->tearDown(fn (Story $story, Throwable $e) => $ran[] = 'tearDown:'.$e->getMessage())
             ->stories([

@@ -2,7 +2,7 @@
 
 - [Inheritance](/docs/stories/inheritance.md)
 - [Name](/docs/stories/name.md)
-- [Actions: Tasks + Scenarios](/docs/stories/actions.md)
+- [Actions: Tasks + Actions](/docs/stories/actions.md)
 - [Expectations](/docs/stories/expectations.md)
 - [Assertions](/docs/stories/assertions.md)
 - [Users / Acting-As](/docs/stories/users-acting-as.md)
@@ -16,7 +16,7 @@
 
 In storyboard, a `Story` is a start-to-finish test case for a 'user story', including all setup and assertions. For example: "as a customer you may create a comment if the post is not locked and the user has ability to post".
 
-In this case, you have many scenarios:
+In this case, you have many actions:
 
 - User exists:
     - Is a customer
@@ -34,7 +34,7 @@ $user = createUser(Role::CUSTOMER);
 $post = Post::factory()->create();
 ```
 
-Then you'd probably find yourself testing not only the "can create when these scenarios are met" but also "cannot create when one of these scenarios are not met". You would either create a test for each scenario _(violation of DRY)_ or you'd use datasets to pass in variables that control the setup (different roles, different point levels, different blocked states, different Post lock states, different Post deleted states). Something like this:
+Then you'd probably find yourself testing not only the "can create when these actions are met" but also "cannot create when one of these actions are not met". You would either create a test for each action _(violation of DRY)_ or you'd use datasets to pass in variables that control the setup (different roles, different point levels, different blocked states, different Post lock states, different Post deleted states). Something like this:
 
 ```php
 test('write comment on post', function (string $role, bool $blocked, int $points, bool $locked, bool $deleted, bool $can) {
@@ -140,46 +140,46 @@ test('write comment on post', function (string $role, bool $blocked, int $points
 ]);
 ```
 
-Adding more scenarios that require testing becomes a little difficult, and can get quite messy.
+Adding more actions that require testing becomes a little difficult, and can get quite messy.
 
-The StoryBoard idea is that these scenarios are often going to be reused across the system in various tests. From policy unit tests (that require an authorised user of varying roles, and posts to exist with varying states) to API feature tests (that also require users of varying roles, and posts with varying states) to completely different tests that just require a post or user to exist in whatever state.
+The StoryBoard idea is that these actions are often going to be reused across the system in various tests. From policy unit tests (that require an authorised user of varying roles, and posts to exist with varying states) to API feature tests (that also require users of varying roles, and posts with varying states) to completely different tests that just require a post or user to exist in whatever state.
 
 ```php
-// In tests/Pest.php you might define some global scenarios that may frequently get used.
+// In tests/Pest.php you might define some global actions that may frequently get used.
 
 /**
- * User scenarios
+ * User actions
  */
-Scenario::make('as_admin')
+Action::make('as_admin')
     ->as(fn (Story $story) => $story->user(createUser(Role::ADMIN)))
     ->appendName('as an admin');
 
-Scenario::make('as_customer')
+Action::make('as_customer')
     ->as(fn (Story $story) => $story->user(createUser(Role::CUSTOMER)))
     ->appendName('as a customer');
 
-Scenario::make('user_blocked')
+Action::make('user_blocked')
     ->as(fn (User $user) => $user->block())
     ->appendName('when blocked');
 
-Scenario::make('user_low_points')
+Action::make('user_low_points')
     ->as(fn (User $user) => $user->update([
         'points' => 99
     ]))
     ->appendName('with low points');
 
-Scenario::make('user_high_points')
+Action::make('user_high_points')
     ->as(fn (User $user) => $user->update([
         'points' => 100
     ]))
     ->appendName('with high points');
 
 /**
- * Post scenarios
+ * Post actions
  */
-Scenario::make('post')->as(fn () => Post::factory()->create());
-Scenario::make('post_locked')->as(fn (Post $post) => $post->lock());
-Scenario::make('post_deleted')->as(fn (Post $post) => $post->delete());
+Action::make('post')->as(fn () => Post::factory()->create());
+Action::make('post_locked')->as(fn (Post $post) => $post->lock());
+Action::make('post_deleted')->as(fn (Post $post) => $post->delete());
 
 
 // In tests/Unit/Policies/CommentTest.php
@@ -200,25 +200,25 @@ StoryBoard::make()
     ->task(function (User $user, Post $post) {
         return (new PostPolicy())->createComment($user, $post);
     })
-    ->scenario('post')
+    ->action('post')
     ->stories([
         Story::make()
-            ->scenario('as_admin')
+            ->action('as_admin')
             ->can()
             ->stories([
                 Story::make(),
-                Story::make('when post is locked')->scenario('post_locked'),
-                Story::make('when post is deleted')->scenario('post_deleted'),
+                Story::make('when post is locked')->action('post_locked'),
+                Story::make('when post is deleted')->action('post_deleted'),
             ]),
         Story::make()
-            ->scenario('as_customer')
+            ->action('as_customer')
             ->cannot()
             ->stories([
-                Story::make()->scenario('user_high_points')->can(),
-                Story::make()->scenario('user_low_points'),
-                Story::make()->scenario('user_blocked'),
-                Story::make('when post is locked')->scenario('post_locked'),
-                Story::make('when post is deleted')->scenario('post_deleted'),
+                Story::make()->action('user_high_points')->can(),
+                Story::make()->action('user_low_points'),
+                Story::make()->action('user_blocked'),
+                Story::make('when post is locked')->action('post_locked'),
+                Story::make('when post is deleted')->action('post_deleted'),
             ]),
     ])
     ->test();
