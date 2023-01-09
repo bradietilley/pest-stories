@@ -4,7 +4,7 @@
 
 A `StoryBoard` should be used as the highest level story, with `Story` for _all_ children and grandchildren, but this is not enforced as there's little-to-no difference between a StoryBoard and a Story.
 
-You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the actions, tasks and assertions are not executed.
+You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the actions and assertions are not executed.
 
 Example:
 
@@ -58,34 +58,9 @@ Story::make()->action(function (Story $story, TestCase $test) {
 
 **Story Registration + Boot**
 
-1: The story is registered, which involves action and task registration.
-
-2: Each action invokes its optional `->registering()` callback, if specified.
-
-3: Each task invokes its optional `->registering()` callback, if specified.
-
-4: The story is then booted, which involves action and task booting.
-
-5: Each action invokes its optional `->booting()` callback, if specified, then immediately invokes its [Generator](/docs/actions.md#generators). 
-
-6: Before tasks are booted, the story invokes its optional `->before()` callback, if specified.
-
-7: Each task invokes its optional `->booting()` callback, if specified.
-
-8: Each task invokes its required [Generator](/docs/actions.md#generators).
-
-9: After tasks are booted, the story invokes its optional `->after()` callback, if specified.
-
-10: The story invokes its required assertion checker (based on the specified expectation of can or cannot).
-
 Take the following example as a depiction of the order of events:
 
 ```php
-Task::make('task')
-    ->as(fn () => echo "task run")
-    ->registering(fn () => echo "task register")
-    ->booting(fn () => echo "task boot");
-
 Action::make('action')
     ->as(fn () => echo "action run")
     ->registering(fn () => echo "action register")
@@ -93,9 +68,9 @@ Action::make('action')
 
 StoryBoard::make()
     ->can()
-    ->before(fn () => echo "task before")
+    ->before(fn () => echo "action before")
     ->action('action')
-    ->after(fn () => echo "task after")
+    ->after(fn () => echo "action after")
     ->assert(fn () => echo "assert run")
     ->test();
 ```
@@ -103,13 +78,10 @@ StoryBoard::make()
 Output would be:
 
 ```
+action before
 action register
-task register
 action boot
 action run
-task before
-task boot
-task run
-task after
+action after
 assert run
 ```

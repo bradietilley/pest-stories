@@ -2,7 +2,7 @@
 
 ### Story Users
 
-By default when a story is run the session is unauthenticated. You may authenticate a user via the `user()` or `setUser` methods for a story. Authentication is immediately performed when `user()` is run, so this is best done via actions or tasks which are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information.
+By default when a story is run the session is unauthenticated. You may authenticate a user via the `user()` or `setUser` methods for a story. Authentication is immediately performed when `user()` is run, so this is best done via actions or actions which are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information.
 
 Example:
 
@@ -13,7 +13,7 @@ Action::make('as_admin', function (Story $story) {
     ]));
 });
 
-Task::make('logout', fn (Story $story) => $story->user(null));
+Action::make('logout', fn (Story $story) => $story->user(null));
 ```
 
 Note: Your `User` model must have the `Illuminate\Contracts\Auth\Authenticatable` interface. If your `User` model extends a custom base model (instead of Laravel's Authenticatable), be sure to add `Illuminate\Contracts\Auth\Authenticatable` interface to your model.
@@ -64,8 +64,8 @@ Story::make('logout successfully')
  * [Can] logout successfully via session
  * [Can] logout successfully via passport
  * 
- * Both assert auth()->check() is true before 'logout' task is run
- * Both assert auth()->check() is false after the 'logout' task is run
+ * Both assert auth()->check() is true before 'logout' action is run
+ * Both assert auth()->check() is false after the 'logout' action is run
  */
 ```
 

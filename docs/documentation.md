@@ -1,7 +1,7 @@
 # Pest StoryBoard Documentation
 
 - [Stories](/docs/stories.md)
-- [Actions: Actions + Tasks](/docs/actions.md)
+- [Actions: Actions](/docs/actions.md)
 
 ## Stories
 
@@ -21,17 +21,6 @@ Read more about [Stories](/docs/stories.md).
 
 An action (`BradieTilley\StoryBoard\Stories\AbstractAction`) is a closure-driven callback that may be used in one or more stories, in order to execute a sequence of events/actions that lead to a state where you can test a given feature/limitation.
 
-There are two different types of actions - actions and tasks.
-
-A Action (`BradieTilley\StoryBoard\Stories\Action`) is designed to seed an environment before you begin testing, such as creating existing records, modifying configuration values, etc.
-
-A Task (`BradieTilley\StoryBoard\Stories\Task`) is designed to perform actions where may assert your expectations against. Typically you only need a single Task, however you may have multiple if needed.
-
-Together, they can paint the picture of what you're testing:
-
-    - Action: `create an admin and login as them`, `create a record`
-    - Task: `impersonate another user`, `view the record via API`.
-
-Then you test the tasks were successful (or prohibited) depending on your expectation.
+A Action (`BradieTilley\StoryBoard\Stories\Action`) is designed to seed an environment either before you begin testing, such as creating existing records, modifying configuration values, etc, and are also designed to perform actions where may assert your expectations against.
 
 Read more about [Actions](/docs/actions.md).

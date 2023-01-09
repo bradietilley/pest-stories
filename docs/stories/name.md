@@ -52,7 +52,7 @@ $a->getTestName(); // parent child1
 $b->getTestName(); // parent child2 grandchild1
 $c->getTestName(); // parent grandchild2
 
-// Note: this code won't execute due to the stories missing required elements (such as expectations and tasks). Purely informational.
+// Note: this code won't execute due to the stories missing required elements (such as expectations and actions). Purely informational.
 ```
 
 <a id="expectation-names">

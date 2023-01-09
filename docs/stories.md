@@ -2,7 +2,7 @@
 
 - [Inheritance](/docs/stories/inheritance.md)
 - [Name](/docs/stories/name.md)
-- [Actions: Tasks + Actions](/docs/stories/actions.md)
+- [Actions](/docs/stories/actions.md)
 - [Expectations](/docs/stories/expectations.md)
 - [Assertions](/docs/stories/assertions.md)
 - [Users / Acting-As](/docs/stories/users-acting-as.md)

@@ -2,9 +2,9 @@
 
 ### Action Test Name
 
-By default, actions don't modify the name of a Story, so when you specify a story with a name and a action or task, only the story name gets printed.
+By default, actions don't modify the name of a Story, so when you specify a story with a name and a action or action, only the story name gets printed.
 
-However, you may opt to suffix a bit of text to the Story name whenever the action or task is added. This can be achieved via the `appendName()` method in one of two ways:
+However, you may opt to suffix a bit of text to the Story name whenever the action or action is added. This can be achieved via the `appendName()` method in one of two ways:
 
 ```php
 // Use the action name (in sentence case without underscores)
@@ -35,4 +35,4 @@ Story::make('create something')
  */
 ```
 
-Note: You may utilise this feature only when the action is instantiated as an instance (at some point), such as when you `Task::make()` or even `new Action()` -- even when you reference the action by name in the story. It will not work when using closure actions like `->action(fn () => doSomething())`.
+Note: You may utilise this feature only when the action is instantiated as an instance (at some point), such as when you `Action::make()` or even `new Action()` -- even when you reference the action by name in the story like so `->name('my_action')`. However, it will not work when using closure actions like `->action(fn () => doSomething())`.

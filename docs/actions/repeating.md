@@ -2,7 +2,7 @@
 
 ### Action Repeating
 
-There may be situations where you wish to run an action (action or task) several times. You can achieve this by passing `->repeat()` to an action.
+There may be situations where you wish to run an action (action or action) several times. You can achieve this by passing `->repeat()` to an action.
 
 ```php
 Action::make('post')

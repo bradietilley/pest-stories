@@ -2,7 +2,7 @@
 
 ### Story Timeouts
 
-You may specify a timeout for a story. Doing so will terminate the story's process after the given time (rounded up to the nearest second). If the timeout is exceeded during the task's process (including registering and booting) then the story will fail with an appropriate message.
+You may specify a timeout for a story. Doing so will terminate the story's process after the given time (rounded up to the nearest second). If the timeout is exceeded during the action's process (including registering and booting) then the story will fail with an appropriate message.
 
 ```php
 StoryBoard::make('parent')
@@ -17,5 +17,5 @@ StoryBoard::make('parent')
 
 The `[Can] parent child 2` story would fail with the following message:
 
-> Failed asserting that this task would complete in less than 2 seconds.
+> Failed asserting that this action would complete in less than 2 seconds.
 

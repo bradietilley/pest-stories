@@ -2,7 +2,7 @@
 
 ### Action Variables
 
-> Only for actions (not tasks).
+> Only for actions (not actions).
 
 A action has a `$variable` property, which defaults to the `$name` property of the action when not manually specified. After the action's generator is invoked for a given story, the returned variable from the generator is then passed to the Story as a variable that's accessible later, via the variable key that the action has defined (`$variable` property).
 

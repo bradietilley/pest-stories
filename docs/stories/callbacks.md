@@ -2,7 +2,7 @@
 
 ### Story Callbacks
 
-Inside storyboard there are many closure driven callbacks, such as Action (action and task) generators and registering/booting callbacks, story `before()` and `after()` callbacks, assertion `check()` callback, and even the `::actingAs()` callback.
+Inside storyboard there are many closure driven callbacks, such as Action (action and action) generators and registering/booting callbacks, story `before()` and `after()` callbacks, assertion `check()` callback, and even the `::actingAs()` callback.
 
 Under the hood, all closure driven callbacks utilise Laravel's container dependency injection, and each closure driven callback will have access to each variable you have set against the story.
 
@@ -10,7 +10,7 @@ Note: There are a handful of variable names you will not be able to dependency i
 
 - `story` is reserved for the `Story` instance
 - `test` is reserved for the `TestCase` instance
-- `result` is reserved for the `Task` result(s) and is made available in the `after()` and assertion `check()` callbacks.
+- `result` is reserved for the `Action` result(s) and is made available in the `after()` and assertion `check()` callbacks.
 - `can` is reserved for the boolean flag specified via `can()` and/or `->cannot()` methdods.
 - `user` is reserved for the Story user.
 
@@ -22,17 +22,11 @@ Action::make('an_action')->as(function (int $a, int $b) {
     echo $b; // 2
 });
 
-Task::make('a_task')->as(function (int $a, int $b) {
-    echo $a; // 1
-    echo $b; // 2
-});
-
 Story::make()
     ->before(function (int $a, int $b) {
         echo $a; // 1
         echo $b; // 2
     })
-    ->action('a_task')
     ->action(function (int $a, int $b) {
         echo $a; // 1
         echo $b; // 2

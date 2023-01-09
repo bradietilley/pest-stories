@@ -27,4 +27,4 @@ $d->getOrder(); // 4
 $e->getOrder(); // 6
 ```
 
-You may specify multiple tasks or actions with the same order.
+You may specify multiple actions or actions with the same order.

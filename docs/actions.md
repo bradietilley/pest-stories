@@ -19,12 +19,12 @@ Examples of actions may be:
 - "without permission"
     - this action would allow arguments (permission(s)) that the authorised user should get stripped of
 
-**Similarities**
+Actions have a `variable` property which allows for you to return a value that is then accessible later in the Story object via callbacks (see [Data / Variables](/docs/stories/data-variables.md) for how you may access these variables elsewhere).
 
-Actions are almost synonymous with Tasks, except Actions have a `variable` property which allows for you to return a value that is then accessible later in the Story object (see [Data / Variables](/docs/stories/data-variables.md) for how you may access these variables elsewhere). Tasks do not have a variable, instead the returned value is accessible in the assertion checker as the variable `$result`.
+The returned value from actions are set as the Story's result variable, which allows for you to target the response from the the most recent action in your assertion checker.
 
 **Workflow**
 
-Actions are registered when a Story is registered, and booted when a Story is booted, and is always: Actions first, Tasks last, and both abide by their defined orders.
+Actions are registered when a Story is registered, and booted when a Story is booted.
 
 See [Workflow](/docs/stories/workflow.md) for more information on exactly when actions are booted.

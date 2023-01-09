@@ -1,6 +1,6 @@
 # Pest StoryBoard
 
-Provides an object-oriented approach for writing large test suites, with the ability to leverage shared actions, assertions and tasks.
+Provides an object-oriented approach for writing large test suites, with the ability to leverage shared actions, assertions and actions.
 
 This of this 
 
