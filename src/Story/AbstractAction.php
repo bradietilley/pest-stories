@@ -9,6 +9,7 @@ use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
 use BradieTilley\StoryBoard\Traits\HasRepeater;
 use Closure;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 abstract class AbstractAction
@@ -75,6 +76,16 @@ abstract class AbstractAction
     }
 
     /**
+     * Get all actions
+     * 
+     * @return Collection<static> 
+     */
+    public static function all(): Collection
+    {
+        return Collection::make(static::$stored[static::class] ?? []);
+    }
+
+    /**
      * Manually register the action (if not created via `make()`)
      *
      * @return $this
@@ -102,6 +113,8 @@ abstract class AbstractAction
      */
     public static function flush(): void
     {
+        static::$orderCounter = 0;
+        
         if (static::class === AbstractAction::class) {
             static::$stored = [];
 

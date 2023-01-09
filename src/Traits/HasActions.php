@@ -40,9 +40,9 @@ trait HasActions
      *
      * @return $this
      */
-    public function action(string|Closure|Action $action, array $arguments = []): self
+    public function action(string|Closure|Action $action, array $arguments = [], int $order = null): self
     {
-        return $this->setAction($action, $arguments);
+        return $this->setAction($action, $arguments, $order);
     }
     /**
      * @return $this
@@ -68,7 +68,7 @@ trait HasActions
 r
      * @return $this
      */
-    public function setAction(string|Closure|Action $action, array $arguments = []): self
+    public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): self
     {
         $action = Action::prepare($action);
 
@@ -76,6 +76,7 @@ r
             story: $this,
             action: $action,
             arguments: $arguments,
+            order: $order,
         );
 
         $this->actions[$action->getName()] = $storyAction;
@@ -94,7 +95,9 @@ r
     }
 
     /**
-     * Register multiple actions for this story
+     * Register multiple actions for this story.
+     * 
+     * The order of each action is inherited from the actions themselves.
      *
      * @return $this
      */
@@ -163,7 +166,7 @@ r
         $this->actions = Collection::make($this->actions)
             ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
             ->all();
-
+        
         foreach ($this->actions as $storyAction) {
             $storyAction->register();
         }

@@ -3,6 +3,7 @@
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\StoryBoard;
+use Illuminate\Support\Collection;
 
 function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
 {
@@ -144,5 +145,37 @@ test('the can method can be applied at a child story level', function () {
         '[Can] do something bar two#' => [
             'action_3d',
         ],
+    ]);
+});
+
+test('action ordering is as per the actions pre-defined orders', function () {
+    Action::flush();
+    $actions = Collection::make();
+    
+    Action::make('a')->as(fn () => $actions[] = 'a');
+    Action::make('b')->as(fn () => $actions[] = 'b');
+    Action::make('e')->as(fn () => $actions[] = 'e')->order(5);
+    Action::make('d')->as(fn () => $actions[] = 'd')->order(5);
+    Action::make('c')->as(fn () => $actions[] = 'c')->order(4);
+
+    $story = Story::make()
+        ->can()
+        ->check(fn () => null)
+        ->action('c')
+        ->actions([
+            'd' => [],
+            'a' => [],
+        ])
+        ->stories([
+            Story::make('child')->action('b'),
+        ]);
+    
+    $story->storiesAll->first()->run();
+
+    expect($actions->toArray())->toBe([
+        'a',
+        'b',
+        'c',
+        'd',
     ]);
 });

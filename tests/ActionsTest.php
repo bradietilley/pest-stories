@@ -2,6 +2,7 @@
 
 use BradieTilley\StoryBoard\Exceptions\ActionGeneratorNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\ActionNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\ActionNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Action;
@@ -336,19 +337,27 @@ test('action flush forgets all registered actions', function () {
     Action::flush();
 
     // But now can't fetch action (throws exception)
-    $actionNotFound = null;
     try {
         Action::fetch('something');
+        $this->fail();
     } catch (ActionNotFoundException $actionNotFound) {
     }
-    // Expect error was thrown
-    expect($actionNotFound)->not()->toBeNull();
 
     // Remake action
     Action::make('something', fn () => true);
 
     // continues to work great
     expect(Action::fetch('something'))->toBeInstanceOf(Action::class);
+
+    // Clear all all
+    AbstractAction::flush();
+
+    // But now can't fetch action (throws exception)
+    try {
+        Action::fetch('something');
+        $this->fail();
+    } catch (ActionNotFoundException $actionNotFound) {
+    }
 });
 
 test('a action may have a custom registering and booting callback', function () {
@@ -379,4 +388,40 @@ test('a action may have a custom registering and booting callback', function () 
         'booting',
         'generating',
     ]);
+});
+
+test('a story must have at least one task', function () {
+    $story = Story::make()
+        ->check(fn () => true)
+        ->can()
+        ->name('parent')
+        ->stories(
+            Story::make('child'),
+        );
+
+    $all = $story->storiesAll;
+
+    expect($all)->toHaveCount(1);
+    /** @var Story $story */
+    $story = $all->first();
+
+    $story->boot()->assert();
+})->throws(ActionNotSpecifiedException::class, 'No action was found for the story `parent child`');
+
+test('can fetch all registered actions', function () {
+    Action::flush();
+
+    Action::make('a')->as(fn () => null);
+    Action::make('b')->as(fn () => null);
+    Action::make('c')->as(fn () => null);
+
+    expect(Action::all())
+        ->toHaveCount(3)
+        ->keys()
+        ->toArray()
+        ->toBe([
+            'a',
+            'b',
+            'c',
+        ]);
 });

@@ -45,12 +45,12 @@ class StoryAction
 
     public function register(): void
     {
-        $this->action->register($this->story, $this->arguments);
+        $this->action->register($this->getStory(), $this->getArguments());
     }
 
     public function boot(array $arguments = []): mixed
     {
-        return $this->action->boot($this->story, array_replace($this->arguments, $arguments));
+        return $this->action->boot($this->getStory(), array_replace($this->getArguments(), $arguments));
     }
 
     public function getVariable(): string
