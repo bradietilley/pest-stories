@@ -24,5 +24,22 @@
     - Useful when the dev wishes to have each test prefixed with a unique identifier (e.g. issue code, client support ticket, etc)
     - Example: you want to quickly ctrl+c and ctrl+f to find the exact story, and/or to easily isolate it natively in pest/phpunit using `--filter="89c1b6a6d134"`
     - Should all prefixes be resolved first to find the longest one, and then have all other prefixes padded to match the same length?
+    - This differs from simply adding a name to a parent story by allowing the child to define a prefix that is prefixed before `[Can]` or `[Cannot]`
 - Low: Allow no expectation (no can/cannot) -- default to can?
     - Concern: weakens integrity of tests by allowing tests to slip by the wayside.
+- Low: Alias can/cannot static methods to make+can/make+cannot
+    - Will need to proxy non-static can/cannot methods as well.
+- Lowest: Add JSON export and import
+    - This may not work well due to complexities such as accessing variables passed via `use ()` in an action callback
+    - Other than the aforementioned issue, this could allow devs to export their current storyboards to a single JSON file (with PHP code found in callbacks).
+    - `{"scenarios":[],"stories":[{"name":"do something","stories":[]}]}`
+- High: Standardise Task/Scenario into a single Action entity.
+    - These classes are almost identical, except for the scenario's variable and the intention of what a task is to be used for (as the getter for the assertion variables).
+    - Call them `Action` seeing as they're both AbstractAction already, and all docs refer to them as actions?
+    - Should `scenario` and `task` methods on story be kept, as a differentiation between "run first" and "run second" or should they be refactored to `->action()` and the ordering be improved in another way?
+- High: Following the standarisation of tasks and scenarios: improve ordering of actions.
+    - This could be a separate class in order to keep the signature strict - An `Action` is kind of static (not bound to a story) and a `StoryAction` is what an `Action` is converted to when bound to a story.
+    - When fetching actions (including when running `->action('name_of_action')`) it'll return a clone of the action (same name?) and allow for custom ordering.
+        - E.g. `->action('name_of_action', order: 2)`
+    - The `->action` method would still only accept `Action`s but would under the hood convert them to `StoryAction`s. A `StoryAction` could in theory merge with Scenario/Task Groups feature
+    - 
