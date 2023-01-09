@@ -6,10 +6,10 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
-use BradieTilley\StoryBoard\StoryBoard;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
+use BradieTilley\StoryBoard\Story\StoryAction;
 
 trait HasActions
 {
@@ -18,7 +18,7 @@ trait HasActions
     /**
      * All actions and their arguments (excluding inheritance until story is registered)
      *
-     * @var array<string,array>
+     * @var array<string,StoryAction>
      */
     protected array $actions = [];
 
@@ -72,10 +72,13 @@ r
     {
         $action = Action::prepare($action);
 
-        $this->actions[$action->getName()] = [
-            'action' => $action,
-            'arguments' => $arguments,
-        ];
+        $storyAction = new StoryAction(
+            story: $this,
+            action: $action,
+            arguments: $arguments,
+        );
+
+        $this->actions[$action->getName()] = $storyAction;
 
         return $this;
     }
@@ -112,6 +115,8 @@ r
 
     /**
      * Get all regsitered actions for this story (no inheritance lookup)
+     * 
+     * @return array<string,StoryAction>
      */
     public function getActions(): array
     {
@@ -123,7 +128,7 @@ r
      *
      * @requires HasInheritance
      *
-     * @return array<string,array>
+     * @return array<string,StoryAction>
      */
     public function allActions(): array
     {
@@ -131,8 +136,8 @@ r
 
         /** @var HasInheritance $this */
         foreach (array_reverse($this->getAncestors()) as $ancestor) {
-            foreach ($ancestor->getActions() as $name => $data) {
-                $all[$name] = $data;
+            foreach ($ancestor->getActions() as $name => $storyAction) {
+                $all[$name] = (clone $storyAction)->withStory($this);
             }
         }
 
@@ -156,16 +161,11 @@ r
     {
         /** @var Story $this */
         $this->actions = Collection::make($this->actions)
-            ->sortBy(fn (array $data) => $data['action']->getOrder())
+            ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
             ->all();
 
-        foreach ($this->actions as $data) {
-            /** @var Action $action */
-            $action = $data['action'];
-            /** @var array $args */
-            $args = $data['arguments'];
-
-            $action->register($this, $args);
+        foreach ($this->actions as $storyAction) {
+            $storyAction->register();
         }
 
         return $this;
@@ -194,20 +194,13 @@ r
 
             $this->runCallback('before', $this->getParameters($resultData));
 
-            /** @var HasData|HasActions|HasName $this */
-            foreach ($this->actions as $data) {
-                /** @var HasData|HasActions|HasName $this */
-
-                /** @var Action $action */
-                $action = $data['action'];
-                /** @var array $args */
-                $args = $data['arguments'];
-
+            /** @var Story $this */
+            foreach ($this->actions as $storyAction) {
                 // Run action get result
-                $value = $action->boot($this, $this->getParameters($resultData + $args));
+                $value = $storyAction->boot($this->getParameters($resultData));
 
                 // Set the variable
-                $this->setData($action->getVariable(), $value);
+                $this->setData($storyAction->getVariable(), $value);
                 
                 // Set the result
                 $result->setValue($value);
@@ -235,8 +228,7 @@ r
     {
         // Just this level
         $actions = Collection::make($this->actions)
-            ->pluck('action')
-            ->map(fn (Action $action) => $action->getAppendName())
+            ->map(fn (StoryAction $storyAction) => $storyAction->getAppendName())
             ->filter();
 
         return $actions->isNotEmpty() ? $actions->implode(' ') : null;
@@ -329,7 +321,7 @@ r
 
         try {
             $args = array_replace($this->getParameters(), [
-                'result' => $this->result ? $this->result->getValue() : null,
+                'result' => $this->getResult()->getValue(),
             ]);
 
             $this->runCallback($callback, $args);

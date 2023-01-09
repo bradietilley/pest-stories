@@ -104,8 +104,8 @@ test('action callbacks are executed when a story boots its actions', function ()
     $story->registerActions();
     $actions = $story->allActions();
 
-    foreach ($actions as $action => $data) {
-        $actions[$action] = $data['arguments'];
+    foreach ($actions as $action => $storyAction) {
+        $actions[$action] = $storyAction->getArguments();
     }
 
     expect($actions)->toBe([

@@ -245,8 +245,8 @@ test('you can retrieve all registered actions for a story', function () {
 
     expect($actions = $child->getActions())->toHaveCount(1);
 
-    expect($actions['action_2']['action']->getName())->toBe('action_2');
-    expect($actions['action_2']['arguments'])->toBe([]);
+    expect($actions['action_2']->getAction()->getName())->toBe('action_2');
+    expect($actions['action_2']->getArguments())->toBe([]);
 
     // Register all children to parent
     $stories = $story->storiesAll;
@@ -257,9 +257,9 @@ test('you can retrieve all registered actions for a story', function () {
 
     expect($actions = $story->getActions())->toHaveCount(2);
 
-    expect($actions['action_1']['action']->getName())->toBe('action_1');
-    expect($actions['action_1']['arguments'])->toBe([]);
+    expect($actions['action_1']->getAction()->getName())->toBe('action_1');
+    expect($actions['action_1']->getArguments())->toBe([]);
 
-    expect($actions['action_2']['action']->getName())->toBe('action_2');
-    expect($actions['action_2']['arguments'])->toBe([]);
+    expect($actions['action_2']->getAction()->getName())->toBe('action_2');
+    expect($actions['action_2']->getArguments())->toBe([]);
 });
