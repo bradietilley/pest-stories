@@ -360,7 +360,7 @@ class Story
         $args = [];
 
         try {
-            $this->assert();
+            $this->perform();
         } catch (Throwable $e) {
             $args = [
                 'e' => $e,

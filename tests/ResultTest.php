@@ -62,7 +62,7 @@ test('a result given from a story can be referenced in the checkers', function (
         ]);
 
     foreach ($story->allStories() as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
 
         // Remove first item so that the second test can grab the relevant string with ->first()
         $randomStringsClone->shift();
@@ -96,7 +96,7 @@ test('when an error occurs during a callback, the result of the story contains a
 
     try {
         $story->boot();
-        $story->assert();
+        $story->perform();
     } catch (\Exception $e) {
     }
 
@@ -122,7 +122,7 @@ test('checkers can inject the raw result as an argument', function () {
         ->check(fn (int $result) => $results[] = $result)
         ->can()
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($results)->toHaveCount(1)
         ->and($results[0])->toBe(1234567890);

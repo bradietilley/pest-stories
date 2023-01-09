@@ -22,7 +22,7 @@ test('you can add a cloned action to a story', function () {
         ->check(fn () => null)
         ->action($action2)
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($story->getTestName())->toBe('[Can] a story new name');
 

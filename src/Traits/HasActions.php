@@ -291,13 +291,13 @@ r
     }
 
     /**
-     * Run the assertions
+     * Perform the assertions
      *
      * @requires Story
      *
      * @return $this
      */
-    public function assert(): self
+    public function perform(): self
     {
         /** @var Story $this */
         if ($this->skipDueToIsolation()) {

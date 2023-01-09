@@ -19,7 +19,7 @@ test('order of everything is as expected', function () {
         ->after(fn () => $data[] = 'action after')
         ->check(fn () => $data[] = 'assert run');
 
-    $story->boot()->assert();
+    $story->boot()->perform();
 
     expect($data->toArray())->toBe([
         'action register',

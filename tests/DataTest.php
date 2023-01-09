@@ -40,7 +40,7 @@ test('the story data can shared easily amongst callbacks', function () {
             $story->set('list', $list);
         });
 
-    $story->boot()->assert();
+    $story->boot()->perform();
 
     expect($story->all())->toBeArray()->toHaveKey('list');
 

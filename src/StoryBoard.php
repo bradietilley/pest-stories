@@ -36,7 +36,7 @@ class StoryBoard extends Story
                 /** @var TestCase $this */
 
                 // @codeCoverageIgnoreStart
-                $story->setTest($this)->boot()->assert();
+                $story->setTest($this)->boot()->perform();
                 // @codeCoverageIgnoreEnd
             })->with($stories);
         } else {

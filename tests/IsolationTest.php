@@ -19,8 +19,8 @@ test('a story can isolate itself and prevent other stories from running', functi
         // none
     }
 
-    $storyA->boot()->assert();
-    $storyB->boot()->assert();
+    $storyA->boot()->perform();
+    $storyB->boot()->perform();
 
     $expect = [
         $story,
@@ -71,7 +71,7 @@ test('a story can isolate itself and allow its children to also run', function (
         ->allStories();
 
     foreach ($stories as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
     }
 
     expect($ran->toArray())->toBe([
@@ -121,7 +121,7 @@ test('multiple stories can be isolated and all isolated stories will run', funct
         ->allStories();
 
     foreach ($stories as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
     }
 
     expect($ran->toArray())->toBe([

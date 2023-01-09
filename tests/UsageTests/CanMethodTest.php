@@ -65,7 +65,7 @@ test('the can method can be applied at a grandparent story level', function () {
     $board = createStoryBoardForCanMethod(level: 1, names: $names);
 
     foreach ($board->allStories() as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
     }
 
     expect($names->toArray())->toBe([
@@ -81,7 +81,7 @@ test('the can method can be applied at a parent story level', function () {
     $board = createStoryBoardForCanMethod(level: 2, names: $names);
 
     foreach ($board->allStories() as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
     }
 
     expect($names->toArray())->toBe([
@@ -97,7 +97,7 @@ test('the can method can be applied at a child story level', function () {
     $board = createStoryBoardForCanMethod(level: 3, names: $names);
 
     foreach ($board->allStories() as $story) {
-        $story->boot()->assert();
+        $story->boot()->perform();
     }
 
     expect($names->toArray())->toBe([

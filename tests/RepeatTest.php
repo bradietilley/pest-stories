@@ -15,7 +15,7 @@ test('an action can be run once', function () {
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($run->toArray())->toBe([
         'action',
@@ -34,7 +34,7 @@ test('an action can be run multiple times', function () {
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($run->toArray())->toBe([
         'action',
@@ -55,7 +55,7 @@ test('an action can be run zero times', function () {
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($run->toArray())->toBe([
         'action2',
@@ -73,7 +73,7 @@ test('an action can opt to not repeat (run once)', function () {
         ->action(fn () => $run[] = 'action2')
         ->action('something')
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($run->toArray())->toBe([
         'action',

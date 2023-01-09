@@ -142,7 +142,7 @@ test('when performer setUser method is run, the user is logged in', function () 
             $users[] = $user;
         })
         ->boot()
-        ->assert();
+        ->perform();
         
     // 2x each of the 4 callbacks, only one for before
     expect($users)->toHaveCount(7);
@@ -196,7 +196,7 @@ test('a custom actingAs callback may be specified to replace the standard auth l
     expect($login)->toHaveCount(0);
 
     // Booting and asserting means the action (and thus actingAs callback) is run
-    $story->boot()->assert();
+    $story->boot()->perform();
 
     // Unlike previous test, auth()->check() should be false as there was no acting as logic
     expect(auth()->check())->toBeFalse();

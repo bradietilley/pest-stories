@@ -152,7 +152,7 @@ test('action variables are made accessible to the check() callback', function ()
             $data['check_blocked'] = $blocked;
         });
 
-    $story->boot()->assert();
+    $story->boot()->perform();
 
     expect($data)->toBe([
         'check_role' => 'ROLE::admin',
@@ -290,7 +290,7 @@ test('a story with the multiple actions of the same variable will use the last/m
             ]),
         ])
         ->storiesAll
-        ->each(fn (Story $story) => $story->boot()->assert());
+        ->each(fn (Story $story) => $story->boot()->perform());
 
     expect($data->toArray())->toBe([
         '1:1',
@@ -317,7 +317,7 @@ test('can set multiple actions of multiple types in a single function', function
         ->can()
         ->check(fn () => null)
         ->boot()
-        ->assert();
+        ->perform();
 
     expect($ran->toArray())->toBe([
         'old_object:noarg',
@@ -405,7 +405,7 @@ test('a story must have at least one task', function () {
     /** @var Story $story */
     $story = $all->first();
 
-    $story->boot()->assert();
+    $story->boot()->perform();
 })->throws(ActionNotSpecifiedException::class, 'No action was found for the story `parent child`');
 
 test('can fetch all registered actions', function () {
