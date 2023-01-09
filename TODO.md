@@ -34,8 +34,5 @@
     - Other than the aforementioned issue, this could allow devs to export their current storyboards to a single JSON file (with PHP code found in callbacks).
     - `{"scenarios":[],"stories":[{"name":"do something","stories":[]}]}`
 - High: Following the standarisation of tasks and scenarios: improve ordering of actions.
-    - This could be a separate class in order to keep the signature strict - An `Action` is kind of static (not bound to a story) and a `StoryAction` is what an `Action` is converted to when bound to a story.
     - When fetching actions (including when running `->action('name_of_action')`) it'll return a clone of the action (same name?) and allow for custom ordering.
         - E.g. `->action('name_of_action', order: 2)`
-    - The `->action` method would still only accept `Action`s but would under the hood convert them to `StoryAction`s. A `StoryAction` could in theory merge with Scenario/Task Groups feature
-    - 
