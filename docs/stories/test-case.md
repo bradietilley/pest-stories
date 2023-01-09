@@ -7,7 +7,7 @@ During the creation/writing of a Story, it is not bound by a `TestCase`. Only wh
 Example:
 
 ```php
-$story = Story::make()->task(function (TestCase $test) {
+$story = Story::make()->action(function (TestCase $test) {
     // Have access in actions, assertions (checks)
 });
 

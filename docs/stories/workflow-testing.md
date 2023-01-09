@@ -13,7 +13,7 @@ $run = collect();
 
 StoryBoard::make('a test')
     ->can()
-    ->task(fn () => $run[] = 'now')
+    ->action(fn () => $run[] = 'now')
     ->test();
 
 $run->count(); // 0 
@@ -30,7 +30,7 @@ By running `->test()`, the `StoryBoard` or `Story` is made available to Pest.
 ```php
 StoryBoard::make('create something')
     ->can()
-    ->task(fn () => null)
+    ->action(fn () => null)
     ->stories([
         Story::make('with a')->action('a'),
         Story::make('with b')->action('b'),
@@ -51,7 +51,7 @@ StoryBoard::make('create something')
 From this point onwards, each Story has its test case available and is accessible via `$story->getTest()` or via any closure driven callback, for example:
 
 ```php
-Story::make()->task(function (Story $story, TestCase $test) {
+Story::make()->action(function (Story $story, TestCase $test) {
     $story->getTest() === $test; // true
 });
 ```
@@ -94,10 +94,9 @@ Action::make('action')
 StoryBoard::make()
     ->can()
     ->before(fn () => echo "task before")
-    ->task('task')
     ->action('action')
     ->after(fn () => echo "task after")
-    ->check(fn () => echo "assert run")
+    ->assert(fn () => echo "assert run")
     ->test();
 ```
 

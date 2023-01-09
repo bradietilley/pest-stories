@@ -185,7 +185,7 @@ Action::make('post_deleted')->as(fn (Post $post) => $post->delete());
 // In tests/Unit/Policies/CommentTest.php
 StoryBoard::make()
     ->name('write a comment on a post')
-    ->check(
+    ->assert(
         can: function (bool|Response $result) {
             expect($result)->toBe(true);
         },
@@ -197,10 +197,10 @@ StoryBoard::make()
             }
         },
     )
-    ->task(function (User $user, Post $post) {
+    ->action('post')
+    ->action(function (User $user, Post $post) {
         return (new PostPolicy())->createComment($user, $post);
     })
-    ->action('post')
     ->stories([
         Story::make()
             ->action('as_admin')

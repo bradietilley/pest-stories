@@ -43,17 +43,16 @@ Story::actingAs(function (Story $story, Authenticatable $user) {
 Action::make('as_admin')->as(fn (Story $story) => $story->user(createAdmin()));
 Action::make('session')->variable('auth')->as(fn () => 'session')->appendName('via session');
 Action::make('passport')->variable('auth')->as(fn () => 'passport')->appendName('via passport');
-
-Task::make('logout')->as(fn (TestCase $test) => $test->post('/logout'));
+Action::make('logout')->as(fn (TestCase $test) => $test->post('/logout'));
 
 Story::make('logout successfully')
     ->can()
     ->action('as_admin')
-    ->task('logout')
+    ->action('logout')
     ->before(
         fn () => expect(auth()->check())->toBeTrue(),
     )
-    ->check(
+    ->assert(
         fn () => expect(auth()->check())->toBeFalse(),
     )
     ->stories([

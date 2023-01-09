@@ -7,7 +7,7 @@ You may specify a timeout for a story. Doing so will terminate the story's proce
 ```php
 StoryBoard::make('parent')
     ->can()
-    ->task(fn () => sleep(2)); // long running process
+    ->action(fn () => sleep(2)); // long running process
     ->timeout(3)
     ->stories([
         Story::make('child 1'), // will pass (takes 2 seconds; max of 3 seconds)

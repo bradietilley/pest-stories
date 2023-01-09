@@ -16,7 +16,7 @@ Action::make('without_2fa')->appendName('without Two-Factor');
 // Example name inheritance:
 Story::make('create something')
     ->can()
-    ->task(fn () => null)
+    ->action(fn () => null)
     ->stories([
         Story::make()->action('as_admin'),
         Story::make()->action('as_admin')->action('without_2fa'),
@@ -35,4 +35,4 @@ Story::make('create something')
  */
 ```
 
-Note: You may utilise this feature only when the action is instantiated as an instance (at some point), such as when you `Task::make()` or even `new Action()` -- even when you reference the action by name in the story. It will not work when using closure actions like `->action(fn () => doSomething())` or `->task(fn () => doSomething())`
+Note: You may utilise this feature only when the action is instantiated as an instance (at some point), such as when you `Task::make()` or even `new Action()` -- even when you reference the action by name in the story. It will not work when using closure actions like `->action(fn () => doSomething())`.

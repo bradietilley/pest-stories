@@ -14,7 +14,6 @@ Action::make('post_has_many_comments')
 
 Story::make('some test')
     ->can()
-    ->task(fn () => expect(null)->toBeNull())
     ->action('post')
     ->action('post_has_many_comments')
     ->run();

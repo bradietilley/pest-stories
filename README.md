@@ -51,12 +51,12 @@ StoryBoard::make()
             'content' => 'Some Content',
         ]),
     )
-    ->task(function (Story $story, TestCase $test) {
+    ->action(function (Story $story, TestCase $test) {
         $test->post(route('posts.store'), [
             'content' => 'Some Content',
         ]);
     })
-    ->check(
+    ->assert(
         can: function (TestCase $test) {
             $test->assertCreated();
 

@@ -21,10 +21,10 @@ This can be achieved via the `get()` and `getData()` methods. Example:
 
 ```php
 Story::make()
-    ->task(fn (Story $story, TestCase $test) => $test->post('/users/', $story->get('payload')))
     ->action('as_admin')
+    ->action(fn (Story $story, TestCase $test) => $test->post('/users/', $story->get('payload')))
     ->cannot()
-    ->check(
+    ->assert(
         cannot: function (Story $story, TestCase $test) {
             $test->assertInvalid($story->get('expectedErrors'))
         },
@@ -40,7 +40,7 @@ You can check for the existence of a variable via the `has()` and `hasData()` me
 
 ```php
 Story::make()
-    ->task(function (Story $story) {
+    ->action(function (Story $story) {
         if ($story->has('expectedErrors')) {
             // do something
         } else {

@@ -14,15 +14,12 @@ $task = Task::make('task_a')->as(fn () => doSomethingElse());
 
 // By name
 Story::make()->action('action_a');
-Story::make()->task('task_a');
 
 // By variable / instance
 Story::make()->action($action);
-Story::make()->task($task);
 
 // By closure
 Story::make()->action(fn () => doSomething());
-Story::make()->task(fn () => doSomethingElse());
 ```
 
 Note: when using closures to add actions to a story, the underling 'name' is defaulted to 'inline_{HASH}'.

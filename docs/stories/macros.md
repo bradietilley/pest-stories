@@ -22,8 +22,8 @@ StoryBoard::make()
     ->can()
     ->name('do something as admin')
     ->asAdmin()
-    ->task(fn () => auth()->user()->isAdmin())
-    ->check(fn (bool $result) => expect($result)->toBeTrue())
+    ->action(fn () => auth()->user()->isAdmin())
+    ->assert(fn (bool $result) => expect($result)->toBeTrue())
     ->test();
 
 echo "Story created";

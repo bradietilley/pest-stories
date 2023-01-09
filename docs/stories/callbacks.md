@@ -28,17 +28,12 @@ Task::make('a_task')->as(function (int $a, int $b) {
 });
 
 Story::make()
-    ->action('an_action')
-    ->action(function (int $a, int $b) {
-        echo $a; // 1
-        echo $b; // 2
-    })
     ->before(function (int $a, int $b) {
         echo $a; // 1
         echo $b; // 2
     })
-    ->task('a_task')
-    ->task(function (int $a, int $b) {
+    ->action('a_task')
+    ->action(function (int $a, int $b) {
         echo $a; // 1
         echo $b; // 2
     })
@@ -46,7 +41,7 @@ Story::make()
         echo $a; // 1
         echo $b; // 2
     })
-    ->check(
+    ->assert(
         can: function (int $a, int $b) {
             echo $a; // 1
             echo $b; // 2
@@ -86,7 +81,7 @@ Action::make('blocked')
     ->appendName();
 
 Story::make('event log created when user is modified')
-    ->check(function (User $user, string $role, bool $blocked = false) {
+    ->assert(function (User $user, string $role, bool $blocked = false) {
         expectDatabaseExists('event_logs', [
             "User created with role `{$role}`",
         ]);

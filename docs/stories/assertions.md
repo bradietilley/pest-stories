@@ -10,11 +10,11 @@ Rudimentary Example:
 
 ```php
 Story::make('write a post')
-    ->check(
+    ->assert(
         can: fn () => expect(Post::count())->toBe(1)
         cannot: fn () => expect(Post::count())->toBe(0)
     )
-    ->task('create_post_api_request')
+    ->action('create_post_api_request')
     ->stories([
         Story::make()->action('as_admin')->can(),
         Story::make()->action('as_user')->cannot(),
