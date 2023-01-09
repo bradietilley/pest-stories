@@ -13,7 +13,7 @@ A story may be comprised of:
 - an expectation of you _"can"_ or _"cannot"_ perform the action, where applicable
 - an assertion where you check if the actual results are as you expect
 
-You play with building blocks to form a situation where a feature/limitation test stems from, then you perform a task and assert the results are as expected. Simple! 
+You play with building blocks to form a situation where a feature/limitation test stems from, then you perform an action and assert the results are as expected. Simple! 
 
 Read more about [Stories](/docs/stories.md).
 

@@ -2,7 +2,7 @@
 
 ### Story Actions
 
-See [Actions](/docs/actions.md) for underlying documentation to Actions, Tasks and Actions. This documentation refers to how to utilise an action in a story.
+See [Actions](/docs/actions.md) for underlying documentation to Actions. This documentation refers to how to utilise an action in a story.
 
 **Adding to stories**
 
