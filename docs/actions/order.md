@@ -2,22 +2,22 @@
 
 ### Action Order
 
-All actions have a boot "order" which is vital to create sequenced events, such as creating a user before acting as them.
+All actions have a boot "order", which allows you to create sequenced events, such as updating the authorised user _after_ acting as them.
 
 The order may be specified in 3 ways:
 
 ```php
-// Defaulted (incremented each time, therefore order of creation = order of boot)
+// 1) Defaulted (incremented each time, therefore order of creation = order of boot)
 $a = Action::make('as_admin', fn () => null, 'var1');
 $b = Action::make('as_admin', fn () => null, 'var2');
 
-// Passed in constructor
+// 2) Passed in constructor
 $c = Action::make('as_admin', fn () => null, 'var3', 5);
 
-// Passed in order() method
+// 3) Passed in order() method
 $d = Action::make('as_admin', fn () => null, 'var4')->order(4);
 
-// Default Again (incremented from max order)
+// 1) Default again (incremented from max order)
 $e = Action::make('as_admin', fn () => null, 'var5');
 
 $a->getOrder(); // 1

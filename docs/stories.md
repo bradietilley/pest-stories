@@ -144,6 +144,10 @@ Adding more actions that require testing becomes a little difficult, and can get
 
 The StoryBoard idea is that these actions are often going to be reused across the system in various tests. From policy unit tests (that require an authorised user of varying roles, and posts to exist with varying states) to API feature tests (that also require users of varying roles, and posts with varying states) to completely different tests that just require a post or user to exist in whatever state.
 
+Across your tests, there's a lot of repeated code, which violates the DRY principle; however this principle is often neglicated in tests due to their purpose being to test functionality not provide functionality.
+
+With StoryBoard you may achieve a similar story by writing the following:
+
 ```php
 // In tests/Pest.php you might define some global actions that may frequently get used.
 

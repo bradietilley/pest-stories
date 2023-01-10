@@ -2,17 +2,36 @@
 
 ### Story Callbacks
 
-Inside storyboard there are many closure driven callbacks, such as Action (action and action) generators and registering/booting callbacks, story `before()` and `after()` callbacks, assertion `check()` callback, and even the `::actingAs()` callback.
+Inside Pest StoryBoard there are many closure-driven callbacks, such as:
 
-Under the hood, all closure driven callbacks utilise Laravel's container dependency injection, and each closure driven callback will have access to each variable you have set against the story.
+- Story:
+    - Action(s):
+        - `->registering($callback)`
+        - `->booting($callback)`
+        - `->as($callback)` _See [Action Generators](/docs/actions/generators.md) for more info._
+    - `->setUp($callback)`
+    - `->before($callback)`
+    - `->after($callback)`
+    - `->tearDown($callback)`
+    - `->assert($callbackCan, $callbackCannot)` _See [Assertions](/docs/stories/assertions.md) for more info._
+    - `::actingAs($callback)` _See [User / Acting As](/docs/stories/users-acting-as.md) for more info._
 
-Note: There are a handful of variable names you will not be able to dependency inject (but can still use via get/set methods) as these are currently used by the plugin, including:
+Under the hood, all closure-driven callbacks utilise Laravel's container dependency injection, with a few extra parameters you may accept in your closures.
+
+Note: There are a handful of variable names you will not be able to dependency inject (but can still use via get/set methods) as these are currently used by Pest StoryBoard, including:
 
 - `story` is reserved for the `Story` instance
+    - This is available across any callback.
 - `test` is reserved for the `TestCase` instance
-- `result` is reserved for the `Action` result(s) and is made available in the `after()` and assertion `check()` callbacks.
+    - Only available when story is running when `->test()` registers the story test
+    - See [Workflow / Testing](/docs/stories/workflow-testing.md) for more info.
+- `result` is reserved for the `Action` result(s)
+    - Only available in action `as()` generators, and story `after()` and `assert()` callbacks.
+    - See [Assertions](/docs/stories/assertions.md) for more info.
 - `can` is reserved for the boolean flag specified via `can()` and/or `->cannot()` methdods.
+    - See [Assertions](/docs/stories/assertions.md) for more info.
 - `user` is reserved for the Story user.
+    - See [Users / Acting As](/docs/stories/users-acting-as.md) for more info.
 
 Examples:
 
@@ -54,6 +73,7 @@ As mentioned in the [Action](/docs/actions.md) docs, each Action has a variable 
 ```php
 Action::make('as_admin')
     ->as(function (Story $story) {
+        // createAdmin should create a user and thus record event_logs
         $story->user(createAdmin());
 
         return 'admin';
@@ -63,6 +83,7 @@ Action::make('as_admin')
 
 Action::make('as_customer')
     ->as(function (Story $story) {
+        // createCustomer should create a user and thus record event_logs
         $story->user(createCustomer());
 
         return 'customer';
@@ -71,22 +92,31 @@ Action::make('as_customer')
     ->appendName();
 
 Action::make('blocked')
-    ->as(fn (Story $story) => $story->user->block())
+    ->as(function (Story $story) {
+        // block should record event_log
+        $story->user->block();
+    })
     ->appendName();
 
 Story::make('event log created when user is modified')
+    ->before(function (string $role) {
+        // Before we start we should not have any event logs with this name
+        expectDatabaseMissing('event_logs', [
+            'message' => "User created with role `{$role}`",
+        ]);
+    })
     ->assert(function (User $user, string $role, bool $blocked = false) {
         expectDatabaseExists('event_logs', [
-            "User created with role `{$role}`",
+            'message' => "User created with role `{$role}`",
         ]);
 
         if ($blocked) {
             expectDatabaseExists('event_logs', [
-                "User #{$user->id} was blocked",
+                'message' => "User #{$user->id} was blocked",
             ]);
         } else {
             expectDatabaseMissing('event_logs', [
-                "User #{$user->id} was blocked",
+                'message' => "User #{$user->id} was blocked",
             ]);
         }
     })

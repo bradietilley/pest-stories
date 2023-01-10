@@ -2,7 +2,7 @@
 
 ### Story Users
 
-By default when a story is run the session is unauthenticated. You may authenticate a user via the `user()` or `setUser` methods for a story. Authentication is immediately performed when `user()` is run, so this is best done via actions or actions which are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information.
+By default when a story is run, the session is unauthenticated. You may authenticate a user via the `->user()` or `->setUser()` methods on a Story. Authentication is immediately performed when `->user()` is run, so this is best done via actions as actions are run when the story is booted, not when the story is written. See [Workflow](/docs/stories/workflow-testing.md) for more information on why this is important.
 
 Example:
 
@@ -22,7 +22,7 @@ Note: Your `User` model must have the `Illuminate\Contracts\Auth\Authenticatable
 
 By default, the `->user()` method is synonymous with `auth()->login()` when `Illuminate\Contracts\Auth\Authenticatable` is provided, or `auth()->logout()` when `null` is provided.
 
-If you have a custom authentication system, or deal with multiple authentication systems (e.g. session for one API, passport for another) then you may replace the authentication system used by StoryBoard. This can be done via the `actingAs()` static method.
+However if you have a custom authentication system, or deal with multiple authentication systems (e.g. session for one API, passport for another) then you may replace the authentication system used by StoryBoard whenever suits you. This can be done via the `Story::actingAs()` method.
 
 Example:
 
@@ -70,3 +70,5 @@ Story::make('logout successfully')
 ```
 
 See [Data / Variables](/docs/stories/data-variables.md) for more information on how the 'auth' variable was accessible in this example.
+
+Note: It is recommended that you use `$story->user($user)` with your own custom `Story::actingAs()` handler, instead of implementing your own custom acting as, as you gain access to the Story's user (not authorised user) via the closure-driven callbacks. This may be changed in future so you can still fetch the user without `$story->user()`... :shrug:

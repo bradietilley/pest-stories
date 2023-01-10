@@ -2,7 +2,7 @@
 
 ### Story Data / Variables
 
-You may store variables in a Story via the data container.
+You may store variables in a Story using the data container.
 
 **Setting a variable**
 
@@ -12,7 +12,10 @@ This can be achieved via the `set()` and `setData()` methods. Example:
 $story = Story::make()
     ->cannot()
     ->set('expectedErrors', [ 'email' => 'The email must be unique.' ])
-    ->set('payload', [ 'email' => User::first()->email, ]);
+    ->set('payload', [ 'email' => User::first()->email, ])
+    ->set([
+        'expectedValid' => 'password',
+    ]);
 ```
 
 **Getting a variable**
@@ -22,11 +25,16 @@ This can be achieved via the `get()` and `getData()` methods. Example:
 ```php
 Story::make()
     ->action('as_admin')
-    ->action(fn (Story $story, TestCase $test) => $test->post('/users/', $story->get('payload')))
+    ->action(function (Story $story, TestCase $test, array $payload) {
+        // Get via dependency injection
+        $test->post('/users/', $payload);
+    })
     ->cannot()
     ->assert(
         cannot: function (Story $story, TestCase $test) {
-            $test->assertInvalid($story->get('expectedErrors'))
+            // Get via story
+            $invalid = $story->get('expectedErrors');
+            $test->assertInvalid($invalid);
         },
     )
     ->stories([
@@ -72,4 +80,4 @@ $story->all();
 
 **Data Injection**
 
-See [Callbacks](/docs/stories/callbacks.md) for more information.
+As depicted in the `get` examples above, you may also pluck variables from the data container by accepting them in any closure-driven callback. See [Callbacks](/docs/stories/callbacks.md) for more information.

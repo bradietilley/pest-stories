@@ -2,7 +2,7 @@
 
 ### Story Names
 
-Each story *should* have a name. This is what Pest uses, so keep them descriptive but short.
+Each story *should* have a name. This is what Pest uses, so keep them descriptive but short, and unique.
 
 **Setting the name**
 
@@ -27,7 +27,7 @@ $story->getName(); // can create something cool
 $story->getTestName(); // can create something cool
 ```
 
-Note: The full name is what is passed to pest as the test name.
+Note: The test name is what is passed to pest as the name of test case.
 
 **Inheritance**
 

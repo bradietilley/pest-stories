@@ -10,3 +10,5 @@ StoryBoard::make()
     ->when($boolCondition, fn (Story $story) => $story->action('some_action'))
     ->test();
 ```
+
+See Laravel's [Conditionable](https://laravel.com/api/9.x/Illuminate/Support/Traits/Conditionable.html) documentation for more information.

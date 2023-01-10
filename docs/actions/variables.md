@@ -2,37 +2,44 @@
 
 ### Action Variables
 
-> Only for actions (not actions).
+All actions have a `$variable` property -- when not provided, it defaults to the `$name` property of the action.
 
-A action has a `$variable` property, which defaults to the `$name` property of the action when not manually specified. After the action's generator is invoked for a given story, the returned variable from the generator is then passed to the Story as a variable that's accessible later, via the variable key that the action has defined (`$variable` property).
+After the action's generator is invoked for a given story, the value the generator returns is then passed to the Story as a variable that's accessible later.
 
 The variable can be specified in 3 ways:
 
 ```php
-// Default to action name
+// 1) Default to action name
 $a = Action::make('as_admin', function () {
     createAdminUser();
 
     return 'admin';
 });
 
-// Passed in constructor
+// 2) Passed in constructor
 $b = Action::make('as_admin', function () {
     createAdminUser();
 
     return 'admin';
-}, 'role');
+}, 'chosen_role');
 
-// Passed in variable() method
+// 3) Passed in variable() method
 $c = Action::make('as_admin', function () {
     createAdminUser();
 
     return 'admin';
-})->variable('chosen_role');
+})->variable('role');
 
+// Get the example (would rarely ever need to)
 $a->getVariable(); // admin
 $b->getVariable(); // role
 $c->getVariable(); // chosen_role
+
+Story::make()
+    ->action('as_admin') // This would be the `$c` as_admin action, by the way
+    ->action(function (string $role) { // and this would be computed second based on order of definition
+        echo $role; // admin
+    });
 ```
 
 See [Data / Variables](/docs/stories/data-variables.md) for more information on how data variables work.

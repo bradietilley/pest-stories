@@ -2,9 +2,9 @@
 
 ### Story Workflow / Testing
 
-A `StoryBoard` should be used as the highest level story, with `Story` for _all_ children and grandchildren, but this is not enforced as there's little-to-no difference between a StoryBoard and a Story.
+A `StoryBoard` should be used as the highest level story, with `Story` for _all_ children and grandchildren, but this is not enforced as there's little-to-no difference between a StoryBoard and a Story. Future releases may get rid of StoryBoard and use Story for all purposes.
 
-You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the actions and assertions are not executed.
+You can register a `Story` or `StoryBoard` test via the `->test()` method. When the stories are created, the actions and assertions are not booted; similar to how nothing is executed when you run `test('name', fn () => null)`.
 
 Example:
 
@@ -13,13 +13,16 @@ $run = collect();
 
 StoryBoard::make('a test')
     ->can()
+    ->action('do_something')
     ->action(fn () => $run[] = 'now')
     ->test();
 
 $run->count(); // 0 
 ```
 
-After Pest discovers all tests, it will then execute all Story tests.
+However that said, stories and actions will register first, as this is required in order to inherit and resolve expectations and actions, which affect the name of the stories and are required to produce the storyies' test names. Todo: verify this.
+
+After Pest discovers all tests, it will then boot all Story tests. 
 
 #### The order of events
 

@@ -36,3 +36,4 @@
 - High: Following the standarisation of tasks and scenarios: improve ordering of actions.
     - When fetching actions (including when running `->action('name_of_action')`) it'll return a clone of the action (same name?) and allow for custom ordering.
         - E.g. `->action('name_of_action', order: 2)`
+- Alias `can(Closure $callback)` to `->can()->assert(can: $callback)` and `cannot(Closure $callback)` to `->cannot()->assert(cannot: $callback)`
