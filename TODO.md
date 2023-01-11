@@ -37,3 +37,12 @@
     - When fetching actions (including when running `->action('name_of_action')`) it'll return a clone of the action (same name?) and allow for custom ordering.
         - E.g. `->action('name_of_action', order: 2)`
 - Alias `can(Closure $callback)` to `->can()->assert(can: $callback)` and `cannot(Closure $callback)` to `->cannot()->assert(cannot: $callback)`
+- Add configuration to PSB which can be modified via config repository (Laravel's?) as well as `Story::config()->enableDatasets()`
+- Add aliases to modify `config()` and `session()` values
+    - Syntax: `->config('key', 'value')` or `->config('key', fn (Story $story) => $story->get('blah'))`
+    - Reset to original value after test.
+- Add tags to stories:
+    - Syntax: `->tag('feature_1')`, `->tag('feature_1', 'feature_2')`
+    - Use case: Maybe suffix tests with tags so you can `--filter="TAG_NAME"`? General record keeping.
+- Add shortcut for marking tests:
+    - Syntax: `->incomplete('wip')`, `->skipped('reason here')`, `->risky('needs refactor')`
