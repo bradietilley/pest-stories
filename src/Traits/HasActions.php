@@ -44,6 +44,7 @@ trait HasActions
     {
         return $this->setAction($action, $arguments, $order);
     }
+    
     /**
      * @return $this
      */

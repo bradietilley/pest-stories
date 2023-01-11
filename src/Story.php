@@ -14,6 +14,7 @@ use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasStories;
+use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
 use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
@@ -42,6 +43,7 @@ class Story
     use HasPerformer;
     use HasActions;
     use HasStories;
+    use HasTags;
     use HasTimeout;
     use Macroable;
     use RunOnce;
@@ -136,6 +138,7 @@ class Story
         }
 
         $this->registerActions();
+        $this->registerTags();
 
         return $this;
     }
@@ -225,6 +228,14 @@ class Story
 
                 $name = "[{$can}] {$name}";
             }
+
+            if ($this->appendTags) {
+                $tags = trim($this->getTagsAsName());
+
+                if ($tags !== '') {
+                    $name = trim("{$name} | {$tags}");
+                }
+            }
         }
 
         return $name;
@@ -272,6 +283,7 @@ class Story
 
         $this->inheritName();
         $this->inheritData();
+        $this->inheritTags();
         $this->inheritActions();
         $this->inheritAssertions();
         $this->inheritCallbacks();
