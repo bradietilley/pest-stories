@@ -28,7 +28,6 @@ test('a story must have at least one assertion checker', function () {
     }
 })->throws(AssertionCheckerNotFoundException::class, 'No "can" assertion checker was found for the story `parent child`');
 
-
 test('you may create a story with an assertion and unset the assertion for a child story', function () {
     $story = Story::make()
         ->name('parent')

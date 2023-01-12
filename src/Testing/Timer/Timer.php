@@ -50,15 +50,16 @@ class Timer
         ?Closure $after = null,
         int $timeout = 60,
         bool $rethrow = true,
-    ): self {
-        return new self(...func_get_args());
+    ): static {
+        /** @phpstan-ignore-next-line */
+        return new static(...func_get_args());
     }
 
     /**
      * Specify the timeout before the callback should be aborted in one of several
      * units (seconds, milliseconds, microseconds)
      */
-    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): self
+    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): static
     {
         $this->timeout = $unit->toMicroseconds($timeout);
 
@@ -72,7 +73,7 @@ class Timer
      *
      *      - int $seconds (remaining)
      */
-    public function finished(?Closure $finished): self
+    public function finished(?Closure $finished): static
     {
         return $this->setCallback('finished', $finished);
     }
@@ -84,7 +85,7 @@ class Timer
      *
      *      - Throwable $e|exception
      */
-    public function errored(?Closure $errored): self
+    public function errored(?Closure $errored): static
     {
         return $this->setCallback('errored', $errored);
     }
@@ -92,7 +93,7 @@ class Timer
     /**
      * Register callback to run when the callback passes, fails or is timedout
      */
-    public function after(?Closure $after): self
+    public function after(?Closure $after): static
     {
         return $this->setCallback('after', $after);
     }
@@ -104,7 +105,7 @@ class Timer
      *
      *      - int $seconds (time taken)
      */
-    public function timedout(?Closure $timedout): self
+    public function timedout(?Closure $timedout): static
     {
         return $this->setCallback('timedout', $timedout);
     }
@@ -114,7 +115,7 @@ class Timer
      * errored/timedout callbacks, ensuring that exceptions are always
      * thrown
      */
-    public function rethrow(): self
+    public function rethrow(): static
     {
         $this->rethrow = true;
 
@@ -124,7 +125,7 @@ class Timer
     /**
      * Do not rethrow exceptions
      */
-    public function dontRethrow(): self
+    public function dontRethrow(): static
     {
         $this->rethrow = false;
 
@@ -161,17 +162,19 @@ class Timer
     /**
      * Run the timeout-bound callback
      */
-    public function run()
+    public function run(): mixed
     {
         if ($this->alreadyRun('run')) {
             // @codeCoverageIgnoreStart
-            return;
+            return null;
             // @codeCoverageIgnoreEnd
         }
 
-        pcntl_signal(SIGALRM, function ($signal) {
-            throw new TimerUpException($this);
-        });
+        if (self::environmentSupportsPcntlAlarm()) {
+            pcntl_signal(SIGALRM, function ($signal) {
+                throw new TimerUpException($this);
+            });
+        }
 
         $args = [
             'timer' => $this,
@@ -188,7 +191,10 @@ class Timer
         try {
             // Start timer
             $timeout = $this->getAlarmTimeout();
-            pcntl_alarm($timeout);
+
+            if (self::environmentSupportsPcntlAlarm()) {
+                pcntl_alarm($timeout);
+            }
 
             // Run a callback that may take a while
             $this->start();
@@ -196,7 +202,9 @@ class Timer
             $this->end();
 
             // Stop timer
-            pcntl_alarm(0);
+            if (self::environmentSupportsPcntlAlarm()) {
+                pcntl_alarm(0);
+            }
 
             if ($this->getTimeRemaining() < 0) {
                 throw new TimerUpException($this);
@@ -286,7 +294,7 @@ class Timer
      */
     public function getAlarmTimeout(): int
     {
-        return ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
+        return (int) ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
     }
 
     /**
@@ -311,5 +319,14 @@ class Timer
     public function getException(): ?Throwable
     {
         return $this->exception;
+    }
+
+    /**
+     * Does the current environment support pcntl_alarm?
+     */
+    public static function environmentSupportsPcntlAlarm(): bool
+    {
+        return false;
+        // return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
     }
 }

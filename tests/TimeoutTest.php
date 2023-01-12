@@ -125,6 +125,10 @@ test('a story with a timeout will pass if it does not reach the timeout', functi
 });
 
 test('a story with a timeout will fail if it reaches the timeout (seconds; via alarm)', function () {
+    if (! Timer::environmentSupportsPcntlAlarm()) {
+        return $this->markTestSkipped('Environment does not support pcntl_alarm');
+    }
+
     $ran = Collection::make();
 
     $story = Story::make('timed test')
@@ -153,6 +157,10 @@ test('a story with a timeout will fail if it reaches the timeout (seconds; via a
 });
 
 test('a story with a timeout will fail if it reaches the timeout (milliseconds; via microtime)', function () {
+    if (! Timer::environmentSupportsPcntlAlarm()) {
+        return $this->markTestSkipped('Environment does not support pcntl_alarm');
+    }
+
     $ran = Collection::make();
 
     $story = Story::make('timed test')
@@ -292,6 +300,10 @@ test('a story can expose the timer used for asserting time', function () {
 });
 
 test('a story cut short by a timeout will still run tearDown', function () {
+    if (! Timer::environmentSupportsPcntlAlarm()) {
+        return $this->markTestSkipped('Environment does not support pcntl_alarm');
+    }
+
     $ran = Collection::make();
 
     $story = Story::make('timed test')

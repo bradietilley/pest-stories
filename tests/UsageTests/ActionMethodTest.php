@@ -151,7 +151,7 @@ test('the can method can be applied at a child story level', function () {
 test('action ordering is as per the actions pre-defined orders', function () {
     Action::flush();
     $actions = Collection::make();
-    
+
     Action::make('a')->as(fn () => $actions[] = 'a');
     Action::make('b')->as(fn () => $actions[] = 'b');
     Action::make('e')->as(fn () => $actions[] = 'e')->order(5);
@@ -169,7 +169,7 @@ test('action ordering is as per the actions pre-defined orders', function () {
         ->stories([
             Story::make('child')->action('b'),
         ]);
-    
+
     $story->storiesAll->first()->run();
 
     expect($actions->toArray())->toBe([

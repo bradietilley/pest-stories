@@ -10,10 +10,8 @@ trait HasRepeater
 
     /**
      * Repeat the execution of this object several times
-     *
-     * @return $this
      */
-    public function repeat(int $times): self
+    public function repeat(int $times): static
     {
         $this->repeatNum = 0;
         $this->repeatMax = max(0, $times);
@@ -23,10 +21,8 @@ trait HasRepeater
 
     /**
      * Do not repeat the execution of this object
-     *
-     * @return $this
      */
-    public function dontRepeat(): self
+    public function dontRepeat(): static
     {
         $this->repeatMax = null;
 

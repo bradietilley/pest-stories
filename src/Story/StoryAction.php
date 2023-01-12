@@ -6,17 +6,18 @@ use BradieTilley\StoryBoard\Story;
 
 class StoryAction
 {
+    protected int $order;
+
     public function __construct(
         protected Story $story,
         protected Action $action,
         protected array $arguments = [],
-        protected ?int $order = null,
-    )
-    {
-        $this->order ??= $action->getOrder();
+        int $order = null,
+    ) {
+        $this->order = $order ?? $action->getOrder();
     }
 
-    public function withStory(Story $story): self
+    public function withStory(Story $story): static
     {
         $this->story = $story;
 

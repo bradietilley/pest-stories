@@ -5,6 +5,9 @@ namespace BradieTilley\StoryBoard\Traits;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithCallbacks
+ */
 trait HasPerformer
 {
     protected ?Authenticatable $user = null;
@@ -14,33 +17,30 @@ trait HasPerformer
      */
     public static function actingAs(?Closure $actingAsCallback): void
     {
-        /** @var HasPerformer|HasCallbacks $this */
         static::setStaticCallback('actingAs', $actingAsCallback);
     }
 
     /**
      * Alias of setUser()
-     *
-     * @return $this
      */
-    public function user(Authenticatable|null $user): self
+    public function user(Authenticatable|null $user): static
     {
         return $this->setUser($user);
     }
 
     /**
      * Set the user to perform this test
-     *
-     * @return $this
      */
-    public function setUser(Authenticatable|null $user): self
+    public function setUser(Authenticatable|null $user): static
     {
-        $this->user = $user;
-
-        /** @var HasPerformer|HasCallbacks $this */
+        $this->user = $user; /** @phpstan-ignore-line */
         if (static::hasStaticCallback('actingAs')) {
             static::runStaticCallback('actingAs', $this->getParameters());
         } else {
+            if (! function_exists('auth')) {
+                throw new \Exception('no custom actingAs handler, and auth() function does not exist!');
+            }
+
             if ($user !== null) {
                 auth()->login($user);
             } else {

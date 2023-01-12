@@ -2,21 +2,25 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Story;
 use Closure;
 use Illuminate\Container\Container;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
+ */
 trait HasCallbacks
 {
     /**
      * Registered callbacks
      */
-    private array $registeredCallbacks = [];
+    protected array $registeredCallbacks = [];
 
     /**
      * Registered static callbacks
      */
-    private static array $registeredStaticCallbacks = [];
+    protected static array $registeredStaticCallbacks = [];
 
     /**
      * Get Laravel's container
@@ -48,10 +52,8 @@ trait HasCallbacks
 
     /**
      * Set a callback
-     *
-     * @return $this
      */
-    public function setCallback(string $name, ?Closure $callback): self
+    public function setCallback(string $name, ?Closure $callback): static
     {
         $this->registeredCallbacks[$name] = $callback;
 
@@ -120,11 +122,14 @@ trait HasCallbacks
 
     public function inheritCallbacks(): void
     {
-        /** @var HasCallbacks|HasInheritance $this */
+        if (! $this instanceof WithInheritance) {
+            return;
+        }
+
         $all = [];
 
         foreach (array_reverse($this->getAncestors()) as $level) {
-            $callbacks = $level->getProperty('registeredCallbacks');
+            $callbacks = (array) $level->getProperty('registeredCallbacks');
 
             foreach ($callbacks as $name => $callback) {
                 if ($callback === null) {

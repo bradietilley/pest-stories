@@ -53,10 +53,8 @@ class Action extends AbstractAction
 
     /**
      * Set the name of the variable
-     *
-     * @return $this;
      */
-    public function variable(string $variable): self
+    public function variable(string $variable): static
     {
         $this->variable = $variable;
 
@@ -65,12 +63,10 @@ class Action extends AbstractAction
 
     /**
      * Append the name of this action to the tests
-     *
-     * @return $this
      */
-    public function appendName(?string $name = null): self
+    public function appendName(string $name = null): static
     {
-        $this->appendName = $name ?? str_replace('_', ' ', $this->getName());
+        $this->appendName = $name ?? str_replace('_', ' ', $this->getNameString());
 
         return $this;
     }

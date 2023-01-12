@@ -2,6 +2,9 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
+ */
 trait HasData
 {
     /**
@@ -83,11 +86,10 @@ trait HasData
 
     public function inheritData(): void
     {
-        /** @var HasCallbacks|HasInheritance $this */
         $all = [];
 
         foreach (array_reverse($this->getAncestors()) as $level) {
-            $all = array_replace($all, $level->getProperty('data'));
+            $all = array_replace($all, (array) $level->getProperty('data'));
         }
 
         $this->data = $all;

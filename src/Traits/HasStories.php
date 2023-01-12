@@ -4,9 +4,11 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithName
+ */
 trait HasStories
 {
     protected array $stories = [];
@@ -39,9 +41,8 @@ trait HasStories
      * Alias of setStories()
      *
      * @param  Story|array<Story>  $stories
-     * @return $this
      */
-    public function stories(...$stories): self
+    public function stories(...$stories): static
     {
         return $this->setStories(...$stories);
     }
@@ -50,9 +51,8 @@ trait HasStories
      * Add stories
      *
      * @param  Story|array<Story>  $stories
-     * @return $this
      */
-    public function setStories(...$stories): self
+    public function setStories(...$stories): static
     {
         foreach ($stories as $storyList) {
             $storyList = (is_array($storyList)) ? $storyList : [$storyList];
@@ -92,7 +92,6 @@ trait HasStories
      */
     public function nestedStories(): array
     {
-        /** @var HasName|HasStories $this */
         $children = [];
 
         foreach ($this->getStories() as $story) {
@@ -118,7 +117,6 @@ trait HasStories
      */
     public function allStories(): array
     {
-        /** @var HasName|HasStories $this */
         $stories = $this->nestedStories();
 
         foreach ($stories as $story) {
