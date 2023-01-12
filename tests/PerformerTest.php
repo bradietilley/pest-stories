@@ -2,6 +2,7 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -98,14 +99,18 @@ if (! class_exists('PestStoryBoardPerformerAuthFaker')) {
 }
 
 /**
- * It shouldn't exist in pest-storyboard dev so what we'll do
- * is proxy calls to auth() to a fake auth class.
+ * Proxy `auth()` calls to a fake Auth manager
  */
 if (! function_exists('auth')) {
     function auth(): PestStoryBoardPerformerAuthFaker
     {
         return new PestStoryBoardPerformerAuthFaker();
     }
+} else {
+    Container::getInstance()->bind(
+        \Illuminate\Contracts\Auth\Factory::class,
+        fn () => new PestStoryBoardPerformerAuthFaker()
+    );
 }
 
 test('when performer setUser method is run, the user is logged in', function () {
