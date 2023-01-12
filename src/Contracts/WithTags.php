@@ -1,6 +1,6 @@
 <?php
 
-namespace BradieTilley\StoryBoard\Traits;
+namespace BradieTilley\StoryBoard\Contracts;
 
 use BradieTilley\StoryBoard\Story\Tag;
 
