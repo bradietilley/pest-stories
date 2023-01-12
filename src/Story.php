@@ -12,6 +12,7 @@ use BradieTilley\StoryBoard\Contracts\WithNameShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithPerformer;
 use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
 use BradieTilley\StoryBoard\Contracts\WithStories;
+use BradieTilley\StoryBoard\Contracts\WithTags;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
@@ -24,9 +25,10 @@ use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use BradieTilley\StoryBoard\Traits\HasStories;
+use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
-use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -41,7 +43,7 @@ use Throwable;
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
  */
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithSingleRunner
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithSingleRunner
 {
     use Conditionable;
     use HasCallbacks;
@@ -53,9 +55,10 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasPerformer;
     use HasActions;
     use HasStories;
+    use HasTags;
     use HasTimeout;
     use Macroable;
-    use RunOnce;
+    use HasSingleRunner;
 
     public readonly int $id;
 
@@ -144,6 +147,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         }
 
         $this->registerActions();
+        $this->registerTags();
 
         return $this;
     }
@@ -233,6 +237,14 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
                 $name = "[{$can}] {$name}";
             }
+
+            if ($this->appendTags) {
+                $tags = trim($this->getTagsAsName());
+
+                if ($tags !== '') {
+                    $name = trim("{$name} | {$tags}");
+                }
+            }
         }
 
         return $name;
@@ -280,6 +292,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
         $this->inheritName();
         $this->inheritData();
+        $this->inheritTags();
         $this->inheritActions();
         $this->inheritAssertions();
         $this->inheritCallbacks();

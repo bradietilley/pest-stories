@@ -3,14 +3,14 @@
 namespace BradieTilley\StoryBoard\Testing\Timer;
 
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
-use BradieTilley\StoryBoard\Traits\RunOnce;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use Closure;
 use Throwable;
 
 class Timer
 {
     use HasCallbacks;
-    use RunOnce;
+    use HasSingleRunner;
 
     private ?int $start = null;
 
@@ -326,7 +326,6 @@ class Timer
      */
     public static function environmentSupportsPcntlAlarm(): bool
     {
-        return false;
-        // return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
+        return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
     }
 }

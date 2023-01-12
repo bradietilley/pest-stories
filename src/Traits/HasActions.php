@@ -49,11 +49,17 @@ trait HasActions
         return $this->setAction($action, $arguments, $order);
     }
 
+    /**
+     * Register a callback to run before actions are run
+     */
     public function before(?Closure $before): static
     {
         return $this->setCallback('before', $before);
     }
 
+    /**
+     * Register a callback to run after actions are run
+     */
     public function after(?Closure $after): static
     {
         return $this->setCallback('after', $after);
