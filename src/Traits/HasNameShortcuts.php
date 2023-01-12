@@ -11,26 +11,41 @@ trait HasNameShortcuts
 {
     public function view(string $item): static
     {
-        return $this->name('view a '.Str::of($item)->afterLast('\\')->toString());
+        return $this->name(
+            sprintf('view a %s', $this->getNameShortcut($item))
+        );
     }
 
     public function create(string $item): static
     {
-        return $this->name('create a '.Str::of($item)->afterLast('\\')->toString());
+        return $this->name(
+            sprintf('create a %s', $this->getNameShortcut($item))
+        );
     }
 
     public function update(string $item): static
     {
-        return $this->name('update a '.Str::of($item)->afterLast('\\')->toString());
+        return $this->name(
+            sprintf('update a %s', $this->getNameShortcut($item))
+        );
     }
 
     public function delete(string $item): static
     {
-        return $this->name('delete a '.Str::of($item)->afterLast('\\')->toString());
+        return $this->name(
+            sprintf('delete a %s', $this->getNameShortcut($item))
+        );
     }
 
     public function restore(string $item): static
     {
-        return $this->name('restore a '.Str::of($item)->afterLast('\\')->toString());
+        return $this->name(
+            sprintf('restore a %s', $this->getNameShortcut($item))
+        );
+    }
+
+    private function getNameShortcut(string $item): string
+    {
+        return (string) Str::of($item)->afterLast('\\');
     }
 }
