@@ -7,6 +7,9 @@ use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
+ */
 trait HasTimeout
 {
     protected ?int $timeout = null;
@@ -18,23 +21,19 @@ trait HasTimeout
     /**
      * Set a timeout for this story.
      * Any value under 1 millisecond will set to 1 millisecond.
-     *
-     * @return $this
      */
-    public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): self
+    public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): static
     {
         $this->timeoutEnabled = true;
-        $this->timeout = $unit->toMicroseconds($timeout, $unit);
+        $this->timeout = $unit->toMicroseconds($timeout);
 
         return $this;
     }
 
     /**
      * Remove the timeout for this story
-     *
-     * @return $this
      */
-    public function noTimeout(): self
+    public function noTimeout(): static
     {
         $this->timeoutEnabled = false;
         $this->timeout = null;
@@ -47,8 +46,8 @@ trait HasTimeout
      */
     public function inheritTimeout(): void
     {
-        /** @var HasInheritance|self $this */
         foreach ($this->getAncestors() as $level) {
+            /** @var ?bool $enabled */
             $enabled = $level->getProperty('timeoutEnabled');
 
             // If the child/parent has explicitly stated no timeout then return with no timeout
@@ -58,8 +57,11 @@ trait HasTimeout
 
             // If the child/parent has explicitly stated a timeout then set the timeout and return
             if ($enabled === true) {
+                /** @var int|float|null $timeout */
+                $timeout = $level->getProperty('timeout');
+
                 $this->timeout(
-                    timeout: $level->getProperty('timeout'),
+                    timeout: $timeout ?? 0,
                     unit: TimerUnit::MICROSECOND,
                 );
 
@@ -73,7 +75,7 @@ trait HasTimeout
      */
     public function getTimeoutMicroseconds(): int
     {
-        return $this->timeout;
+        return (int) $this->timeout;
     }
 
     /**

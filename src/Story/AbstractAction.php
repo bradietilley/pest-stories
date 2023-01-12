@@ -47,48 +47,43 @@ abstract class AbstractAction
 
     /**
      * Set the generator
-     *
-     * @return $this
      */
-    public function as(Closure $generator): self
+    public function as(Closure $generator): static
     {
         return $this->setCallback('generator', $generator);
     }
 
     /**
      * Set a callback when this action is registering
-     *
-     * @return $this
      */
-    public function registering(Closure $callback): self
+    public function registering(Closure $callback): static
     {
         return $this->setCallback('register', $callback);
     }
 
     /**
      * Set a callback when this action is booting
-     *
-     * @return $this
      */
-    public function booting(Closure $callback): self
+    public function booting(Closure $callback): static
     {
         return $this->setCallback('boot', $callback);
     }
 
     /**
      * Get all actions
-     * 
-     * @return Collection<static> 
+     *
+     * @return Collection<string, static>
      */
     public static function all(): Collection
     {
-        return Collection::make(static::$stored[static::class] ?? []);
+        /** @var array<string, static> $all */
+        $all = static::$stored[static::class] ?? [];
+
+        return Collection::make($all);
     }
 
     /**
      * Manually register the action (if not created via `make()`)
-     *
-     * @return $this
      */
     public function store(): static
     {
@@ -114,7 +109,7 @@ abstract class AbstractAction
     public static function flush(): void
     {
         static::$orderCounter = 0;
-        
+
         if (static::class === AbstractAction::class) {
             static::$stored = [];
 
@@ -176,7 +171,7 @@ abstract class AbstractAction
             $this->runCallback('boot', $story->getParameters($arguments));
 
             if (! $this->hasCallback('generator')) {
-                throw static::generatorNotFound($this->getName());
+                throw static::generatorNotFound($this->getNameString());
             }
 
             $result = $this->runCallback('generator', $story->getParameters($arguments));
@@ -187,18 +182,19 @@ abstract class AbstractAction
 
     /**
      * Make and register this action
-     *
-     * @return $this
      */
-    public static function make()
+    public static function make(): static
     {
+        /** @phpstan-ignore-next-line */
         return (new static(...func_get_args()))->store();
     }
 
     /**
      * Get the name of the action to be referenced when building a story's set of actions
+     *
+     * @param  string|Closure|static  $action
      */
-    public static function prepare(string|Closure|self $action): self
+    public static function prepare(string|Closure|self $action): static
     {
         if (is_string($action)) {
             return self::fetch($action);
@@ -222,7 +218,7 @@ abstract class AbstractAction
     /**
      * Reset any properties modified by previous stories
      */
-    public function reset(): self
+    public function reset(): static
     {
         $this->resetRepeater();
 

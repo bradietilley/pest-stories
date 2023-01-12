@@ -2,9 +2,21 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Contracts\WithActions;
+use BradieTilley\StoryBoard\Contracts\WithCallbacks;
+use BradieTilley\StoryBoard\Contracts\WithData;
+use BradieTilley\StoryBoard\Contracts\WithInheritance;
+use BradieTilley\StoryBoard\Contracts\WithIsolation;
+use BradieTilley\StoryBoard\Contracts\WithName;
+use BradieTilley\StoryBoard\Contracts\WithNameShortcuts;
+use BradieTilley\StoryBoard\Contracts\WithPerformer;
+use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
+use BradieTilley\StoryBoard\Contracts\WithStories;
+use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
+use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
@@ -12,7 +24,6 @@ use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
-use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
 use BradieTilley\StoryBoard\Traits\RunOnce;
@@ -30,7 +41,7 @@ use Throwable;
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
  */
-class Story
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithSingleRunner
 {
     use Conditionable;
     use HasCallbacks;
@@ -48,7 +59,7 @@ class Story
 
     public readonly int $id;
 
-    private static $idCounter = 0;
+    private static int $idCounter = 0;
 
     protected bool $inherited = false;
 
@@ -90,11 +101,10 @@ class Story
 
     /**
      * Create a new story
-     *
-     * @return $this
      */
     public static function make(?string $name = null, ?Story $parent = null): static
     {
+        /** @phpstan-ignore-next-line */
         return new static($name, $parent);
     }
 
@@ -118,10 +128,8 @@ class Story
 
     /**
      * Register this story actions
-     *
-     * @return $this
      */
-    public function register(): self
+    public function register(): static
     {
         $this->inherit();
 
@@ -142,10 +150,8 @@ class Story
 
     /**
      * Boot (and register) the story and its actions
-     *
-     * @return $this
      */
-    public function boot(): self
+    public function boot(): static
     {
         $this->register();
 
@@ -175,7 +181,7 @@ class Story
     /**
      * Set the test case used for this story
      */
-    public function setTest(TestCase $test): self
+    public function setTest(TestCase $test): static
     {
         $this->test = $test;
 
@@ -184,10 +190,8 @@ class Story
 
     /**
      * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
-     *
-     * @return $this
      */
-    public function test(): self
+    public function test(): static
     {
         $story = $this;
 
@@ -207,6 +211,10 @@ class Story
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
+        if (! is_callable($function)) {
+            throw StoryBoardException::testFunctionNotFound($function);
+        }
+
         $function(...$args);
 
         return $this;
@@ -256,7 +264,7 @@ class Story
     /**
      * Inherit all properties that are inheritable
      */
-    public function inherit(): self
+    public function inherit(): static
     {
         if ($this->alreadyRun('inherited')) {
             // @codeCoverageIgnoreStart
@@ -285,7 +293,9 @@ class Story
      */
     protected function inheritAssertions(): void
     {
-        if (($can = $this->inheritProperty('can')) !== null) {
+        $can = $this->inheritPropertyBool('can');
+
+        if ($can !== null) {
             $this->can($can);
         }
     }
@@ -293,7 +303,7 @@ class Story
     /**
      * Run this story from start to finish
      */
-    public function run(): self
+    public function run(): static
     {
         try {
             if ($this->timeoutEnabled && $this->timeout > 0) {
@@ -352,7 +362,7 @@ class Story
     /**
      * Run the full test assertion (after setTest)
      */
-    public function fullRun(): self
+    public function fullRun(): static
     {
         $this->boot();
         $this->runSetUp();
@@ -380,7 +390,7 @@ class Story
     /**
      * Register a callback to run when the test is set up
      */
-    public function setUp(?Closure $callback): self
+    public function setUp(?Closure $callback): static
     {
         return $this->setCallback('setUp', $callback);
     }
@@ -388,7 +398,7 @@ class Story
     /**
      * Register a callback to run when the test the teared down
      */
-    public function tearDown(?Closure $callback): self
+    public function tearDown(?Closure $callback): static
     {
         return $this->setCallback('tearDown', $callback);
     }

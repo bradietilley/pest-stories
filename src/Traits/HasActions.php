@@ -6,11 +6,14 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
+use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
-use BradieTilley\StoryBoard\Story\StoryAction;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Story
+ */
 trait HasActions
 {
     protected ?Result $result = null;
@@ -22,6 +25,9 @@ trait HasActions
      */
     protected array $actions = [];
 
+    /**
+     * Current expectation
+     */
     protected ?bool $can = null;
 
     /**
@@ -37,28 +43,19 @@ trait HasActions
 
     /**
      * Alias for setAction()
-     *
-     * @return $this
      */
-    public function action(string|Closure|Action $action, array $arguments = [], int $order = null): self
+    public function action(string|Closure|Action $action, array $arguments = [], int $order = null): static
     {
         return $this->setAction($action, $arguments, $order);
     }
-    /**
-     * @return $this
-     */
-    public function before(?Closure $before): self
+
+    public function before(?Closure $before): static
     {
-        /** @var HasTasks|HasCallbacks $this */
         return $this->setCallback('before', $before);
     }
 
-    /**
-     * @return $this
-     */
-    public function after(?Closure $after): self
+    public function after(?Closure $after): static
     {
-        /** @var HasTasks|HasCallbacks $this */
         return $this->setCallback('after', $after);
     }
 
@@ -66,9 +63,8 @@ trait HasActions
      * Register a single action for this story.
      * Optionally pass in arguments (matched by name) if the action supports them.
 r
-     * @return $this
      */
-    public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): self
+    public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): static
     {
         $action = Action::prepare($action);
 
@@ -86,22 +82,18 @@ r
 
     /**
      * Alias for setActions()
-     *
-     * @return $this
      */
-    public function actions(iterable $actions): self
+    public function actions(iterable $actions): static
     {
         return $this->setActions($actions);
     }
 
     /**
      * Register multiple actions for this story.
-     * 
-     * The order of each action is inherited from the actions themselves.
      *
-     * @return $this
+     * The order of each action is inherited from the actions themselves.
      */
-    public function setActions(iterable $actions): self
+    public function setActions(iterable $actions): static
     {
         foreach ($actions as $action => $arguments) {
             // Closures and classes will be int key
@@ -118,7 +110,7 @@ r
 
     /**
      * Get all regsitered actions for this story (no inheritance lookup)
-     * 
+     *
      * @return array<string,StoryAction>
      */
     public function getActions(): array
@@ -129,7 +121,7 @@ r
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires HasInheritance
+     * @requires WithInheritance
      *
      * @return array<string,StoryAction>
      */
@@ -137,7 +129,6 @@ r
     {
         $all = [];
 
-        /** @var HasInheritance $this */
         foreach (array_reverse($this->getAncestors()) as $ancestor) {
             foreach ($ancestor->getActions() as $name => $storyAction) {
                 $all[$name] = (clone $storyAction)->withStory($this);
@@ -157,16 +148,13 @@ r
 
     /**
      * Resolve all actions that are inherited
-     *
-     * @return $this
      */
-    public function registerActions(): self
+    public function registerActions(): static
     {
-        /** @var Story $this */
         $this->actions = Collection::make($this->actions)
             ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
             ->all();
-        
+
         foreach ($this->actions as $storyAction) {
             $storyAction->register();
         }
@@ -177,34 +165,30 @@ r
     /**
      * Boot all registered actions for this test.
      *
-     * @requires HasInheritance
-     *
-     * @return $this
+     * @requires WithInheritance
      */
-    public function bootActions(): self
+    public function bootActions(): static
     {
-        /** @var Story $this */
-
         if (empty($this->actions)) {
             throw StoryBoardException::actionNotSpecified($this);
         }
 
+        $result = $this->getResult();
+
         try {
-            $result = $this->getResult();
             $resultData = [
                 'result' => $result->getValue(),
             ];
 
             $this->runCallback('before', $this->getParameters($resultData));
 
-            /** @var Story $this */
             foreach ($this->actions as $storyAction) {
                 // Run action get result
                 $value = $storyAction->boot($this->getParameters($resultData));
 
                 // Set the variable
                 $this->setData($storyAction->getVariable(), $value);
-                
+
                 // Set the result
                 $result->setValue($value);
 
@@ -237,22 +221,15 @@ r
         return $actions->isNotEmpty() ? $actions->implode(' ') : null;
     }
 
-        /**
-     * @return $this
-     */
-    public function assert(Closure $can = null, Closure $cannot = null): self
+    public function assert(Closure $can = null, Closure $cannot = null): static
     {
-        /** @var HasCallbacks|HasTasks $this */
         $this->setCallback('can', $can);
         $this->setCallback('cannot', $cannot);
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function noAssertion(): self
+    public function noAssertion(): static
     {
         $this->can = null;
         $this->canHalt = true;
@@ -262,10 +239,8 @@ r
 
     /**
      * Set whether this task can run (i.e. passes)
-     *
-     * @return $this
      */
-    public function can(bool $can = true): self
+    public function can(bool $can = true): static
     {
         $this->can = $can;
 
@@ -274,10 +249,8 @@ r
 
     /**
      * Set that this task cannot run (i.e. fails)
-     *
-     * @return $this
      */
-    public function cannot(): self
+    public function cannot(): static
     {
         return $this->can(false);
     }
@@ -294,12 +267,9 @@ r
      * Perform the assertions
      *
      * @requires Story
-     *
-     * @return $this
      */
-    public function perform(): self
+    public function perform(): static
     {
-        /** @var Story $this */
         if ($this->skipDueToIsolation()) {
             $test = $this->getTest();
 

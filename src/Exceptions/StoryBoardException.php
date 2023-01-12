@@ -28,7 +28,6 @@ abstract class StoryBoardException extends Exception
         );
     }
 
-
     public static function invalidStory(): InvalidStoryException
     {
         return new InvalidStoryException(

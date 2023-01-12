@@ -31,7 +31,7 @@ class TimerUpException extends Exception
      */
     public function getTimeTaken(): int
     {
-        return $this->timer->getTimeTaken();
+        return (int) $this->timer->getTimeTaken();
     }
 
     /**

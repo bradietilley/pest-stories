@@ -143,7 +143,7 @@ test('when performer setUser method is run, the user is logged in', function () 
         })
         ->boot()
         ->perform();
-        
+
     // 2x each of the 4 callbacks, only one for before
     expect($users)->toHaveCount(7);
 
