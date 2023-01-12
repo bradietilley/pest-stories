@@ -26,9 +26,8 @@ trait HasInheritance
      * Set the parent of this story
      *
      * @param  static  $parent
-     * @return $this
      */
-    public function setParent(self $parent): self
+    public function setParent(self $parent): static
     {
         $this->parent = $parent;
 
@@ -56,6 +55,14 @@ trait HasInheritance
         }
 
         return $default;
+    }
+
+    /**
+     * Strict-type alias of inheritProperty
+     */
+    public function inheritPropertyBool(string $property, bool $default = null): ?bool
+    {
+        return (bool) $this->inheritProperty($property, $default);
     }
 
     /**

@@ -20,10 +20,8 @@ trait HasIsolation
 
     /**
      * Add this instance to the list of isolated classes to run
-     *
-     * @return $this
      */
-    public function isolate(): self
+    public function isolate(): static
     {
         static::$isolationStories[] = $this->isolationId();
 

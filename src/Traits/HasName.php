@@ -20,20 +20,16 @@ trait HasName
 
     /**
      * Alias for setName()
-     *
-     * @return $this
      */
-    public function name(string $name): self
+    public function name(string $name): static
     {
         return $this->setName($name);
     }
 
     /**
      * Set the name (or name fragment) of this story
-     *
-     * @return $this
      */
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -44,6 +40,14 @@ trait HasName
      * Get the name (or name fragment) of this story
      */
     public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the name (or name fragment) of this story.
+     */
+    public function getNameString(): string
     {
         return $this->name;
     }

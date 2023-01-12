@@ -48,7 +48,7 @@ class Story
 
     public readonly int $id;
 
-    private static $idCounter = 0;
+    private static int $idCounter = 0;
 
     protected bool $inherited = false;
 
@@ -91,11 +91,11 @@ class Story
     /**
      * Create a new story
      *
-     * @return $this
+     * @return self
      */
     public static function make(?string $name = null, ?Story $parent = null): static
     {
-        return new static($name, $parent);
+        return new self($name, $parent);
     }
 
     /**
@@ -118,10 +118,8 @@ class Story
 
     /**
      * Register this story actions
-     *
-     * @return $this
      */
-    public function register(): self
+    public function register(): static
     {
         $this->inherit();
 
@@ -142,10 +140,8 @@ class Story
 
     /**
      * Boot (and register) the story and its actions
-     *
-     * @return $this
      */
-    public function boot(): self
+    public function boot(): static
     {
         $this->register();
 
@@ -175,7 +171,7 @@ class Story
     /**
      * Set the test case used for this story
      */
-    public function setTest(TestCase $test): self
+    public function setTest(TestCase $test): static
     {
         $this->test = $test;
 
@@ -184,10 +180,8 @@ class Story
 
     /**
      * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
-     *
-     * @return $this
      */
-    public function test(): self
+    public function test(): static
     {
         $story = $this;
 
@@ -207,6 +201,11 @@ class Story
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
+
+        if (! is_callable($function)) {
+            throw StoryBoardException::testFunctionNotFound($function);
+        }
+
         $function(...$args);
 
         return $this;
@@ -256,7 +255,7 @@ class Story
     /**
      * Inherit all properties that are inheritable
      */
-    public function inherit(): self
+    public function inherit(): static
     {
         if ($this->alreadyRun('inherited')) {
             // @codeCoverageIgnoreStart
@@ -285,7 +284,9 @@ class Story
      */
     protected function inheritAssertions(): void
     {
-        if (($can = $this->inheritProperty('can')) !== null) {
+        $can = $this->inheritPropertyBool('can');
+
+        if ($can !== null) {
             $this->can($can);
         }
     }
@@ -293,7 +294,7 @@ class Story
     /**
      * Run this story from start to finish
      */
-    public function run(): self
+    public function run(): static
     {
         try {
             if ($this->timeoutEnabled && $this->timeout > 0) {
@@ -352,7 +353,7 @@ class Story
     /**
      * Run the full test assertion (after setTest)
      */
-    public function fullRun(): self
+    public function fullRun(): static
     {
         $this->boot();
         $this->runSetUp();
@@ -380,7 +381,7 @@ class Story
     /**
      * Register a callback to run when the test is set up
      */
-    public function setUp(?Closure $callback): self
+    public function setUp(?Closure $callback): static
     {
         return $this->setCallback('setUp', $callback);
     }
@@ -388,7 +389,7 @@ class Story
     /**
      * Register a callback to run when the test the teared down
      */
-    public function tearDown(?Closure $callback): self
+    public function tearDown(?Closure $callback): static
     {
         return $this->setCallback('tearDown', $callback);
     }

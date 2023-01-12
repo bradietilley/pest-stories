@@ -15,7 +15,7 @@ class StoryAction
         $this->order ??= $action->getOrder();
     }
 
-    public function withStory(Story $story): self
+    public function withStory(Story $story): static
     {
         $this->story = $story;
 

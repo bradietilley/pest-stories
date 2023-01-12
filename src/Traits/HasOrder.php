@@ -24,10 +24,8 @@ trait HasOrder
 
     /**
      * Set the order to register/boot this item
-     *
-     * @return $this
      */
-    public function setOrder(?int $order): self
+    public function setOrder(?int $order): static
     {
         $order ??= self::getNextOrder();
 
@@ -39,10 +37,8 @@ trait HasOrder
 
     /**
      * Alias of setOrder()
-     *
-     * @return $this
      */
-    public function order(?int $order): self
+    public function order(?int $order): static
     {
         return $this->setOrder($order);
     }

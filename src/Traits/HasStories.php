@@ -39,9 +39,8 @@ trait HasStories
      * Alias of setStories()
      *
      * @param  Story|array<Story>  $stories
-     * @return $this
      */
-    public function stories(...$stories): self
+    public function stories(...$stories): static
     {
         return $this->setStories(...$stories);
     }
@@ -50,9 +49,8 @@ trait HasStories
      * Add stories
      *
      * @param  Story|array<Story>  $stories
-     * @return $this
      */
-    public function setStories(...$stories): self
+    public function setStories(...$stories): static
     {
         foreach ($stories as $storyList) {
             $storyList = (is_array($storyList)) ? $storyList : [$storyList];

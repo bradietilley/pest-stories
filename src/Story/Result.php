@@ -12,7 +12,7 @@ class Result
 
     private bool $valueAdded = false;
 
-    public function setValue(mixed $value): self
+    public function setValue(mixed $value): static
     {
         $this->value = $value;
         $this->valueAdded = true;
@@ -30,7 +30,7 @@ class Result
         return $this->valueAdded;
     }
 
-    public function setError(Throwable $error): self
+    public function setError(Throwable $error): static
     {
         $this->error = $error;
 

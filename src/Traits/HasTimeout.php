@@ -18,23 +18,19 @@ trait HasTimeout
     /**
      * Set a timeout for this story.
      * Any value under 1 millisecond will set to 1 millisecond.
-     *
-     * @return $this
      */
-    public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): self
+    public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): static
     {
         $this->timeoutEnabled = true;
-        $this->timeout = $unit->toMicroseconds($timeout, $unit);
+        $this->timeout = $unit->toMicroseconds($timeout);
 
         return $this;
     }
 
     /**
      * Remove the timeout for this story
-     *
-     * @return $this
      */
-    public function noTimeout(): self
+    public function noTimeout(): static
     {
         $this->timeoutEnabled = false;
         $this->timeout = null;
@@ -47,7 +43,6 @@ trait HasTimeout
      */
     public function inheritTimeout(): void
     {
-        /** @var HasInheritance|self $this */
         foreach ($this->getAncestors() as $level) {
             $enabled = $level->getProperty('timeoutEnabled');
 

@@ -6,42 +6,27 @@ use Illuminate\Support\Str;
 
 trait HasNameShortcuts
 {
-    /**
-     * @return $this
-     */
-    public function view(string $item): self
+    public function view(string $item): static
     {
         return $this->name('view a '.Str::of($item)->afterLast('\\')->toString());
     }
 
-    /**
-     * @return $this
-     */
-    public function create(string $item): self
+    public function create(string $item): static
     {
         return $this->name('create a '.Str::of($item)->afterLast('\\')->toString());
     }
 
-    /**
-     * @return $this
-     */
-    public function update(string $item): self
+    public function update(string $item): static
     {
         return $this->name('update a '.Str::of($item)->afterLast('\\')->toString());
     }
 
-    /**
-     * @return $this
-     */
-    public function delete(string $item): self
+    public function delete(string $item): static
     {
         return $this->name('delete a '.Str::of($item)->afterLast('\\')->toString());
     }
 
-    /**
-     * @return $this
-     */
-    public function restore(string $item): self
+    public function restore(string $item): static
     {
         return $this->name('restore a '.Str::of($item)->afterLast('\\')->toString());
     }

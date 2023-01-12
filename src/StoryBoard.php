@@ -24,7 +24,7 @@ class StoryBoard extends Story
     /**
      * Create test cases for all tests
      */
-    public function test(): self
+    public function test(): static
     {
         if (static::$datasetsEnabled) {
             $function = Story::getTestFunction();

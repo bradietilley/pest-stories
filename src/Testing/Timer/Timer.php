@@ -50,7 +50,7 @@ class Timer
         ?Closure $after = null,
         int $timeout = 60,
         bool $rethrow = true,
-    ): self {
+    ): static {
         return new self(...func_get_args());
     }
 
@@ -58,7 +58,7 @@ class Timer
      * Specify the timeout before the callback should be aborted in one of several
      * units (seconds, milliseconds, microseconds)
      */
-    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): self
+    public function timeout(int $timeout, TimerUnit $unit = TimerUnit::SECOND): static
     {
         $this->timeout = $unit->toMicroseconds($timeout);
 
@@ -72,7 +72,7 @@ class Timer
      *
      *      - int $seconds (remaining)
      */
-    public function finished(?Closure $finished): self
+    public function finished(?Closure $finished): static
     {
         return $this->setCallback('finished', $finished);
     }
@@ -84,7 +84,7 @@ class Timer
      *
      *      - Throwable $e|exception
      */
-    public function errored(?Closure $errored): self
+    public function errored(?Closure $errored): static
     {
         return $this->setCallback('errored', $errored);
     }
@@ -92,7 +92,7 @@ class Timer
     /**
      * Register callback to run when the callback passes, fails or is timedout
      */
-    public function after(?Closure $after): self
+    public function after(?Closure $after): static
     {
         return $this->setCallback('after', $after);
     }
@@ -104,7 +104,7 @@ class Timer
      *
      *      - int $seconds (time taken)
      */
-    public function timedout(?Closure $timedout): self
+    public function timedout(?Closure $timedout): static
     {
         return $this->setCallback('timedout', $timedout);
     }
@@ -114,7 +114,7 @@ class Timer
      * errored/timedout callbacks, ensuring that exceptions are always
      * thrown
      */
-    public function rethrow(): self
+    public function rethrow(): static
     {
         $this->rethrow = true;
 
@@ -124,7 +124,7 @@ class Timer
     /**
      * Do not rethrow exceptions
      */
-    public function dontRethrow(): self
+    public function dontRethrow(): static
     {
         $this->rethrow = false;
 
