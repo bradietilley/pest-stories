@@ -187,7 +187,7 @@ Action::make('post_deleted')->as(fn (Post $post) => $post->delete());
 
 
 // In tests/Unit/Policies/CommentTest.php
-StoryBoard::make()
+Story::make()
     ->name('write a comment on a post')
     ->assert(
         can: function (bool|Response $result) {

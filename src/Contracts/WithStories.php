@@ -3,7 +3,6 @@
 namespace BradieTilley\StoryBoard\Contracts;
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 interface WithStories

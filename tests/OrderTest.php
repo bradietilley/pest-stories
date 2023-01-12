@@ -1,7 +1,7 @@
 <?php
 
+use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('order of everything is as expected', function () {
@@ -12,7 +12,7 @@ test('order of everything is as expected', function () {
         ->registering(fn () => $data[] = 'action register')
         ->booting(fn () => $data[] = 'action boot');
 
-    $story = StoryBoard::make()
+    $story = Story::make()
         ->can()
         ->before(fn () => $data[] = 'action before')
         ->action('action')

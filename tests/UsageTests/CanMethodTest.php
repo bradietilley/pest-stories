@@ -1,11 +1,10 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 
-function createStoryBoardForCanMethod(int $level, &$names): StoryBoard
+function createStoryBoardForCanMethod(int $level, &$names): Story
 {
-    return StoryBoard::make()
+    return Story::make()
         ->name('do something')
         ->when(
             ($level === 1),

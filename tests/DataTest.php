@@ -2,7 +2,6 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 
 test('the story data can shared easily amongst callbacks', function () {
     Action::make('something_cool')->as(function (Story $story) {
@@ -53,7 +52,7 @@ test('the story data can shared easily amongst callbacks', function () {
 });
 
 test('a story may inherit variables from its parent stories', function () {
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->set('foo', '1')
         ->set('bar', 2)
         ->set('old', 'yes')

@@ -3,7 +3,6 @@
 use BradieTilley\StoryBoard\Exceptions\InvalidStoryException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 beforeEach(function () {
@@ -15,7 +14,7 @@ beforeEach(function () {
 });
 
 test('a storyboard with a single story can generate test cases with names', function () {
-    $storyboard = StoryBoard::make('create something cool')
+    $storyboard = Story::make('create something cool')
         ->can()
         ->assert(fn () => null)
         ->action(fn () => null);
@@ -31,7 +30,7 @@ test('a storyboard with a single story can generate test cases with names', func
 });
 
 test('a storyboard with multiple stories can generate test cases with names', function () {
-    $storyboard = StoryBoard::make()
+    $storyboard = Story::make()
         ->name('create something cool')
         ->can()
         ->assert(fn () => null)
@@ -53,7 +52,7 @@ test('a storyboard with multiple stories can generate test cases with names', fu
 });
 
 test('a storyboard with multiple nested stories can generate test cases with names', function () {
-    $storyboard = StoryBoard::make()
+    $storyboard = Story::make()
         ->name('create something cool')
         ->can()
         ->assert(fn () => null)
@@ -83,7 +82,7 @@ test('a storyboard with multiple nested stories can generate test cases with nam
 });
 
 test('a story with multiple nested stories can collate required actions', function () {
-    $storyboard = StoryBoard::make()
+    $storyboard = Story::make()
         ->name('create something cool')
         ->can()
         ->assert(fn () => null)
@@ -148,7 +147,7 @@ test('a story cannot accept children that are not story classes', function (stri
         ],
     };
 
-    StoryBoard::make()->stories($stories);
+    Story::make()->stories($stories);
 })->with([
     'when given string' => 'string',
     'when given action' => 'action',
@@ -202,7 +201,7 @@ test('a story can fetch its children stories via collection methods and property
 });
 
 test('stories can append child stories in various ways', function () {
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->can()
         ->assert(fn () => null)
         ->action(fn () => null);
@@ -235,7 +234,7 @@ test('you can retrieve all registered actions for a story', function () {
     Action::make('action_1')->as(fn () => null);
     Action::make('action_2')->as(fn () => null);
 
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->can()
         ->assert(fn () => null)
         ->action('action_1')

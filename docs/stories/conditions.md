@@ -5,7 +5,7 @@
 Stories use Laravel's `\Illuminate\Support\Traits\Conditionable` trait, meaning you can easily add chainable conditions to your stories.
 
 ```php
-StoryBoard::make()
+Story::make()
     ->name('do something')
     ->when($boolCondition, fn (Story $story) => $story->action('some_action'))
     ->test();

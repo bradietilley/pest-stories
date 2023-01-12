@@ -2,10 +2,9 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
-function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
+function createStoryBoardForMethodTest(int $level, &$names): Story
 {
     Action::make('action_1', fn () => null, 'action1');
     Action::make('action_2a', fn () => null, 'action2');
@@ -15,7 +14,7 @@ function createStoryBoardForMethodTest(int $level, &$names): StoryBoard
     Action::make('action_3c', fn () => null, 'action3');
     Action::make('action_3d', fn () => null, 'action3');
 
-    return StoryBoard::make()
+    return Story::make()
         ->name('do something')
         ->can()
         ->when(

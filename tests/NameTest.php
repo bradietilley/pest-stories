@@ -1,11 +1,10 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a story can be given a name using different shortcuts', function () {
-    $story = StoryBoard::make()
+    $story = Story::make()
         ->can()
         ->assert(fn () => null)
         ->stories([
@@ -37,7 +36,7 @@ test('a story can be named during the make static constructor', function () {
 });
 
 test('a storyboard will not prefix its story names with the parent name when dataset mode is enabled', function () {
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->can()
         ->assert(fn () => null)
         ->stories([
@@ -46,7 +45,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
             Story::make('child 3'),
         ]);
 
-    StoryBoard::disableDatasets();
+    Story::disableDatasets();
 
     expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] parent child 1',
@@ -54,7 +53,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
         '[Can] parent child 3',
     ]);
 
-    StoryBoard::enableDatasets();
+    Story::enableDatasets();
 
     expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] child 1',
@@ -63,11 +62,11 @@ test('a storyboard will not prefix its story names with the parent name when dat
     ]);
 
     // Reset
-    StoryBoard::disableDatasets();
+    Story::disableDatasets();
 });
 
 test('can inherit name from parents', function () {
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->can()
         ->assert(fn () => null)
         ->stories([
@@ -81,7 +80,7 @@ test('can inherit name from parents', function () {
         ]);
 
     // Disable datasets
-    StoryBoard::disableDatasets();
+    Story::disableDatasets();
 
     $story->storiesAll;
 
@@ -115,7 +114,7 @@ test('can inherit name from parents', function () {
     ]);
 
     // Enable datasets (should change the name)
-    StoryBoard::enableDatasets();
+    Story::enableDatasets();
 
     // Try inherit it again
     $child1->inheritName();
@@ -135,5 +134,5 @@ test('can inherit name from parents', function () {
     ]);
 
     // Disable datasets for remainder of tests
-    StoryBoard::disableDatasets();
+    Story::disableDatasets();
 });

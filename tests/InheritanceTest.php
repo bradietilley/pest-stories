@@ -1,10 +1,9 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 
 test('inheritance can retrieve parent', function () {
-    $parent = StoryBoard::make('parent')
+    $parent = Story::make('parent')
         ->stories([
             $child = Story::make('child'),
             $another = Story::make('another')->stories([
@@ -19,7 +18,7 @@ test('inheritance can retrieve parent', function () {
 });
 
 test('inheritance can check existence parent', function () {
-    $parent = StoryBoard::make('parent')
+    $parent = Story::make('parent')
         ->stories([
             $child = Story::make('child'),
             $another = Story::make('another')->stories([
