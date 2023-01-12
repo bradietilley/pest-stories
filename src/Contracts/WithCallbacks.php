@@ -64,9 +64,10 @@ interface WithCallbacks
 
     /**
      * Inherit all callbacks from this items's parents
-     * 
+     *
      * @requires WithInheritance
-     * @return void 
+     *
+     * @return void
      */
     public function inheritCallbacks(): void;
 

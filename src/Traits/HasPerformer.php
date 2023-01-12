@@ -34,7 +34,6 @@ trait HasPerformer
     public function setUser(Authenticatable|null $user): static
     {
         $this->user = $user; /** @phpstan-ignore-line */
-
         if (static::hasStaticCallback('actingAs')) {
             static::runStaticCallback('actingAs', $this->getParameters());
         } else {

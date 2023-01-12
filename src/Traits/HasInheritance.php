@@ -25,8 +25,8 @@ trait HasInheritance
 
     /**
      * Set the parent of this story
-     * 
-     * @param static $parent
+     *
+     * @param  static  $parent
      */
     public function setParent($parent): static
     {

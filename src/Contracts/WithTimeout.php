@@ -4,7 +4,6 @@ namespace BradieTilley\StoryBoard\Contracts;
 
 use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
-use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 
 interface WithTimeout

@@ -9,9 +9,7 @@ use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Contracts\WithIsolation;
 use BradieTilley\StoryBoard\Contracts\WithName;
 use BradieTilley\StoryBoard\Contracts\WithNameShortcuts;
-use BradieTilley\StoryBoard\Contracts\WithOrder;
 use BradieTilley\StoryBoard\Contracts\WithPerformer;
-use BradieTilley\StoryBoard\Contracts\WithRepeater;
 use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
 use BradieTilley\StoryBoard\Contracts\WithStories;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
@@ -213,7 +211,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
-
         if (! is_callable($function)) {
             throw StoryBoardException::testFunctionNotFound($function);
         }

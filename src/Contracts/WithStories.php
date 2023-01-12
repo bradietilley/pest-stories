@@ -2,7 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
-use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
@@ -55,7 +54,7 @@ interface WithStories
 
     /**
      * Get all nested stories
-     * 
+     *
      * @return array<Story>
      */
     public function nestedStories(): array;

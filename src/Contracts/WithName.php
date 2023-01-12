@@ -36,7 +36,8 @@ interface WithName
 
     /**
      * Get full name, minus expectation
-     * @return string 
+     *
+     * @return string
      */
     public function getFullName(): string;
 

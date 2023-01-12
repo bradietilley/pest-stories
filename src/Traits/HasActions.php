@@ -174,7 +174,7 @@ r
         }
 
         $result = $this->getResult();
-        
+
         try {
             $resultData = [
                 'result' => $result->getValue(),

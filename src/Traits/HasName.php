@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property ?string $name
- * 
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasName
