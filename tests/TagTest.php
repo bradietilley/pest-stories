@@ -40,7 +40,7 @@ test('a story can inherit tags from parents', function () {
             ]),
         ])
         ->storiesAll;
-    
+
     expect($child1->register()->getTagsData())->toBe([
         'issue' => '123',
     ]);
@@ -67,7 +67,7 @@ test('a story can have tags resolved by callback', function () {
             ]),
         ])
         ->storiesAll;
-    
+
     expect($child1->register()->getTagsData())->toBe([
         'issue' => '123',
     ]);
@@ -100,7 +100,7 @@ test('a story can have shared instance-based tags', function () {
             ]),
         ])
         ->storiesAll;
-    
+
     expect($child1->register()->getTagsData())->toBe([
         'issue' => '123',
     ]);

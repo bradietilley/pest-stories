@@ -26,7 +26,7 @@ class Tag implements Stringable
         if ($value instanceof Closure) {
             $this->setCallback('value', $value);
         } else {
-            $this->value =  $value;
+            $this->value = $value;
         }
     }
 
@@ -40,7 +40,7 @@ class Tag implements Stringable
         if ($this->alreadyRun('register')) {
             return $this;
         }
-        
+
         return $this;
     }
 
@@ -53,7 +53,7 @@ class Tag implements Stringable
         if ($this->hasCallback('value')) {
             $this->value = $this->runCallback('value', $story->getParameters());
         }
-        
+
         return $this;
     }
 

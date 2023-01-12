@@ -4,14 +4,13 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Tag;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 trait HasTags
 {
     /**
      * All registered tags for this object
-     * 
+     *
      * @var array<string, Tag>
      */
     protected array $tags = [];
@@ -23,8 +22,8 @@ trait HasTags
 
     /**
      * Add a tag (or multiple tags) to this object
-     * 
-     * @return $this 
+     *
+     * @return $this
      */
     public function tag(string|array|Tag $key, mixed $value = null): self
     {
@@ -49,7 +48,6 @@ trait HasTags
 
             $this->tags[$tag->getName()] = $tag;
         }
-
 
         return $this;
     }
@@ -85,7 +83,7 @@ trait HasTags
 
     /**
      * Append all tags to the test name
-     * 
+     *
      * @return $this
      */
     public function appendTags(): self
@@ -97,7 +95,7 @@ trait HasTags
 
     /**
      * Don't append all tags to the test name
-     * 
+     *
      * @return $this
      */
     public function dontAppendTags(): self
@@ -108,9 +106,9 @@ trait HasTags
     }
 
     /**
-     * Get all tags 
-     * 
-     * @return array<Tag> 
+     * Get all tags
+     *
+     * @return array<Tag>
      */
     public function getTags(): array
     {
@@ -129,7 +127,7 @@ trait HasTags
 
     /**
      * Get all tags used by this object
-     * 
+     *
      * e.g. [ 'foo' => 'bar', 'something' ]
      *      'foo: bar | something'
      */
