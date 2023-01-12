@@ -1,7 +1,6 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use BradieTilley\StoryBoard\Testing\Timer\Timer;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use Illuminate\Support\Collection;
@@ -229,7 +228,7 @@ test('a story with a timeout will fail if it reaches the timeout (microseconds; 
 test('a timeout can be inherited from parents with no timeout override on children', function () {
     $ran = Collection::make();
 
-    $story = StoryBoard::make('parent')
+    $story = Story::make('parent')
         ->can()
         ->assert(fn () => null)
         ->action(function (Story $story) use ($ran) {

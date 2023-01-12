@@ -26,7 +26,6 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
@@ -51,5 +50,5 @@ function something()
 beforeEach(function () {
     Action::flush();
     Story::flushIsolation();
-    StoryBoard::disableDatasets();
+    Story::disableDatasets();
 });

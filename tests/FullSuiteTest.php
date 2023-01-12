@@ -2,7 +2,6 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use PHPUnit\Framework\TestCase;
 
 $data = collect([
@@ -62,7 +61,7 @@ Action::make('action_two', function () use (&$data) {
 /**
  * Create a storyboard with a shared action and two child tests
  */
-$story = StoryBoard::make()
+$story = Story::make()
     ->name('full suite test')
     ->action('shared_action')
     ->before(fn () => null)

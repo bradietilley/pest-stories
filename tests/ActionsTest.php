@@ -6,7 +6,6 @@ use BradieTilley\StoryBoard\Exceptions\ActionNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a storyboard with multiple nested stories can collate required actions', function () {
@@ -16,7 +15,7 @@ test('a storyboard with multiple nested stories can collate required actions', f
     Action::make('as_unblocked', fn () => true);
     Action::make('as_blocked', fn () => true);
 
-    $storyboard = StoryBoard::make()
+    $storyboard = Story::make()
         ->can()
         ->assert(fn () => null)
         ->name('create something cool')
@@ -142,7 +141,7 @@ test('action variables are made accessible to the check() callback', function ()
 
     $data = [];
 
-    $story = StoryBoard::make()
+    $story = Story::make()
         ->can()
         ->name('do something')
         ->action('as_admin')
@@ -223,7 +222,7 @@ test('actions can offer to append their name to the story name', function () {
     Action::make('test_b', fn () => null)->appendName('custom name');
     Action::make('test_c', fn () => null)->appendName();
 
-    $story = StoryBoard::make()
+    $story = Story::make()
         ->name('parent name')
         ->can()
         ->assert(fn () => true)

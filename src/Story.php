@@ -60,6 +60,21 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use Macroable;
     use HasSingleRunner;
 
+    /**
+     * Flag to enable datasets where the parent StoryBoard
+     * becomes a Pest test case and all children stories
+     * become dataset entries.
+     *
+     * False example:
+     *      <parent test> <child test> <grandchild test>
+     *
+     * True example:
+     *      <parent test> with dataset "<child test> <grandchild test>"
+     *
+     * @var bool
+     */
+    protected static bool $datasetsEnabled = false;
+
     public readonly int $id;
 
     private static int $idCounter = 0;
@@ -193,9 +208,44 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     }
 
     /**
-     * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
+     * Create test cases for all tests
      */
     public function test(): static
+    {
+        if (! $this->hasStories()) {
+            return $this->testSingleStory();
+        }
+
+        if (static::$datasetsEnabled) {
+            $function = Story::getTestFunction();
+            $parentName = $this->getName();
+            $stories = $this->allStories();
+
+            if (! is_callable($function)) {
+                throw StoryBoardException::testFunctionNotFound($function);
+            }
+
+            $function($parentName, function (Story $story) {
+                /** @var Story $story */
+                /** @var TestCase $this */
+
+                // @codeCoverageIgnoreStart
+                $story->setTest($this)->boot()->perform();
+                // @codeCoverageIgnoreEnd
+            })->with($stories);
+        } else {
+            foreach ($this->allStories() as $story) {
+                $story->test();
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Create a test case for this story (e.g. create a `test('name', fn () => ...)`)
+     */
+    private function testSingleStory(): static
     {
         $story = $this;
 
@@ -414,5 +464,29 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     public function tearDown(?Closure $callback): static
     {
         return $this->setCallback('tearDown', $callback);
+    }
+
+    /**
+     * Enable the use of datasets (see static::$datasetsEnabled)
+     */
+    public static function enableDatasets(): void
+    {
+        static::$datasetsEnabled = true;
+    }
+
+    /**
+     * Disable the use of datasets (see static::$datasetsEnabled)
+     */
+    public static function disableDatasets(): void
+    {
+        static::$datasetsEnabled = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function datasetsEnabled(): bool
+    {
+        return static::$datasetsEnabled;
     }
 }

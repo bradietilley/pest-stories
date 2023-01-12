@@ -22,7 +22,7 @@ Story::macro('asAdmin', function () {
     return $this;
 });
 
-StoryBoard::make()
+Story::make()
     ->can()
     ->name('do something as admin')
     ->asAdmin()

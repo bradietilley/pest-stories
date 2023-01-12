@@ -2,7 +2,6 @@
 
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 $testExecutions = Collection::make([]);
@@ -49,12 +48,12 @@ test('storyboard test function will call upon the pest test function for each st
     $testExecutions->forget($testExecutions->keys()->toArray());
 
     if ($datasetEnabled) {
-        StoryBoard::enableDatasets();
+        Story::enableDatasets();
     } else {
-        StoryBoard::disableDatasets();
+        Story::disableDatasets();
     }
 
-    StoryBoard::make()
+    Story::make()
         ->name('parent')
         ->can()
         ->action(fn () => null)

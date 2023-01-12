@@ -7,7 +7,7 @@ Your application may require features to operate within certain timeframes and n
 By specifying a timeount, the story's process (including registering and booting) will abort after the given amount of time (see notes below). For example if you set a timeout of 2 seconds and your story/actions take 2 seconds, it will abort and will fail with an appropriate message.
 
 ```php
-StoryBoard::make('parent')
+Story::make('parent')
     ->can()
     ->action(fn () => sleep(2)); // long running process
     ->timeout(3)

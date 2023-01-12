@@ -5,7 +5,6 @@ namespace BradieTilley\StoryBoard\Traits;
 use BradieTilley\StoryBoard\Contracts\WithActions;
 use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Str;
 
 /**
@@ -62,7 +61,7 @@ trait HasName
             return;
         }
 
-        $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
+        $datasetKey = Story::datasetsEnabled() ? 'dataset' : 'default';
 
         if (isset($this->fullName[$datasetKey])) {
             return;
@@ -74,7 +73,7 @@ trait HasName
 
         foreach ($levels as $key => $level) {
             if ($key === $first) {
-                if (StoryBoard::datasetsEnabled()) {
+                if (Story::datasetsEnabled()) {
                     continue;
                 }
             }
@@ -89,7 +88,7 @@ trait HasName
 
     public function getFullName(): string
     {
-        $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
+        $datasetKey = Story::datasetsEnabled() ? 'dataset' : 'default';
 
         return $this->fullName[$datasetKey] ?? $this->getName();
     }

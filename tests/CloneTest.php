@@ -1,7 +1,7 @@
 <?php
 
+use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('you can clone a action and it will have a different identifier', function () {
@@ -17,7 +17,7 @@ test('you can add a cloned action to a story', function () {
     $action1 = Action::make('something_common')->as(fn () => $data[] = 'something_common')->appendName('old name');
     $action2 = $action1->clone()->as(fn () => $data[] = 'something_not_so_common')->appendName('new name');
 
-    $story = StoryBoard::make('a story')
+    $story = Story::make('a story')
         ->can()
         ->assert(fn () => null)
         ->action($action2)

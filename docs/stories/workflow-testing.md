@@ -11,7 +11,7 @@ Example:
 ```php
 $run = collect();
 
-StoryBoard::make('a test')
+Story::make('a test')
     ->can()
     ->action('do_something')
     ->action(fn () => $run[] = 'now')
@@ -31,7 +31,7 @@ After Pest discovers all tests, it will then boot all Story tests.
 By running `->test()`, the `StoryBoard` or `Story` is made available to Pest. 
 
 ```php
-StoryBoard::make('create something')
+Story::make('create something')
     ->can()
     ->action(fn () => null)
     ->stories([
@@ -69,7 +69,7 @@ Action::make('action')
     ->registering(fn () => echo "action register")
     ->booting(fn () => echo "action boot");
 
-StoryBoard::make()
+Story::make()
     ->can()
     ->before(fn () => echo "action before")
     ->action('action')

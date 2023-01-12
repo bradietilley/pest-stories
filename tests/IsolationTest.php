@@ -1,7 +1,6 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Collection;
 
 test('a story can isolate itself and prevent other stories from running', function (string $story) {
@@ -45,7 +44,7 @@ test('a story can isolate itself and prevent other stories from running', functi
 test('a story can isolate itself and allow its children to also run', function () {
     $ran = Collection::make([]);
 
-    $stories = StoryBoard::make()
+    $stories = Story::make()
         ->can()
         ->name('parent')
         ->action(fn (Story $story) => $ran[] = $story->getFullName())
@@ -87,7 +86,7 @@ test('a story can isolate itself and allow its children to also run', function (
 test('multiple stories can be isolated and all isolated stories will run', function () {
     $ran = Collection::make([]);
 
-    $stories = StoryBoard::make()
+    $stories = Story::make()
         ->can()
         ->name('parent')
         ->action(fn (Story $story) => $ran[] = $story->getFullName())

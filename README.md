@@ -44,7 +44,7 @@ Action::make('not_blocked')
     ->variable('blocked')
     ->appendName('when not blocked');
 
-StoryBoard::make()
+Story::make()
     ->name('create a post')
     ->before(
         fn () => assertDatabaseMissing('posts', [
