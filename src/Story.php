@@ -2,6 +2,19 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Contracts\WithActions;
+use BradieTilley\StoryBoard\Contracts\WithCallbacks;
+use BradieTilley\StoryBoard\Contracts\WithData;
+use BradieTilley\StoryBoard\Contracts\WithInheritance;
+use BradieTilley\StoryBoard\Contracts\WithIsolation;
+use BradieTilley\StoryBoard\Contracts\WithName;
+use BradieTilley\StoryBoard\Contracts\WithNameShortcuts;
+use BradieTilley\StoryBoard\Contracts\WithOrder;
+use BradieTilley\StoryBoard\Contracts\WithPerformer;
+use BradieTilley\StoryBoard\Contracts\WithRepeater;
+use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
+use BradieTilley\StoryBoard\Contracts\WithStories;
+use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
@@ -30,7 +43,7 @@ use Throwable;
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
  */
-class Story
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithSingleRunner
 {
     use Conditionable;
     use HasCallbacks;
@@ -90,12 +103,11 @@ class Story
 
     /**
      * Create a new story
-     *
-     * @return self
      */
     public static function make(?string $name = null, ?Story $parent = null): static
     {
-        return new self($name, $parent);
+        /** @phpstan-ignore-next-line */
+        return new static($name, $parent);
     }
 
     /**

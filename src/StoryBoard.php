@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard;
 
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use PHPUnit\Framework\TestCase;
 
 class StoryBoard extends Story
@@ -30,6 +31,10 @@ class StoryBoard extends Story
             $function = Story::getTestFunction();
             $parentName = $this->getName();
             $stories = $this->allStories();
+
+            if (! is_callable($function)) {
+                throw StoryBoardException::testFunctionNotFound($function);
+            }
 
             $function($parentName, function (Story $story) {
                 /** @var Story $story */

@@ -4,6 +4,9 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use Illuminate\Support\Str;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithName
+ */
 trait HasNameShortcuts
 {
     public function view(string $item): static

@@ -2,12 +2,16 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Contracts\WithActions;
+use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\StoryBoard;
 use Illuminate\Support\Str;
 
 /**
  * @property ?string $name
+ * 
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasName
 {
@@ -49,11 +53,15 @@ trait HasName
      */
     public function getNameString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     public function inheritName(): void
     {
+        if (! $this instanceof WithInheritance) {
+            return;
+        }
+
         $datasetKey = StoryBoard::datasetsEnabled() ? 'dataset' : 'default';
 
         if (isset($this->fullName[$datasetKey])) {
@@ -74,7 +82,7 @@ trait HasName
             $name[] = $level->getLevelName();
         }
 
-        $name = trim(preg_replace('/\s+/', ' ', implode(' ', $name)));
+        $name = trim((string) preg_replace('/\s+/', ' ', implode(' ', $name)));
 
         $this->fullName[$datasetKey] = $name;
     }
@@ -88,12 +96,12 @@ trait HasName
 
     public function getLevelName(): string
     {
-        $name = $this->getName();
+        $name = $this->getNameString();
 
         /**
          * Append names from actions (where actions opt to `->appendName()`)
          */
-        if (method_exists($this, 'getNameFromActions')) {
+        if ($this instanceof WithActions) {
             $name = "{$name} {$this->getNameFromActions()}";
         }
 
@@ -101,34 +109,4 @@ trait HasName
 
         return $name;
     }
-
-    // /**
-    //  * Get the full test name
-    //  *
-    //  * Example: create something > as low level user > with correct permissions
-    //  * Output:  [Can] create something as low level user with correct permissions
-    //  *
-    //  * @requires Story
-    //  */
-    // public function getFullName(): ?string
-    // {
-    //     if (! $this instanceof Story) {
-    //         return null;
-    //     }
-
-    //     $fullName = $this->getName();
-
-    //     /**
-    //      * Only the most lowest level story should get prefixed with can or cannot
-    //      */
-    //     if (! $this->hasStories()) {
-    //         if ($this->can !== null) {
-    //             $can = $this->can ? 'Can' : 'Cannot';
-
-    //             $fullName = "[{$can}] {$fullName}";
-    //         }
-    //     }
-
-    //     return $fullName;
-    // }
 }

@@ -9,7 +9,7 @@ trait HasOrder
     /**
      * Get the next order number
      */
-    protected static function getNextOrder(): int
+    public static function getNextOrder(): int
     {
         return ++self::$orderCounter;
     }

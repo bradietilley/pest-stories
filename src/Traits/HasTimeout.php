@@ -7,6 +7,9 @@ use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
+ */
 trait HasTimeout
 {
     protected ?int $timeout = null;
@@ -44,6 +47,7 @@ trait HasTimeout
     public function inheritTimeout(): void
     {
         foreach ($this->getAncestors() as $level) {
+            /** @var ?bool $enabled */
             $enabled = $level->getProperty('timeoutEnabled');
 
             // If the child/parent has explicitly stated no timeout then return with no timeout
@@ -53,8 +57,11 @@ trait HasTimeout
 
             // If the child/parent has explicitly stated a timeout then set the timeout and return
             if ($enabled === true) {
+                /** @var int|float|null $timeout */
+                $timeout = $level->getProperty('timeout');
+
                 $this->timeout(
-                    timeout: $level->getProperty('timeout'),
+                    timeout: $timeout ?? 0,
                     unit: TimerUnit::MICROSECOND,
                 );
 
@@ -68,7 +75,7 @@ trait HasTimeout
      */
     public function getTimeoutMicroseconds(): int
     {
-        return $this->timeout;
+        return (int) $this->timeout;
     }
 
     /**

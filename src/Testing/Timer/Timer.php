@@ -51,7 +51,8 @@ class Timer
         int $timeout = 60,
         bool $rethrow = true,
     ): static {
-        return new self(...func_get_args());
+        /** @phpstan-ignore-next-line */
+        return new static(...func_get_args());
     }
 
     /**
@@ -161,11 +162,11 @@ class Timer
     /**
      * Run the timeout-bound callback
      */
-    public function run()
+    public function run(): mixed
     {
         if ($this->alreadyRun('run')) {
             // @codeCoverageIgnoreStart
-            return;
+            return null;
             // @codeCoverageIgnoreEnd
         }
 
@@ -286,7 +287,7 @@ class Timer
      */
     public function getAlarmTimeout(): int
     {
-        return ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
+        return (int) ceil(TimerUnit::MICROSECOND->toSeconds($this->timeout));
     }
 
     /**

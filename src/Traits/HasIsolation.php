@@ -4,6 +4,9 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use Illuminate\Support\Str;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
+ */
 trait HasIsolation
 {
     protected static array $isolationStories = [];
@@ -38,7 +41,6 @@ trait HasIsolation
 
     public function inheritIsolation(): void
     {
-        /** @var self|HasInheritance $this */
         foreach ($this->getAncestors() as $ancestor) {
             if ($ancestor === $this) {
                 continue;
@@ -58,7 +60,6 @@ trait HasIsolation
      */
     public function inIsolation(): bool
     {
-        /** @var HasIsolation|HasInheritance $this */
         return in_array($this->isolationId(), static::$isolationStories);
     }
 

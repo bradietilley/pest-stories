@@ -64,9 +64,9 @@ class Action extends AbstractAction
     /**
      * Append the name of this action to the tests
      */
-    public function appendName(?string $name = null): static
+    public function appendName(string $name = null): static
     {
-        $this->appendName = $name ?? str_replace('_', ' ', $this->getName());
+        $this->appendName = $name ?? str_replace('_', ' ', $this->getNameString());
 
         return $this;
     }

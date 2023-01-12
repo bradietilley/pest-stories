@@ -191,6 +191,8 @@ abstract class AbstractAction
 
     /**
      * Get the name of the action to be referenced when building a story's set of actions
+     * 
+     * @param string|Closure|static $action
      */
     public static function prepare(string|Closure|self $action): static
     {

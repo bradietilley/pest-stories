@@ -11,6 +11,9 @@ use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Story
+ */
 trait HasActions
 {
     protected ?Result $result = null;
@@ -22,6 +25,9 @@ trait HasActions
      */
     protected array $actions = [];
 
+    /**
+     * Current expectation
+     */
     protected ?bool $can = null;
 
     /**
@@ -45,13 +51,11 @@ trait HasActions
 
     public function before(?Closure $before): static
     {
-        /** @var HasTasks|HasCallbacks $this */
         return $this->setCallback('before', $before);
     }
 
     public function after(?Closure $after): static
     {
-        /** @var HasTasks|HasCallbacks $this */
         return $this->setCallback('after', $after);
     }
 
@@ -117,7 +121,7 @@ r
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires HasInheritance
+     * @requires WithInheritance
      *
      * @return array<string,StoryAction>
      */
@@ -125,7 +129,6 @@ r
     {
         $all = [];
 
-        /** @var HasInheritance $this */
         foreach (array_reverse($this->getAncestors()) as $ancestor) {
             foreach ($ancestor->getActions() as $name => $storyAction) {
                 $all[$name] = (clone $storyAction)->withStory($this);
@@ -148,7 +151,6 @@ r
      */
     public function registerActions(): static
     {
-        /** @var Story $this */
         $this->actions = Collection::make($this->actions)
             ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
             ->all();
@@ -163,24 +165,23 @@ r
     /**
      * Boot all registered actions for this test.
      *
-     * @requires HasInheritance
+     * @requires WithInheritance
      */
     public function bootActions(): static
     {
-        /** @var Story $this */
         if (empty($this->actions)) {
             throw StoryBoardException::actionNotSpecified($this);
         }
 
+        $result = $this->getResult();
+        
         try {
-            $result = $this->getResult();
             $resultData = [
                 'result' => $result->getValue(),
             ];
 
             $this->runCallback('before', $this->getParameters($resultData));
 
-            /** @var Story $this */
             foreach ($this->actions as $storyAction) {
                 // Run action get result
                 $value = $storyAction->boot($this->getParameters($resultData));
@@ -222,7 +223,6 @@ r
 
     public function assert(Closure $can = null, Closure $cannot = null): static
     {
-        /** @var HasCallbacks|HasTasks $this */
         $this->setCallback('can', $can);
         $this->setCallback('cannot', $cannot);
 
@@ -270,7 +270,6 @@ r
      */
     public function perform(): static
     {
-        /** @var Story $this */
         if ($this->skipDueToIsolation()) {
             $test = $this->getTest();
 

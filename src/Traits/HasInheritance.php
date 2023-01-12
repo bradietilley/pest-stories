@@ -2,6 +2,9 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+/**
+ * @property ?static $parent
+ */
 trait HasInheritance
 {
     /**
@@ -14,26 +17,27 @@ trait HasInheritance
 
     /**
      * Get the parent Story
-     *
-     * @return static
      */
     public function getParent(): ?static
     {
-        return $this->parent;
+        return $this->parent; /** @phpstan-ignore-line */
     }
 
     /**
      * Set the parent of this story
-     *
-     * @param  static  $parent
+     * 
+     * @param static $parent
      */
-    public function setParent(self $parent): static
+    public function setParent($parent): static
     {
         $this->parent = $parent;
 
         return $this;
     }
 
+    /**
+     * Inherit a given property from the parent(s)
+     */
     public function inheritProperty(string $property, mixed $default = null): mixed
     {
         $instance = $this;
