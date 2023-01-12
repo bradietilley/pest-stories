@@ -303,7 +303,7 @@ test('a story cut short by a timeout will still run tearDown', function () {
     if (! Timer::environmentSupportsPcntlAlarm()) {
         return $this->markTestSkipped('Environment does not support pcntl_alarm');
     }
-    
+
     $ran = Collection::make();
 
     $story = Story::make('timed test')
