@@ -66,7 +66,10 @@ trait HasInheritance
      */
     public function inheritPropertyBool(string $property, bool $default = null): ?bool
     {
-        return (bool) $this->inheritProperty($property, $default);
+        /** @var ?bool $value */
+        $value = $this->inheritProperty($property, $default);
+
+        return $value;
     }
 
     /**
