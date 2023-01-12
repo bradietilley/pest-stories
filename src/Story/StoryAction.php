@@ -11,8 +11,7 @@ class StoryAction
         protected Action $action,
         protected array $arguments = [],
         protected ?int $order = null,
-    )
-    {
+    ) {
         $this->order ??= $action->getOrder();
     }
 

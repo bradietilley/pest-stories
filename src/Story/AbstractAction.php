@@ -77,8 +77,8 @@ abstract class AbstractAction
 
     /**
      * Get all actions
-     * 
-     * @return Collection<static> 
+     *
+     * @return Collection<static>
      */
     public static function all(): Collection
     {
@@ -114,7 +114,7 @@ abstract class AbstractAction
     public static function flush(): void
     {
         static::$orderCounter = 0;
-        
+
         if (static::class === AbstractAction::class) {
             static::$stored = [];
 

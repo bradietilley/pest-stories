@@ -6,10 +6,10 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
+use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
-use BradieTilley\StoryBoard\Story\StoryAction;
 
 trait HasActions
 {
@@ -44,6 +44,7 @@ trait HasActions
     {
         return $this->setAction($action, $arguments, $order);
     }
+
     /**
      * @return $this
      */
@@ -96,7 +97,7 @@ r
 
     /**
      * Register multiple actions for this story.
-     * 
+     *
      * The order of each action is inherited from the actions themselves.
      *
      * @return $this
@@ -118,7 +119,7 @@ r
 
     /**
      * Get all regsitered actions for this story (no inheritance lookup)
-     * 
+     *
      * @return array<string,StoryAction>
      */
     public function getActions(): array
@@ -166,7 +167,7 @@ r
         $this->actions = Collection::make($this->actions)
             ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
             ->all();
-        
+
         foreach ($this->actions as $storyAction) {
             $storyAction->register();
         }
@@ -184,7 +185,6 @@ r
     public function bootActions(): self
     {
         /** @var Story $this */
-
         if (empty($this->actions)) {
             throw StoryBoardException::actionNotSpecified($this);
         }
@@ -204,7 +204,7 @@ r
 
                 // Set the variable
                 $this->setData($storyAction->getVariable(), $value);
-                
+
                 // Set the result
                 $result->setValue($value);
 
@@ -237,7 +237,7 @@ r
         return $actions->isNotEmpty() ? $actions->implode(' ') : null;
     }
 
-        /**
+    /**
      * @return $this
      */
     public function assert(Closure $can = null, Closure $cannot = null): self
