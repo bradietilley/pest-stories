@@ -191,7 +191,7 @@ class Timer
         try {
             // Start timer
             $timeout = $this->getAlarmTimeout();
-            
+
             if (self::environmentSupportsPcntlAlarm()) {
                 pcntl_alarm($timeout);
             }
