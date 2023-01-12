@@ -326,7 +326,6 @@ class Timer
      */
     public static function environmentSupportsPcntlAlarm(): bool
     {
-        return false;
-        // return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
+        return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
     }
 }
