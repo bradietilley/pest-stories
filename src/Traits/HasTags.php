@@ -22,10 +22,8 @@ trait HasTags
 
     /**
      * Add a tag (or multiple tags) to this object
-     *
-     * @return $this
      */
-    public function tag(string|array|Tag $key, mixed $value = null): self
+    public function tag(string|array|Tag $key, mixed $value = null): static
     {
         if ($key instanceof Tag) {
             $key = [
@@ -57,22 +55,22 @@ trait HasTags
      */
     public function inheritTags(): void
     {
-        /** @var Story $this */
         $tags = [];
 
         foreach (array_reverse($this->getAncestors()) as $level) {
-            $tags = array_replace($tags, $level->getProperty('tags'));
+            $tags = array_replace($tags, (array) $level->getProperty('tags'));
         }
 
+        /** @var array<string, Tag> $tags */
         $this->tags = Collection::make($tags)->sortBy(fn (Tag $tag) => $tag->getOrder())->all();
 
-        $this->appendTags = $this->inheritProperty('appendTags');
+        $this->appendTags = $this->inheritPropertyBool('appendTags');
     }
 
     /**
      * Register the tags
      */
-    public function registerTags(): self
+    public function registerTags(): static
     {
         foreach ($this->tags as $tag) {
             $tag->register($this)->boot($this);
@@ -83,10 +81,8 @@ trait HasTags
 
     /**
      * Append all tags to the test name
-     *
-     * @return $this
      */
-    public function appendTags(): self
+    public function appendTags(): static
     {
         $this->appendTags = true;
 
@@ -95,10 +91,8 @@ trait HasTags
 
     /**
      * Don't append all tags to the test name
-     *
-     * @return $this
      */
-    public function dontAppendTags(): self
+    public function dontAppendTags(): static
     {
         $this->appendTags = false;
 

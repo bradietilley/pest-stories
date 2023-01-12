@@ -51,7 +51,14 @@ class Tag implements Stringable
         }
 
         if ($this->hasCallback('value')) {
-            $this->value = $this->runCallback('value', $story->getParameters());
+            $value = $this->runCallback('value', $story->getParameters());
+
+            if (! is_null($value) && ! is_bool($value) && ! is_numeric($value)) {
+                /** @phpstan-ignore-next-line */
+                $value = (string) $value;
+            }
+
+            $this->value = $value;
         }
 
         return $this;
@@ -67,7 +74,7 @@ class Tag implements Stringable
         $name = $this->getName();
         $value = $this->value;
 
-        if ($name === $value) {
+        if (($name !== null) && ($name === $value)) {
             return $name;
         }
 
@@ -78,7 +85,7 @@ class Tag implements Stringable
         return sprintf('%s: %s', $name, $value);
     }
 
-    public function getValue(): string|float|int|null
+    public function getValue(): string|float|int|bool|null
     {
         return $this->value;
     }

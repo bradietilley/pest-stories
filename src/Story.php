@@ -28,6 +28,7 @@ use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
 use BradieTilley\StoryBoard\Traits\RunOnce;
+use BradieTilley\StoryBoard\Traits\WithTags;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -42,7 +43,7 @@ use Throwable;
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
  */
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithSingleRunner
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithSingleRunner
 {
     use Conditionable;
     use HasCallbacks;
