@@ -3,14 +3,14 @@
 namespace BradieTilley\StoryBoard\Testing\Timer;
 
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
-use BradieTilley\StoryBoard\Traits\RunOnce;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use Closure;
 use Throwable;
 
 class Timer
 {
     use HasCallbacks;
-    use RunOnce;
+    use HasSingleRunner;
 
     private ?int $start = null;
 

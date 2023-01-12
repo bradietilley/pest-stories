@@ -25,10 +25,10 @@ use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
-use BradieTilley\StoryBoard\Traits\RunOnce;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -58,7 +58,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasTags;
     use HasTimeout;
     use Macroable;
-    use RunOnce;
+    use HasSingleRunner;
 
     public readonly int $id;
 

@@ -2,14 +2,14 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-trait RunOnce
+trait HasSingleRunner
 {
     /**
      * Container of already-run
      *
      * @var array
      */
-    private array $runOnce = [];
+    private array $alreadyRun = [];
 
     /**
      * Determine if this is the first time the given identifier
@@ -17,10 +17,10 @@ trait RunOnce
      */
     public function alreadyRun(string $identifier): bool
     {
-        $alreadyRun = in_array($identifier, $this->runOnce);
+        $alreadyRun = in_array($identifier, $this->alreadyRun);
 
         // Prevent this from running again
-        $this->runOnce[] = $identifier;
+        $this->alreadyRun[] = $identifier;
 
         return $alreadyRun;
     }

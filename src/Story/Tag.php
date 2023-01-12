@@ -6,7 +6,7 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasOrder;
-use BradieTilley\StoryBoard\Traits\RunOnce;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use Closure;
 use Stringable;
 
@@ -15,7 +15,7 @@ class Tag implements Stringable
     use HasName;
     use HasOrder;
     use HasCallbacks;
-    use RunOnce;
+    use HasSingleRunner;
 
     protected string|int|float|bool|null $value = null;
 

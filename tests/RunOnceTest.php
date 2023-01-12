@@ -1,11 +1,11 @@
 <?php
 
-use BradieTilley\StoryBoard\Traits\RunOnce;
+use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 
-test('an object with RunOnce trait will not run the same function twice', function () {
+test('an object with HasSingleRunner trait will not run the same function twice', function () {
     $class = new class()
     {
-        use RunOnce;
+        use HasSingleRunner;
 
         public function foo(): bool
         {
