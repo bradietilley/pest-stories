@@ -125,6 +125,10 @@ test('a story with a timeout will pass if it does not reach the timeout', functi
 });
 
 test('a story with a timeout will fail if it reaches the timeout (seconds; via alarm)', function () {
+    if (! Timer::environmentSupportsPcntlAlarm()) {
+        return $this->markTestSkipped('Environment does not support pcntl_alarm');
+    }
+
     $ran = Collection::make();
 
     $story = Story::make('timed test')

@@ -170,9 +170,11 @@ class Timer
             // @codeCoverageIgnoreEnd
         }
 
-        pcntl_signal(SIGALRM, function ($signal) {
-            throw new TimerUpException($this);
-        });
+        if (self::environmentSupportsPcntlAlarm()) {
+            pcntl_signal(SIGALRM, function ($signal) {
+                throw new TimerUpException($this);
+            });
+        }
 
         $args = [
             'timer' => $this,
@@ -189,7 +191,10 @@ class Timer
         try {
             // Start timer
             $timeout = $this->getAlarmTimeout();
-            pcntl_alarm($timeout);
+            
+            if (self::environmentSupportsPcntlAlarm()) {
+                pcntl_alarm($timeout);
+            }
 
             // Run a callback that may take a while
             $this->start();
@@ -197,7 +202,9 @@ class Timer
             $this->end();
 
             // Stop timer
-            pcntl_alarm(0);
+            if (self::environmentSupportsPcntlAlarm()) {
+                pcntl_alarm(0);
+            }
 
             if ($this->getTimeRemaining() < 0) {
                 throw new TimerUpException($this);
@@ -312,5 +319,14 @@ class Timer
     public function getException(): ?Throwable
     {
         return $this->exception;
+    }
+
+    /**
+     * Does the current environment support pcntl_alarm?
+     */
+    public static function environmentSupportsPcntlAlarm(): bool
+    {
+        return false;
+        // return function_exists('pcntl_signal') && function_exists('pcntl_alarm');
     }
 }
