@@ -297,7 +297,6 @@ test('a story can expose the timer used for asserting time', function () {
 });
 
 test('a story cut short by a timeout will still run tearDown', function () {
-
     $ran = Collection::make();
 
     $story = Story::make('timed test')
