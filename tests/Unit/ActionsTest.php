@@ -424,3 +424,21 @@ test('can fetch all registered actions', function () {
             'c',
         ]);
 });
+
+test('you can specify the assertion callbacks via the expectation can/cannot methods', function () {
+    $ran = Collection::make();
+
+    Story::make('parent')
+        ->action(fn () => null)
+        ->stories([
+            Story::make('child can')->can(fn () => $ran[] = 'can'),
+            Story::make('child cannot')->cannot(fn () => $ran[] = 'cannot'),
+        ])
+        ->storiesAll
+        ->each(fn (Story $story) => $story->run());
+
+    expect($ran->all())->toBe([
+        'can',
+        'cannot',
+    ]);
+});
