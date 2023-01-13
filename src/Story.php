@@ -13,6 +13,7 @@ use BradieTilley\StoryBoard\Contracts\WithPerformer;
 use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
 use BradieTilley\StoryBoard\Contracts\WithStories;
 use BradieTilley\StoryBoard\Contracts\WithTags;
+use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
@@ -29,6 +30,7 @@ use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use BradieTilley\StoryBoard\Traits\HasStories;
 use BradieTilley\StoryBoard\Traits\HasTags;
+use BradieTilley\StoryBoard\Traits\HasTestCaseShortcuts;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -44,7 +46,7 @@ use Throwable;
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
  */
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithSingleRunner
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithTestCaseShortcuts, WithSingleRunner
 {
     use Conditionable;
     use HasCallbacks;
@@ -57,6 +59,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasActions;
     use HasStories;
     use HasTags;
+    use HasTestCaseShortcuts;
     use HasTimeout;
     use Macroable;
     use HasSingleRunner;
@@ -170,6 +173,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
             // @codeCoverageIgnoreEnd
         }
 
+        $this->bootTestCaseShortcuts();
         $this->bootActions();
 
         return $this;
@@ -337,6 +341,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         $this->inheritAssertions();
         $this->inheritCallbacks();
         $this->inheritTimeout();
+        $this->inheritTestCaseShortcuts();
 
         return $this;
     }
