@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use Exception;
 use PHPUnit\Framework\RiskyTestError;
 
 /**
@@ -52,6 +53,10 @@ trait HasTestCaseShortcuts
     public function bootTestCaseShortcuts(): void
     {
         $test = $this->getTest();
+
+        if ($test === null) {
+            throw new Exception('The test case could not be found when running test case shortcuts.');
+        }
 
         foreach ($this->testCaseShortcuts as $key => $value) {
             match ($key) {
