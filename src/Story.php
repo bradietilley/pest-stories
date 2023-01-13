@@ -16,6 +16,7 @@ use BradieTilley\StoryBoard\Contracts\WithTags;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
+use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
@@ -59,21 +60,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasTimeout;
     use Macroable;
     use HasSingleRunner;
-
-    /**
-     * Flag to enable datasets where the parent StoryBoard
-     * becomes a Pest test case and all children stories
-     * become dataset entries.
-     *
-     * False example:
-     *      <parent test> <child test> <grandchild test>
-     *
-     * True example:
-     *      <parent test> with dataset "<child test> <grandchild test>"
-     *
-     * @var bool
-     */
-    protected static bool $datasetsEnabled = false;
 
     public readonly int $id;
 
@@ -212,11 +198,15 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
      */
     public function test(): static
     {
+        if (! Builder::hasRun()) {
+            Builder::run();
+        }
+
         if (! $this->hasStories()) {
             return $this->testSingleStory();
         }
 
-        if (static::$datasetsEnabled) {
+        if (Config::datasetsEnabled()) {
             $function = Story::getTestFunction();
             $parentName = $this->getName();
             $stories = $this->allStories();
@@ -464,29 +454,5 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     public function tearDown(?Closure $callback): static
     {
         return $this->setCallback('tearDown', $callback);
-    }
-
-    /**
-     * Enable the use of datasets (see static::$datasetsEnabled)
-     */
-    public static function enableDatasets(): void
-    {
-        static::$datasetsEnabled = true;
-    }
-
-    /**
-     * Disable the use of datasets (see static::$datasetsEnabled)
-     */
-    public static function disableDatasets(): void
-    {
-        static::$datasetsEnabled = false;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function datasetsEnabled(): bool
-    {
-        return static::$datasetsEnabled;
     }
 }

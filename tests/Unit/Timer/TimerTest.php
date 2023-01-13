@@ -5,6 +5,12 @@ use BradieTilley\StoryBoard\Testing\Timer\TimerUnit;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Illuminate\Support\Collection;
 
+beforeEach(function () {
+    if (! Timer::environmentSupportsPcntlAlarm()) {
+        return $this->markTestSkipped('Environment does not support pcntl_alarm');
+    }
+});
+
 test('timer unit can convert between units', function () {
     /**
      * Second -> Second
