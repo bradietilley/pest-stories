@@ -2,7 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use Exception;
 use PHPUnit\Framework\RiskyTestError;
 
 /**
