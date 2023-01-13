@@ -94,12 +94,12 @@ interface WithActions
     /**
      * Set whether this task can run (i.e. passes)
      */
-    public function can(bool $can = true): static;
+    public function can(bool|Closure $can = true): static;
 
     /**
      * Set that this task cannot run (i.e. fails)
      */
-    public function cannot(): static;
+    public function cannot(?Closure $cannot = null): static;
 
     /**
      * Get the 'can' / 'cannot' flag for this story
