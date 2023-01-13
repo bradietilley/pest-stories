@@ -11,6 +11,8 @@ if (! class_exists('PestStoryBoardPerformerAuthenticatable')) {
     {
         public static int $lastId = 0;
 
+        public bool $timestamps = true;
+
         public function __construct(public readonly int $id)
         {
         }
@@ -63,6 +65,11 @@ if (! class_exists('PestStoryBoardPerformerAuthenticatable')) {
         public function getRememberTokenName(): string
         {
             return 'token_name';
+        }
+
+        public function save(): bool
+        {
+            return true;
         }
     }
 }

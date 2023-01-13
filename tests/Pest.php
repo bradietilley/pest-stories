@@ -26,9 +26,10 @@ uses(Tests\TestCase::class)->in('Unit', 'Feature');
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
+use BradieTilley\StoryBoard\Story\Config;
 
 beforeEach(function () {
     Action::flush();
     Story::flushIsolation();
-    Story::disableDatasets();
+    Config::disableDatasets();
 });

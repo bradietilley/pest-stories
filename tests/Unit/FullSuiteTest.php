@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Builder;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +21,7 @@ function expectTestSuiteRun(&$data): void
         ->and($data['action'])->toBe('3')
         ->and($data['can'])->toBe('[Can] full suite test with child one')
         ->and($data['cannot'])->toBe('[Cannot] full suite test with child two')
-        ->and($data['testcase'])->toBe('P\\Tests\\FullSuiteTest');
+        ->and($data['testcase'])->toBe('P\\Tests\\Unit\\FullSuiteTest');
 
     // reset
     $data = collect([

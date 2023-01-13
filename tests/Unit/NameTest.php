@@ -1,6 +1,7 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Config;
 use Illuminate\Support\Collection;
 
 test('a story can be given a name using different shortcuts', function () {
@@ -45,7 +46,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
             Story::make('child 3'),
         ]);
 
-    Story::disableDatasets();
+    Config::disableDatasets();
 
     expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] parent child 1',
@@ -53,7 +54,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
         '[Can] parent child 3',
     ]);
 
-    Story::enableDatasets();
+    Config::enableDatasets();
 
     expect($story->storiesAll->map(fn (Story $story) => $story->getTestName())->values()->toArray())->toBe([
         '[Can] child 1',
@@ -62,7 +63,7 @@ test('a storyboard will not prefix its story names with the parent name when dat
     ]);
 
     // Reset
-    Story::disableDatasets();
+    Config::disableDatasets();
 });
 
 test('can inherit name from parents', function () {
@@ -80,7 +81,7 @@ test('can inherit name from parents', function () {
         ]);
 
     // Disable datasets
-    Story::disableDatasets();
+    Config::disableDatasets();
 
     $story->storiesAll;
 
@@ -114,7 +115,7 @@ test('can inherit name from parents', function () {
     ]);
 
     // Enable datasets (should change the name)
-    Story::enableDatasets();
+    Config::enableDatasets();
 
     // Try inherit it again
     $child1->inheritName();
@@ -134,5 +135,5 @@ test('can inherit name from parents', function () {
     ]);
 
     // Disable datasets for remainder of tests
-    Story::disableDatasets();
+    Config::disableDatasets();
 });
