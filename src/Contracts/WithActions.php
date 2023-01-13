@@ -31,6 +31,11 @@ interface WithActions
     public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): static;
 
     /**
+     * Add many actions and have them sorted in the exact order they're provided
+     */
+    public function sequence(iterable $actions, int $order = 0): static;
+
+    /**
      * Alias for setActions()
      */
     public function actions(iterable $actions): static;

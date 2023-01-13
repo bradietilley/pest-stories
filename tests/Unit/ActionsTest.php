@@ -190,33 +190,6 @@ test('an exception is thrown when a action is referenced but not found', functio
     Story::make()->action('found')->action('not_found')->boot();
 })->throws(ActionNotFoundException::class, 'The `not_found` action could not be found.');
 
-// test('actions can be defined as inline closures, Action objects, or string identifiers', function () {
-//     $actionsRun = Collection::make();
-
-//     Action::make('registered', function ($a) use ($actionsRun) {
-//         $actionsRun[] = 'registered_'.$a;
-//     });
-
-//     $action = new Action('variable', function ($a) use ($actionsRun) {
-//         $actionsRun[] = 'variable_'.$a;
-//     });
-
-//     Story::make()
-//         ->action($action, ['a' => '1'])
-//         ->action('registered', ['a' => '2'])
-//         ->action(function ($a) use ($actionsRun) {
-//             $actionsRun[] = 'inline_'.$a;
-//         }, ['a' => '3'])
-//         ->registerActions()
-//         ->bootActions();
-
-//     expect($actionsRun->toArray())->toBe([
-//         'registered_2',
-//         'variable_1',
-//         'inline_3',
-//     ]);
-// });
-
 test('actions can offer to append their name to the story name', function () {
     Action::make('test_a', fn () => null);
     Action::make('test_b', fn () => null)->appendName('custom name');
@@ -442,3 +415,82 @@ test('you can specify the assertion callbacks via the expectation can/cannot met
         'cannot',
     ]);
 });
+
+test('actions can be booted in a custom sequence', function (string $sequence) {
+    $data = collect();
+    $sequence = str_split($sequence);
+
+    Action::make('a', fn () => $data->push('a'))->order(1);
+    Action::make('b', fn () => $data->push('b'))->order(2);
+    Action::make('c', fn () => $data->push('c'))->order(3);
+    Action::make('d', fn () => $data->push('d'))->order(4);
+
+    Story::make()
+        ->name('test')
+        ->sequence($sequence)
+        ->registerActions()
+        ->bootActions();
+
+    expect($data->toArray())->toBe($sequence);
+})->with([
+    'abcd',
+    'dcba',
+    'acbd',
+    'cdba',
+]);
+
+test('actions can be booted in a custom sequence alongside other actions with no order offset', function (string $sequence) {
+    $data = collect();
+    $sequence = str_split($sequence);
+
+    Action::make('x', fn () => $data->push('x'))->order(6);
+    Action::make('z', fn () => $data->push('z'))->order(20);
+    Action::make('a', fn () => $data->push('a'))->order(1);
+    Action::make('b', fn () => $data->push('b'))->order(2);
+    Action::make('c', fn () => $data->push('c'))->order(3);
+    Action::make('d', fn () => $data->push('d'))->order(4);
+
+    Story::make()
+        ->name('test')
+        ->action('x')
+        ->action('z')
+        ->sequence($sequence)
+        ->registerActions()
+        ->bootActions();
+
+    array_push($sequence, 'x');
+    array_push($sequence, 'z');
+
+    expect($data->toArray())->toBe($sequence);
+})->with([
+    'abcd',
+    'dcba',
+]);
+
+test('actions can be booted in a custom sequence alongside other actions with order offset', function (string $sequence) {
+    $data = collect();
+    $sequence = str_split($sequence);
+
+    Action::make('x', fn () => $data->push('x'))->order(6);
+    Action::make('z', fn () => $data->push('z'))->order(20);
+    Action::make('a', fn () => $data->push('a'))->order(1);
+    Action::make('b', fn () => $data->push('b'))->order(2);
+    Action::make('c', fn () => $data->push('c'))->order(3);
+    Action::make('d', fn () => $data->push('d'))->order(4);
+
+    Story::make()
+        ->name('test')
+        ->action('x')
+        ->action('z')
+        ->sequence($sequence, 7)
+        ->registerActions()
+        ->bootActions();
+
+    array_unshift($sequence, 'x');
+    array_push($sequence, 'z');
+
+    expect($data->toArray())->toBe($sequence);
+})->with([
+    'abcd',
+    'dcba',
+]);
