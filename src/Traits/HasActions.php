@@ -87,6 +87,24 @@ r
     }
 
     /**
+     * Add many actions and have them sorted in the exact order they're provided
+     */
+    public function sequence(iterable $actions, int $order = 0): static
+    {
+        foreach ($actions as $action => $arguments) {
+            // Closures and classes will be int key
+            if (is_string($arguments) || ($arguments instanceof Closure) || ($arguments instanceof Action)) {
+                $action = $arguments;
+                $arguments = [];
+            }
+
+            $this->setAction($action, $arguments, order: ++$order);
+        }
+
+        return $this;
+    }
+
+    /**
      * Alias for setActions()
      */
     public function actions(iterable $actions): static
