@@ -263,16 +263,24 @@ r
 
     /**
      * Set whether this task can run (i.e. passes)
+     *
+     * The name and callback can be passed in in either order.
      */
-    public function can(bool|Closure $can = true): static
+    public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static
     {
-        if ($can instanceof Closure) {
-            $this->setCallback('can', $can);
-
-            $can = true;
+        if (is_string($name)) {
+            $this->name($name);
+        } elseif (is_string($callback)) {
+            $this->name($callback);
         }
 
-        $this->can = $can;
+        if ($name instanceof Closure) {
+            $this->setCallback('can', $name);
+        } elseif ($callback instanceof Closure) {
+            $this->setCallback('can', $callback);
+        }
+
+        $this->can = true;
 
         return $this;
     }
@@ -280,13 +288,23 @@ r
     /**
      * Set that this task cannot run (i.e. fails)
      */
-    public function cannot(?Closure $cannot = null): static
+    public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static
     {
-        if ($cannot instanceof Closure) {
-            $this->setCallback('cannot', $cannot);
+        if (is_string($name)) {
+            $this->name($name);
+        } elseif (is_string($callback)) {
+            $this->name($callback);
         }
 
-        return $this->can(false);
+        if ($name instanceof Closure) {
+            $this->setCallback('cannot', $name);
+        } elseif ($callback instanceof Closure) {
+            $this->setCallback('cannot', $callback);
+        }
+
+        $this->can = false;
+
+        return $this;
     }
 
     /**

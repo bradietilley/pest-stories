@@ -45,6 +45,11 @@ use Throwable;
  * @property-read Collection<int,Story> $storiesDirect
  * @property-read Collection<string,Story> $storiesAll
  * @property-read ?Authenticatable $user
+ *
+ * @method self can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method self cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static self can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static self cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  */
 class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithTestCaseShortcuts, WithSingleRunner
 {
@@ -61,7 +66,10 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasTags;
     use HasTestCaseShortcuts;
     use HasTimeout;
-    use Macroable;
+    use Macroable {
+        __call as __callMacroable;
+        __callStatic as __callStaticMacroable;
+    }
     use HasSingleRunner;
 
     public readonly int $id;
@@ -104,6 +112,38 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         }
 
         return $this->{$name};
+    }
+
+    /**
+     * Proxy the can/cannot methods to their setters
+     *
+     * @param  string  $method
+     * @param  array<mixed>  $parameters
+     */
+    public function __call($method, $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            $method = 'set'.ucfirst($method);
+
+            return $this->{$method}(...$parameters);
+        }
+
+        return $this->__callMacroable($method, $parameters);
+    }
+
+    /**
+     * Proxy the can/cannot methods to their setters
+     *
+     * @param  string  $method
+     * @param  array<mixed>  $parameters
+     */
+    public static function __callStatic($method, $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            return self::make()->{$method}(...$parameters);
+        }
+
+        return static::__callStaticMacroable($method, $parameters);
     }
 
     /**
@@ -354,7 +394,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         $can = $this->inheritPropertyBool('can');
 
         if ($can !== null) {
-            $this->can($can);
+            $this->can = $can;
         }
     }
 
