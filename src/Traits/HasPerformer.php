@@ -42,8 +42,10 @@ trait HasPerformer
             }
 
             if ($user !== null) {
+                /** @phpstan-ignore-next-line */
                 auth()->login($user);
             } else {
+                /** @phpstan-ignore-next-line */
                 auth()->logout();
             }
         }
