@@ -55,7 +55,7 @@ trait HasTestCaseShortcuts
         $test = $this->getTest();
 
         if ($test === null) {
-            throw new Exception('The test case could not be found when running test case shortcuts.');
+            return;
         }
 
         foreach ($this->testCaseShortcuts as $key => $value) {
