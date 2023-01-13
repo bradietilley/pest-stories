@@ -494,3 +494,71 @@ test('actions can be booted in a custom sequence alongside other actions with or
     'abcd',
     'dcba',
 ]);
+
+test('statically construct a story with can/cannot bypassing need to make', function () {
+    $matrix = [
+        ['can', 'cannot'],
+        ['static', 'nonstatic'],
+        ['withName', 'withoutName', 'callbackAsName'],
+        ['withCallback', 'withoutCallback', 'nameAsCallback'],
+    ];
+
+    $all = Collection::make($matrix[0])->crossJoin($matrix[1], $matrix[2], $matrix[3]);
+
+    foreach ($all as $test) {
+        [$method, $static, $name, $callback] = $test;
+
+        $arguments = [];
+        $ran = Collection::make();
+
+        $storyName = null;
+        $storyAssertion = null;
+
+        if ($name === 'withName') {
+            $arguments[] = $storyName = 'a story name';
+        } elseif ($name === 'callbackAsName') {
+            $storyAssertion = $method.'_callback';
+            $arguments[] = fn () => $ran[] = $storyAssertion;
+        }
+
+        if ($callback === 'withCallback') {
+            $storyAssertion = $method.'_callback';
+            $arguments[] = fn () => $ran[] = $storyAssertion;
+        } elseif ($callback === 'nameAsCallback') {
+            $arguments[] = $storyName = 'a story name';
+        }
+
+        /** @var Story $story */
+        $story = ($static === 'static') ? Story::{$method}(...$arguments) : Story::make()->{$method}(...$arguments);
+
+        // Add the required action
+        $story->action(fn () => null);
+
+        // The name provided is as we expect for the ones that provided a name
+        expect($story->getName())->toBe($storyName);
+
+        // Name required so set one if not already provided
+        if ($storyName === null) {
+            $story->name('default name');
+        }
+
+        // Assertion required so set one if not already provided
+        if ($storyAssertion === null) {
+            $story->assert(
+                fn () => null,
+                fn () => null,
+            );
+        }
+
+        $story->run();
+
+        if ($storyAssertion !== null) {
+            expect($ran->toArray())->toBe([
+                $storyAssertion,
+            ]);
+        } else {
+            // no assertion = empty
+            expect($ran)->toBeEmpty();
+        }
+    }
+});
