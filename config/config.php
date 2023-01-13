@@ -26,6 +26,8 @@ return [
     'datasets' => false,
 
     /**
+     * (Work In Progress:)
+     * 
      * Choose where various sources of story names can come from and where
      * in the story name they are arranged.
      *
