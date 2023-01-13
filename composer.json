@@ -8,6 +8,11 @@
             "BradieTilley\\StoryBoard\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Bradie Tilley",
@@ -34,7 +39,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Bradietilley\\PestStoryboard\\PestStoryboardServiceProvider"
+                "BradieTilley\\StoryBoard\\StoryBoardServiceProvider"
             ]
         }
     }

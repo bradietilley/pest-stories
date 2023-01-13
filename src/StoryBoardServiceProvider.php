@@ -1,10 +1,10 @@
 <?php
 
-namespace Bradietilley\PestStoryboard;
+namespace BradieTilley\StoryBoard;
 
 use Illuminate\Support\ServiceProvider;
 
-class PestStoryboardServiceProvider extends ServiceProvider
+class StoryBoardServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -13,7 +13,7 @@ class PestStoryboardServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('pest-storyboard.php'),
+                __DIR__.'/../config/config.php' => config_path('storyboard.php'),
             ], 'config');
         }
     }
@@ -24,6 +24,6 @@ class PestStoryboardServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'pest-storyboard');
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'storyboard');
     }
 }
