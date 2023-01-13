@@ -10,9 +10,9 @@ class TestCase extends OrchestraTestCase
 {
     /**
      * Get package providers
-     * 
-     * @param Application $app
-     * @return array<string> 
+     *
+     * @param  Application  $app
+     * @return array<string>
      */
     public function getPackageProviders($app): array
     {

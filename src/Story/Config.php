@@ -10,16 +10,16 @@ class Config
 
     public static function datasetsEnabled(): bool
     {
-        return (bool) Settings::get(self::KEY . 'datasets', false);
+        return (bool) Settings::get(self::KEY.'datasets', false);
     }
 
     public static function enableDatasets(): void
     {
-        Settings::set(self::KEY . 'datasets', true);
+        Settings::set(self::KEY.'datasets', true);
     }
 
     public static function disableDatasets(): void
     {
-        Settings::set(self::KEY . 'datasets', false);
+        Settings::set(self::KEY.'datasets', false);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use BradieTilley\StoryBoard\Builder;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use PHPUnit\Framework\TestCase;

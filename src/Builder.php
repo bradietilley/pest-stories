@@ -23,7 +23,7 @@ class Builder
     public static function run(): void
     {
         self::instance()->createApplication();
-        
+
         self::$run = true;
     }
 }
