@@ -2,7 +2,8 @@
 
 Provides an object-oriented approach for writing large test suites, with the ability to leverage shared actions, assertions and actions.
 
-This of this 
+![Static Analysis](https://github.com/bradietilley/pest-storyboard/actions/workflows/static.yml/badge.svg)
+![Tests](https://github.com/bradietilley/pest-storyboard/actions/workflows/tests.yml/badge.svg)
 
 ### Installation
 
