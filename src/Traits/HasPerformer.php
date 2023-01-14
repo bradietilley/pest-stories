@@ -6,11 +6,23 @@ use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
+ * @property-read ?Authenticatable $user
+ * 
  * @mixin \BradieTilley\StoryBoard\Contracts\WithCallbacks
  */
 trait HasPerformer
 {
     protected ?Authenticatable $user = null;
+
+    /**
+     * Property getter(s) for Performer trait
+     */
+    public function __getPerformer(string $name): mixed
+    {
+        if ($name === 'user') {
+            return $this->user;
+        }
+    }
 
     /**
      * Specify what to do when the user is set

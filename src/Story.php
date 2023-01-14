@@ -32,22 +32,9 @@ use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTest;
 use BradieTilley\StoryBoard\Traits\HasTestCaseShortcuts;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
-use Closure;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 
-/**
- * @property-read Collection<int,Story> $storiesDirect
- * @property-read Collection<string,Story> $storiesAll
- * @property-read ?Authenticatable $user
- *
- * @method self can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method self cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static self can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static self cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- */
 class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
 {
     use Conditionable;
@@ -88,51 +75,50 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
      */
     public function __get($name)
     {
-        if ($name === 'storiesDirect') {
-            return $this->collectGetStories();
-        }
-
-        if ($name === 'storiesAll') {
-            return $this->collectAllStories();
-        }
-
-        if ($name === 'user') {
-            return $this->getUser();
-        }
-
-        return $this->{$name};
+        return match (true) {
+            in_array($name, [
+                'user'
+            ]) => $this->__getPerformer($name),
+            in_array($name, [
+                'storiesDirect',
+                'storiesAll'
+            ]) => $this->__getStories($name),
+            default => $this->{$name},
+        };
     }
 
     /**
      * Proxy the can/cannot methods to their setters
      *
-     * @param  string  $method
-     * @param  array<mixed>  $parameters
+     * @param  string  $name
+     * @param  array<mixed>  $args
      */
-    public function __call($method, $parameters): mixed
+    public function __call($name, $args): mixed
     {
-        if ($method === 'can' || $method === 'cannot') {
-            $method = 'set'.ucfirst($method);
-
-            return $this->{$method}(...$parameters);
-        }
-
-        return $this->__callMacroable($method, $parameters);
+        return match (true) {
+            in_array($name, [
+                'can',
+                'cannot',
+            ]) => $this->__callActions($name, $args),
+            default => $this->__callMacroable($name, $args),
+        };
     }
 
     /**
      * Proxy the can/cannot methods to their setters
      *
-     * @param  string  $method
-     * @param  array<mixed>  $parameters
+     * @param  string  $name
+     * @param  array<mixed>  $args
      */
-    public static function __callStatic($method, $parameters): mixed
+    public static function __callStatic($name, $args): mixed
     {
-        if ($method === 'can' || $method === 'cannot') {
-            return self::make()->{$method}(...$parameters);
-        }
-
-        return static::__callStaticMacroable($method, $parameters);
+        return match (true) {
+            in_array($name, [
+                'can',
+                'cannot',
+            ]) => static::__callStaticActions($name, $args),
+            default => static::__callStaticMacroable($name, $args),
+        };
     }
 
     /**

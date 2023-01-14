@@ -3,7 +3,6 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
-use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
@@ -12,6 +11,11 @@ use Illuminate\Support\Collection;
 use Throwable;
 
 /**
+ * @method static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * 
  * @mixin \BradieTilley\StoryBoard\Story
  */
 trait HasActions
@@ -40,6 +44,28 @@ trait HasActions
      * story and its children.
      */
     protected bool $canHalt = false;
+
+    /**
+     * Method alias(es) for Actions trait
+     */
+    public function __callActions(string $method, array $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            $method = 'set'.ucfirst($method);
+
+            return $this->{$method}(...$parameters);
+        }
+    }
+
+    /**
+     * Static method alias(es) for Actions trait
+     */
+    public static function __callStaticActions(string $method, array $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            return static::make()->{$method}(...$parameters);
+        }
+    }
 
     /**
      * Alias for setAction()

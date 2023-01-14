@@ -7,11 +7,28 @@ use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
 
 /**
+ * @property-read Collection<int,Story> $storiesDirect
+ * @property-read Collection<string,Story> $storiesAll
+ * 
  * @mixin \BradieTilley\StoryBoard\Contracts\WithName
  */
 trait HasStories
 {
     protected array $stories = [];
+
+    /**
+     * Property getter(s) for Stories trait
+     */
+    public function __getStories(string $name): mixed
+    {
+        if ($name === 'storiesAll') {
+            return $this->collectAllStories();
+        }
+
+        if ($name === 'storiesDirect') {
+            return $this->collectGetStories();
+        }
+    }
 
     /**
      * Get stories (direct-children) as a collection
