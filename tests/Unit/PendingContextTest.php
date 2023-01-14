@@ -6,27 +6,60 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
 test('a story can record pending context changes to the cache', function () {
-    $story = Story::make()->setCache('peststoryboard_testkey', 'b');
+    $story = Story::make()
+        ->setCache('peststoryboard_testkey', 'b')
+        ->setCache([
+            'peststoryboard_testkey2' => 'c',
+        ]);
 
+    // Preflight check
     expect(Cache::get('peststoryboard_testkey'))->toBe(null);
+    expect(Cache::get('peststoryboard_testkey2'))->toBe(null);
+
+    // Boot
     $story->bootPendingContext();
+
+    // Assert
     expect(Cache::get('peststoryboard_testkey'))->toBe('b');
+    expect(Cache::get('peststoryboard_testkey2'))->toBe('c');
 });
 
 test('a story can record pending context changes to the config', function () {
-    $story = Story::make()->setConfig('peststoryboard_testkey', 'b');
+    $story = Story::make()
+        ->setConfig('peststoryboard_testkey', 'b')
+        ->setConfig([
+            'peststoryboard_testkey2' => 'c',
+        ]);
 
+    // Preflight check
     expect(Config::get('peststoryboard_testkey'))->toBe(null);
+    expect(Config::get('peststoryboard_testkey2'))->toBe(null);
+
+    // Boot
     $story->bootPendingContext();
+
+    // Assert
     expect(Config::get('peststoryboard_testkey'))->toBe('b');
+    expect(Config::get('peststoryboard_testkey2'))->toBe('c');
 });
 
 test('a story can record pending context changes to the session', function () {
-    $story = Story::make()->setSession('peststoryboard_testkey', 'b');
+    $story = Story::make()
+        ->setSession('peststoryboard_testkey', 'b')
+        ->setSession([
+            'peststoryboard_testkey2' => 'c',
+        ]);
 
+    // Preflight check
     expect(Session::get('peststoryboard_testkey'))->toBe(null);
+    expect(Session::get('peststoryboard_testkey2'))->toBe(null);
+
+    // Boot
     $story->bootPendingContext();
+
+    // Assert
     expect(Session::get('peststoryboard_testkey'))->toBe('b');
+    expect(Session::get('peststoryboard_testkey2'))->toBe('c');
 });
 
 test('a story can inherit pending context changes', function () {

@@ -20,7 +20,7 @@ trait HasPendingContext
     /**
      * Set some pending context
      */
-    private function setPendingContext(string $context, string|array $key, mixed $value): static
+    private function setPendingContext(string $context, string|array $key, mixed $value = null): static
     {
         $data = is_array($key) ? $key : [$key => $value];
         $data = array_replace_recursive($this->pendingContext[$context] ?? [], $data);
@@ -36,7 +36,7 @@ trait HasPendingContext
      * Deferred proxy to
      *      Cache::set($key, $value)
      */
-    public function setCache(string|array $key, mixed $value): static
+    public function setCache(string|array $key, mixed $value = null): static
     {
         return $this->setPendingContext('cache', $key, $value);
     }
@@ -47,7 +47,7 @@ trait HasPendingContext
      * Deferred proxy to
      *      Config::set($key, $value)
      */
-    public function setConfig(string|array $key, mixed $value): static
+    public function setConfig(string|array $key, mixed $value = null): static
     {
         return $this->setPendingContext('config', $key, $value);
     }
@@ -58,7 +58,7 @@ trait HasPendingContext
      * Deferred proxy to
      *      Session::set($key, $value)
      */
-    public function setSession(string|array $key, mixed $value): static
+    public function setSession(string|array $key, mixed $value = null): static
     {
         return $this->setPendingContext('session', $key, $value);
     }

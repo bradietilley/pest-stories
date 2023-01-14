@@ -7,17 +7,17 @@ interface WithPendingContext
     /**
      * Set some cache when this object is ran
      */
-    public function setCache(string|array $key, mixed $value): static;
+    public function setCache(string|array $key, mixed $value = null): static;
 
     /**
      * Set some config when this object is ran
      */
-    public function setConfig(string|array $key, mixed $value): static;
+    public function setConfig(string|array $key, mixed $value = null): static;
 
     /**
      * Set some session values when this object is ran
      */
-    public function setSession(string|array $key, mixed $value): static;
+    public function setSession(string|array $key, mixed $value = null): static;
 
     /**
      * Inherit any config and session data
