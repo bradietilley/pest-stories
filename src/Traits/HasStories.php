@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 /**
  * @property-read Collection<int,Story> $storiesDirect
  * @property-read Collection<string,Story> $storiesAll
- * 
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithName
  */
 trait HasStories

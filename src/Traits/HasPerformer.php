@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
  * @property-read ?Authenticatable $user
- * 
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithCallbacks
  */
 trait HasPerformer

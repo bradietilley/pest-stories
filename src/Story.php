@@ -77,11 +77,11 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     {
         return match (true) {
             in_array($name, [
-                'user'
+                'user',
             ]) => $this->__getPerformer($name),
             in_array($name, [
                 'storiesDirect',
-                'storiesAll'
+                'storiesAll',
             ]) => $this->__getStories($name),
             default => $this->{$name},
         };

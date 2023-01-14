@@ -15,7 +15,7 @@ use Throwable;
  * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  * @method static static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * 
+ *
  * @mixin \BradieTilley\StoryBoard\Story
  */
 trait HasActions
