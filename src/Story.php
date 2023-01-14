@@ -9,6 +9,7 @@ use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Contracts\WithIsolation;
 use BradieTilley\StoryBoard\Contracts\WithName;
 use BradieTilley\StoryBoard\Contracts\WithNameShortcuts;
+use BradieTilley\StoryBoard\Contracts\WithPendingContext;
 use BradieTilley\StoryBoard\Contracts\WithPerformer;
 use BradieTilley\StoryBoard\Contracts\WithSingleRunner;
 use BradieTilley\StoryBoard\Contracts\WithStories;
@@ -26,6 +27,7 @@ use BradieTilley\StoryBoard\Traits\HasInheritance;
 use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
 use BradieTilley\StoryBoard\Traits\HasNameShortcuts;
+use BradieTilley\StoryBoard\Traits\HasPendingContext;
 use BradieTilley\StoryBoard\Traits\HasPerformer;
 use BradieTilley\StoryBoard\Traits\HasSingleRunner;
 use BradieTilley\StoryBoard\Traits\HasStories;
@@ -51,7 +53,7 @@ use Throwable;
  * @method static self can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  * @method static self cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  */
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPerformer, WithStories, WithTimeout, WithTags, WithTestCaseShortcuts, WithSingleRunner
+class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTestCaseShortcuts
 {
     use Conditionable;
     use HasCallbacks;
@@ -60,8 +62,10 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     use HasNameShortcuts;
     use HasInheritance;
     use HasIsolation;
+    use HasPendingContext;
     use HasPerformer;
     use HasActions;
+    use HasSingleRunner;
     use HasStories;
     use HasTags;
     use HasTestCaseShortcuts;
@@ -70,7 +74,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         __call as __callMacroable;
         __callStatic as __callStaticMacroable;
     }
-    use HasSingleRunner;
 
     public readonly int $id;
 
@@ -213,6 +216,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
             // @codeCoverageIgnoreEnd
         }
 
+        $this->bootPendingContext();
         $this->bootTestCaseShortcuts();
         $this->bootActions();
 
@@ -382,6 +386,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         $this->inheritCallbacks();
         $this->inheritTimeout();
         $this->inheritTestCaseShortcuts();
+        $this->inheritPendingContext();
 
         return $this;
     }
