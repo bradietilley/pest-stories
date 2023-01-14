@@ -13,6 +13,9 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
+/**
+ * @mixin \BradieTilley\StoryBoard\Contracts\WithStories
+ */
 trait HasTest
 {
     protected bool $inherited = false;
@@ -30,6 +33,16 @@ trait HasTest
      */
     public function register(): static
     {
+        /**
+         * If this story has children then it should not be inherited; instead,
+         * each of its children should run the `->register()` method.
+         */
+        if ($this->hasStories()) {
+            $this->collectAllStories()->each(fn (Story $story) => $story->register());
+
+            return $this;
+        }
+
         $this->inherit();
 
         if ($this->skipDueToIsolation()) {
@@ -53,6 +66,16 @@ trait HasTest
      */
     public function boot(): static
     {
+        /**
+         * If this story has children then it should not be inherited; instead,
+         * each of its children should run the `->boot()` method.
+         */
+        if ($this->hasStories()) {
+            $this->collectAllStories()->each(fn (Story $story) => $story->boot());
+
+            return $this;
+        }
+
         $this->register();
 
         if ($this->skipDueToIsolation()) {
@@ -218,6 +241,16 @@ trait HasTest
      */
     public function inherit(): static
     {
+        /**
+         * If this story has children then it should not be inherited; instead,
+         * each of its children should run the `->inherit()` method.
+         */
+        if ($this->hasStories()) {
+            $this->collectAllStories()->each(fn (Story $story) => $story->inherit());
+
+            return $this;
+        }
+
         if ($this->alreadyRun('inherited')) {
             // @codeCoverageIgnoreStart
             return $this;
