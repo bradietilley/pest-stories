@@ -51,13 +51,6 @@ abstract class StoryBoardException extends Exception
         );
     }
 
-    public static function testFunctionNotFound(string $function): TestFunctionNotFoundException
-    {
-        return new TestFunctionNotFoundException(
-            sprintf('The story test function `%s` could not be found', $function),
-        );
-    }
-
     /**
      * Internally used for when a Trait's magic method handler doesn't know what to do with a
      * given property or method call.

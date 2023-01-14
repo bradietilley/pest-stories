@@ -39,7 +39,9 @@ class Config
     }
 
     /**
-     * Get the class name from the config for the given alias,
+     * Get the class name from the config for the given alias
+     * 
+     * @return class-string
      */
     public static function getAliasClass(string $name): string
     {
@@ -58,7 +60,9 @@ class Config
     }
 
     /**
-     * Get the function name from the config for the given alias,
+     * Get the function name from the config for the given alias
+     * 
+     * @return string&callable
      */
     public static function getAliasFunction(string $name): string
     {

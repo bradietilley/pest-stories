@@ -3,7 +3,6 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Builder;
-use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
@@ -129,10 +128,6 @@ trait HasTest
             $parentName = $this->getName();
             $stories = $this->allStories();
 
-            if (! is_callable($function)) {
-                throw StoryBoardException::testFunctionNotFound($function);
-            }
-
             $function($parentName, function (Story $story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
@@ -173,10 +168,6 @@ trait HasTest
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
-        if (! is_callable($function)) {
-            throw StoryBoardException::testFunctionNotFound($function);
-        }
-
         $function(...$args);
 
         return $this;
