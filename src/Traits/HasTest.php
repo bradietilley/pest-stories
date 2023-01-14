@@ -161,6 +161,9 @@ trait HasTest
         return $this;
     }
 
+    /**
+     * Get the name of this test
+     */
     public function getTestName(): string
     {
         $name = $this->getFullName();
