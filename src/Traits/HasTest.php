@@ -2,9 +2,9 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Builder;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use PHPUnit\Framework\Assert;
@@ -114,9 +114,7 @@ trait HasTest
      */
     public function test(): static
     {
-        if (! Builder::hasRun()) {
-            Builder::run();
-        }
+        StoryApplication::boot();
 
         if (! $this->hasStories()) {
             return $this->testSingle();
