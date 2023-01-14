@@ -69,4 +69,34 @@ abstract class StoryBoardException extends Exception
             type: $type,
         );
     }
+
+    /**
+     * When config `storyboard.aliases.$alias` is missing
+     */
+    public static function aliasNotFound(string $alias): AliasNotFoundException
+    {
+        return new AliasNotFoundException(
+            sprintf('The `%s` alias config was not found', $alias),
+        );
+    }
+
+    /**
+     * When config `storyboard.aliases.$alias` is a missing class
+     */
+    public static function aliasClassNotFound(string $alias, string $class): AliasNotFoundException
+    {
+        return new AliasNotFoundException(
+            sprintf('The `%s` alias class `%s` was not found', $alias, $class),
+        );
+    }
+
+    /**
+     * When config `storyboard.aliases.$alias` is a missing function
+     */
+    public static function aliasFunctionNotFound(string $alias, string $function): AliasNotFoundException
+    {
+        return new AliasNotFoundException(
+            sprintf('The `%s` alias function `%s` was not found', $alias, $function),
+        );
+    }
 }

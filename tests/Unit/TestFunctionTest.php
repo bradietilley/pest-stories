@@ -1,6 +1,6 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\AliasNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use Illuminate\Support\Collection;
@@ -44,7 +44,8 @@ function test_alternative(string $description, Closure $callback)
 
 test('storyboard test function will call upon the pest test function for each story in its board', function (bool $datasetEnabled) use (&$testExecutions) {
     // Swap out the test function for our test function
-    Story::setTestFunction('test_alternative');
+    Config::setAlias('test', 'test_alternative');
+
     // clean slate
     $testExecutions->forget($testExecutions->keys()->toArray());
 
@@ -107,12 +108,13 @@ test('storyboard test function will call upon the pest test function for each st
         $testExecutions->forget($key);
     }
 
-    Story::setTestFunction();
+    Config::setAlias('test', 'test');
 })->with([
     'datasets enabled' => true,
     'datasets disabled' => false,
 ]);
 
 test('using an alternative test function will throw an exception if it does not exist', function () {
-    Story::setTestFunction('pest_storyboard_test_function_that_does_not_exist');
-})->throws(TestFunctionNotFoundException::class, 'The story test function `pest_storyboard_test_function_that_does_not_exist` could not be found');
+    Config::setAlias('test', 'pest_storyboard_test_function_that_does_not_exist');
+    Config::getAliasFunction('test');
+})->throws(AliasNotFoundException::class, 'The `test` alias function `pest_storyboard_test_function_that_does_not_exist` was not found');

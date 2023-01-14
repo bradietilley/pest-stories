@@ -2,7 +2,6 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use Closure;
 use PHPUnit\Framework\TestCase;
 
@@ -42,18 +41,6 @@ interface WithTest
      * Get the name of this test
      */
     public function getTestName(): string;
-
-    /**
-     * Set the name of the function that powers the testing. Default: `test`
-     *
-     * @throws TestFunctionNotFoundException
-     */
-    public static function setTestFunction(string $function = 'test'): void;
-
-    /**
-     * Get the name of the function that powers the testing. Default: `test`
-     */
-    public static function getTestFunction(): string;
 
     /**
      * Inherit all properties that are inheritable

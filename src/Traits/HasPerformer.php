@@ -4,6 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
+use BradieTilley\StoryBoard\Story\Config;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -53,16 +54,14 @@ trait HasPerformer
         if (static::hasStaticCallback('actingAs')) {
             static::runStaticCallback('actingAs', $this->getParameters());
         } else {
-            if (! function_exists('auth')) {
-                throw new \Exception('no custom actingAs handler, and auth() function does not exist!');
-            }
+            $authFunction = Config::getAliasFunction('auth');
 
             if ($user !== null) {
                 /** @phpstan-ignore-next-line */
-                auth()->login($user);
+                $authFunction()->login($user);
             } else {
                 /** @phpstan-ignore-next-line */
-                auth()->logout();
+                $authFunction()->logout();
             }
         }
 

@@ -17,6 +17,7 @@ use BradieTilley\StoryBoard\Contracts\WithTags;
 use BradieTilley\StoryBoard\Contracts\WithTest;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
+use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
@@ -126,8 +127,10 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
      */
     public static function make(?string $name = null, ?Story $parent = null): static
     {
+        $class = Config::getAliasClass('story');
+
         /** @phpstan-ignore-next-line */
-        return new static($name, $parent);
+        return new $class($name, $parent);
     }
 
     /**

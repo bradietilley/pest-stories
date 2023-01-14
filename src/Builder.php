@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard;
 
+use Illuminate\Foundation\Application;
+
 class Builder
 {
     use \Orchestra\Testbench\Concerns\CreatesApplication;
@@ -17,13 +19,19 @@ class Builder
 
     public static function hasRun(): bool
     {
-        return self::$run;
+        /** @var Application $app */
+        $app = app();
+
+        return $app->hasBeenBootstrapped();
     }
 
     public static function run(): void
     {
-        self::instance()->createApplication();
+        if (self::hasRun()) {
+            return;
+        }
 
+        self::instance()->createApplication();
         self::$run = true;
     }
 }

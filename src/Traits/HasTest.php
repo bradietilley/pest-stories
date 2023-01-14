@@ -4,7 +4,6 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Builder;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
@@ -25,8 +24,6 @@ trait HasTest
     protected bool $booted = false;
 
     protected ?TestCase $test = null;
-
-    protected static string $testFunction = 'test';
 
     /**
      * Register this story actions
@@ -127,7 +124,8 @@ trait HasTest
         }
 
         if (Config::datasetsEnabled()) {
-            $function = Story::getTestFunction();
+            $function = Config::getAliasFunction('test');
+
             $parentName = $this->getName();
             $stories = $this->allStories();
 
@@ -159,7 +157,7 @@ trait HasTest
     {
         $story = $this;
 
-        $function = self::getTestFunction();
+        $function = Config::getAliasFunction('test');
         $args = [
             $this->getTestName(),
             function () use ($story) {
@@ -211,29 +209,6 @@ trait HasTest
         }
 
         return $name;
-    }
-
-    /**
-     * Set the name of the function that powers the testing. Default: `test`
-
-     *
-     * @throws TestFunctionNotFoundException
-     */
-    public static function setTestFunction(string $function = 'test'): void
-    {
-        if (! function_exists($function)) {
-            throw StoryBoardException::testFunctionNotFound($function);
-        }
-
-        self::$testFunction = $function;
-    }
-
-    /**
-     * Get the name of the function that powers the testing. Default: `test`
-     */
-    public static function getTestFunction(): string
-    {
-        return self::$testFunction;
     }
 
     /**
