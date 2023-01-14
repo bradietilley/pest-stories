@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
+use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -22,6 +24,8 @@ trait HasPerformer
         if ($name === 'user') {
             return $this->user;
         }
+
+        throw StoryBoardException::invalidMagicAliasException($name, InvalidMagicAliasException::TYPE_PROPERTY);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use Illuminate\Support\Collection;
@@ -28,6 +29,8 @@ trait HasStories
         if ($name === 'storiesDirect') {
             return $this->collectGetStories();
         }
+
+        throw StoryBoardException::invalidMagicAliasException($name, InvalidMagicAliasException::TYPE_PROPERTY);
     }
 
     /**

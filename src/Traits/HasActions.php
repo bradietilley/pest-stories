@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
@@ -55,6 +56,8 @@ trait HasActions
 
             return $this->{$method}(...$parameters);
         }
+
+        throw StoryBoardException::invalidMagicAliasException($method, InvalidMagicAliasException::TYPE_METHOD);
     }
 
     /**
@@ -65,6 +68,8 @@ trait HasActions
         if ($method === 'can' || $method === 'cannot') {
             return static::make()->{$method}(...$parameters);
         }
+
+        throw StoryBoardException::invalidMagicAliasException($method, InvalidMagicAliasException::TYPE_STATIC_METHOD);
     }
 
     /**

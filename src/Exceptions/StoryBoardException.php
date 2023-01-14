@@ -57,4 +57,16 @@ abstract class StoryBoardException extends Exception
             sprintf('The story test function `%s` could not be found', $function),
         );
     }
+
+    /**
+     * Internally used for when a Trait's magic method handler doesn't know what to do with a
+     * given property or method call.
+     */
+    public static function invalidMagicAliasException(string $name, string $type): InvalidMagicAliasException
+    {
+        return new InvalidMagicAliasException(
+            name: $name,
+            type: $type,
+        );
+    }
 }
