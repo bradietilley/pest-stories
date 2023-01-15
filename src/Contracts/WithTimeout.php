@@ -33,13 +33,13 @@ use Closure;
 interface WithTimeout
 {
     /**
-     * Set a timeout for this story.
+     * Set a timeout for this object/story.
      * Any value under 1 microsecond will set to 1 microsecond.
      */
     public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): static;
 
     /**
-     * Remove the timeout for this story
+     * Remove the timeout for this object/story. The parent's timeout is not inherited.
      */
     public function noTimeout(): static;
 
@@ -49,12 +49,12 @@ interface WithTimeout
     public function getTimeoutMicroseconds(): int;
 
     /**
-     * Get the timer used for this story
+     * Get the timer used for this object/story
      */
     public function getTimer(): ?Timer;
 
     /**
-     * Create a timer for this story
+     * Create a timer for this object/story
      */
     public function createTimer(Closure $callback): Timer;
 

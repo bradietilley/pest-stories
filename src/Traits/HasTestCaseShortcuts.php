@@ -23,7 +23,7 @@ trait HasTestCaseShortcuts
     /**
      * Pending list of test case shortcuts to apply
      *
-     * @var array<string, string|bool>
+     * @var array<string,string>
      */
     protected array $testCaseShortcuts = [];
 
@@ -50,9 +50,9 @@ trait HasTestCaseShortcuts
     /**
      * Alias of throw new RiskyTestError()
      */
-    public function risky(): static
+    public function risky(string $message = ''): static
     {
-        $this->testCaseShortcuts['risky'] = true;
+        $this->testCaseShortcuts['risky'] = $message;
 
         return $this;
     }
@@ -78,7 +78,7 @@ trait HasTestCaseShortcuts
 
         foreach ($this->testCaseShortcuts as $key => $value) {
             match ($key) {
-                'risky' => throw new RiskyTestError('This story is risky'),
+                'risky' => throw new RiskyTestError($value),
                 'incomplete' => $test->markTestIncomplete($value),
                 'skipped' => $test->markTestSkipped($value),
                 default => throw new \Exception(sprintf('Unrecognised test case shortcut `%s`', $key)),
@@ -97,6 +97,7 @@ trait HasTestCaseShortcuts
             $all = array_replace($all, (array) $level->getProperty('testCaseShortcuts'));
         }
 
+        /** @var array<string, string> $all */
         $this->testCaseShortcuts = $all;
     }
 }

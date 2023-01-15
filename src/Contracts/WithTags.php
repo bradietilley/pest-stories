@@ -14,7 +14,7 @@ use BradieTilley\StoryBoard\Story\Tag;
 interface WithTags
 {
     /**
-     * Add a tag (or multiple tags) to this object
+     * Add a tag (or multiple tags) to this object.
      */
     public function tag(string|array|Tag $key, mixed $value = null): static;
 
