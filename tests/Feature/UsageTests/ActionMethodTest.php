@@ -76,7 +76,7 @@ test('the action method can be applied at a grandparent story level', function (
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getTestName()] = array_keys($story->allActions());
+        $names[$story->getTestName()] = array_keys($story->resolveInheritedActions());
     }
 
     expect($names->toArray())->toBe([
@@ -102,7 +102,7 @@ test('the action method can be applied at a parent story level', function () {
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getTestName()] = array_keys($story->allActions());
+        $names[$story->getTestName()] = array_keys($story->resolveInheritedActions());
     }
 
     expect($names->toArray())->toBe([
@@ -128,7 +128,7 @@ test('the can method can be applied at a child story level', function () {
     foreach ($board->allStories() as $story) {
         $story->boot();
 
-        $names[$story->getTestName()] = array_keys($story->allActions());
+        $names[$story->getTestName()] = array_keys($story->resolveInheritedActions());
     }
 
     expect($names->toArray())->toBe([

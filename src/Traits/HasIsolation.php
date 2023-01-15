@@ -5,16 +5,28 @@ namespace BradieTilley\StoryBoard\Traits;
 use Illuminate\Support\Str;
 
 /**
+ * This object (Story) can be target to run in isolatation.
+ * This means only it and its children will run/boot.
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasIsolation
 {
+    /**
+     * Container of recorded story IDs (Story isolation IDs)
+     * that are to be run as part of the current isolation mode.
+     *
+     * When empty, all stories are run.
+     */
     protected static array $isolationStories = [];
 
+    /**
+     * The Story's isolation ID
+     */
     private ?string $isolationId = null;
 
     /**
-     * Flush isolation flags
+     * Flush isolation flags (don't isolate any objects/stories)
      */
     public static function flushIsolation(): void
     {
@@ -32,31 +44,16 @@ trait HasIsolation
     }
 
     /**
-     * Does this group (class type) have isolation enabled?
+     * Does this object type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool
     {
         return ! empty(static::$isolationStories);
     }
 
-    public function inheritIsolation(): void
-    {
-        foreach ($this->getAncestors() as $ancestor) {
-            if ($ancestor === $this) {
-                continue;
-            }
-
-            if ($ancestor->inIsolation()) {
-                $this->isolate();
-            }
-        }
-    }
-
     /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
-     *
-     * @requires HasInheritance
      */
     public function inIsolation(): bool
     {
@@ -78,5 +75,22 @@ trait HasIsolation
     public function isolationId(): string
     {
         return $this->isolationId ??= Str::random(64);
+    }
+
+    /**
+     * Inherit isolation flags (i.e. run in isolation) from
+     * this item's parents
+     */
+    public function inheritIsolation(): void
+    {
+        foreach ($this->getAncestors() as $ancestor) {
+            if ($ancestor === $this) {
+                continue;
+            }
+
+            if ($ancestor->inIsolation()) {
+                $this->isolate();
+            }
+        }
     }
 }

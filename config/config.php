@@ -26,6 +26,54 @@ return [
     'datasets' => false,
 
     /**
+     * Aliases allow you to choose which classes and functions to use when
+     * using Pest StoryBoard.
+     */
+    'aliases' => [
+        /**
+         * The `test` function for StoryBoard is the function that is used to run
+         * a given story as a test. The signature of this function must match that
+         * of Pest's `test()` function. Specifically, this is:
+         *
+         *     function(string $nameOfTest, Closure $testRunner): mixed;
+         */
+        'test' => 'test',
+
+        /**
+         * The `auth` function for StoryBoard is used when a story performer (User)
+         * is set, but only when an `actingAs` callback has not been specified. By
+         * default this means without the `actingAs` callback, the `auth()` function
+         * provided by Laravel is used. This function must return a class with the following signature:
+         *
+         *     public function login(Authenticatable $user): mixed;
+         *
+         *     public function logout(): mixed;
+         */
+        'auth' => 'auth',
+
+        /**
+         * The class to use when creating Stories via `Story::make()` method or the `story()` function.
+         *
+         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story`
+         */
+        'story' => \BradieTilley\StoryBoard\Story::class,
+
+        /**
+         * The class to use when creating Actions via `Action::make()` method or the `action()` function.
+         *
+         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\AbstractAction`
+         */
+        'action' => \BradieTilley\StoryBoard\Story\Action::class,
+
+        /**
+         * The class to use when creating Tags via `Tag::make()` method or the `tag()` function.
+         *
+         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\Tag`
+         */
+        'tag' => \BradieTilley\StoryBoard\Story\Tag::class,
+    ],
+
+    /**
      * (Work In Progress:)
      *
      * Choose where various sources of story names can come from and where

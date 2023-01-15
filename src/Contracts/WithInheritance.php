@@ -2,24 +2,26 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * This object has hierarchy (parent -> children -> etc) and
+ * can inherit properties from its parent(s)
+ */
 interface WithInheritance
 {
     /**
-     * Does this story have a parent?
+     * Does this object have a parent?
      */
     public function hasParent(): bool;
 
     /**
-     * Get the parent Story
-     *
-     * @return static
+     * Get the parent of this object
      */
     public function getParent(): ?static;
 
     /**
-     * Set the parent of this story
+     * Set the parent of this object
      *
-     * @param  static  $parent
+     * @param  static  $parent Parent must be of the same class type
      */
     public function setParent(self $parent): static;
 

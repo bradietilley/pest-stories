@@ -52,9 +52,9 @@ test('a story can be marked as skipped', function (string $message) {
     'a message' => 'will work on later',
 ]);
 
-test('a story can be marked as risky', function () {
+test('a story can be marked as risky', function (string $message) {
     $story = Story::make('parent')
-        ->risky()
+        ->risky($message)
         ->stories([
             Story::make('child'),
         ])
@@ -68,15 +68,18 @@ test('a story can be marked as risky', function () {
 
         $this->fail();
     } catch (RiskyTestError $e) {
-        expect($e->getMessage())->toBe('This story is risky');
+        expect($e->getMessage())->toBe($message);
     }
-});
+})->with([
+    'no message' => '',
+    'a message' => 'will work on later',
+]);
 
 test('you can fetch the testcase shortcuts from a story', function () {
     $story = Story::make('parent')
-        ->risky()
         ->incomplete('a')
         ->skipped('b')
+        ->risky('c')
         ->stories([
             Story::make('child'),
         ])
@@ -84,8 +87,8 @@ test('you can fetch the testcase shortcuts from a story', function () {
         ->first();
 
     expect($story->getTestCaseShortcuts())->toBe([
-        'risky' => true,
         'incomplete' => 'a',
         'skipped' => 'b',
+        'risky' => 'c',
     ]);
 });

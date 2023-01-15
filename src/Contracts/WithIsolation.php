@@ -2,10 +2,16 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * This object (Story) can be target to run in isolatation.
+ * This means only it and its children will run/boot.
+ *
+ * @mixin WithInheritance
+ */
 interface WithIsolation
 {
     /**
-     * Flush isolation flags
+     * Flush isolation flags (don't isolate any objects/stories)
      */
     public static function flushIsolation(): void;
 
@@ -15,21 +21,13 @@ interface WithIsolation
     public function isolate(): static;
 
     /**
-     * Does this group (class type) have isolation enabled?
+     * Does this object type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool;
 
     /**
-     * Inherit isolation flags (i.e. run in isolation) from
-     * this item's parents
-     */
-    public function inheritIsolation(): void;
-
-    /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
-     *
-     * @requires HasInheritance
      */
     public function inIsolation(): bool;
 
@@ -43,4 +41,10 @@ interface WithIsolation
      * Get a unique ID for this instance
      */
     public function isolationId(): string;
+
+    /**
+     * Inherit isolation flags (i.e. run in isolation) from
+     * this item's parents
+     */
+    public function inheritIsolation(): void;
 }

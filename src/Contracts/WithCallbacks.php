@@ -5,6 +5,12 @@ namespace BradieTilley\StoryBoard\Contracts;
 use Closure;
 use Illuminate\Container\Container;
 
+/**
+ * This object has custom callbacks (e.g. before, booting, etc) that
+ * you can add callbacks to.
+ *
+ * @mixin WithInheritance
+ */
 interface WithCallbacks
 {
     /**
@@ -64,10 +70,6 @@ interface WithCallbacks
 
     /**
      * Inherit all callbacks from this items's parents
-     *
-     * @requires WithInheritance
-     *
-     * @return void
      */
     public function inheritCallbacks(): void;
 

@@ -3,6 +3,10 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 /**
+ * This object has a variables/data container that you can
+ * write to and read from
+ *
+ * *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasData
@@ -84,6 +88,9 @@ trait HasData
         return $this->allData();
     }
 
+    /**
+     * Inherit all data from parent stories
+     */
     public function inheritData(): void
     {
         $all = [];

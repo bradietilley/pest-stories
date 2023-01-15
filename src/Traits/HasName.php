@@ -9,14 +9,28 @@ use BradieTilley\StoryBoard\Story\Config;
 use Illuminate\Support\Str;
 
 /**
+ * This object has a name
+ *
  * @property ?string $name
  *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasName
 {
+    /**
+     * Cache of this object's full name based on the current
+     * `datasets` configuration state (enabled/disabled).
+     *
+     *     Key = dataset enabled flag
+     *     Value = full name
+     *
+     * @var array<string,string>
+     */
     protected array $fullName = [];
 
+    /**
+     * Run when parent class is cloned; name may need updating?
+     */
     public function __cloneName(): void
     {
         $this->name = Str::random(32);
@@ -31,7 +45,7 @@ trait HasName
     }
 
     /**
-     * Set the name (or name fragment) of this story
+     * Set the name of this story
      */
     public function setName(string $name): static
     {
@@ -41,7 +55,7 @@ trait HasName
     }
 
     /**
-     * Get the name (or name fragment) of this story
+     * Get the name of this story
      */
     public function getName(): ?string
     {
@@ -49,13 +63,48 @@ trait HasName
     }
 
     /**
-     * Get the name (or name fragment) of this story.
+     * Require the name of this story.
      */
     public function getNameString(): string
     {
         return (string) $this->name;
     }
 
+    /**
+     * Get full name, without:
+     *
+     * - expectation (e.g. `[Can]`)
+     * - tags (e.g. `issue: 123`)
+     */
+    public function getFullName(): string
+    {
+        $datasetKey = Config::datasetsEnabled() ? 'dataset' : 'default';
+
+        return $this->fullName[$datasetKey] ?? $this->getNameString();
+    }
+
+    /**
+     * Get the name of this ancestory level
+     */
+    public function getLevelName(): string
+    {
+        $name = $this->getNameString();
+
+        /**
+         * Append names from actions (where actions opt to `->appendName()`)
+         */
+        if ($this instanceof WithActions) {
+            $name = "{$name} {$this->getNameFromActions()}";
+        }
+
+        $name = trim($name);
+
+        return $name;
+    }
+
+    /**
+     * Inherit the name from parents
+     */
     public function inheritName(): void
     {
         if (! $this instanceof WithInheritance) {
@@ -85,28 +134,5 @@ trait HasName
         $name = trim((string) preg_replace('/\s+/', ' ', implode(' ', $name)));
 
         $this->fullName[$datasetKey] = $name;
-    }
-
-    public function getFullName(): string
-    {
-        $datasetKey = Config::datasetsEnabled() ? 'dataset' : 'default';
-
-        return $this->fullName[$datasetKey] ?? $this->getName();
-    }
-
-    public function getLevelName(): string
-    {
-        $name = $this->getNameString();
-
-        /**
-         * Append names from actions (where actions opt to `->appendName()`)
-         */
-        if ($this instanceof WithActions) {
-            $name = "{$name} {$this->getNameFromActions()}";
-        }
-
-        $name = trim($name);
-
-        return $name;
     }
 }

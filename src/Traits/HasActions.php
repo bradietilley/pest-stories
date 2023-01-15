@@ -2,8 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
-use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
@@ -12,6 +12,13 @@ use Illuminate\Support\Collection;
 use Throwable;
 
 /**
+ * This object has actions, expectations and assertions
+ *
+ * @method static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ *
  * @mixin \BradieTilley\StoryBoard\Story
  */
 trait HasActions
@@ -42,6 +49,32 @@ trait HasActions
     protected bool $canHalt = false;
 
     /**
+     * Method alias(es) for Actions trait
+     */
+    public function __callActions(string $method, array $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            $method = 'set'.ucfirst($method);
+
+            return $this->{$method}(...$parameters);
+        }
+
+        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_METHOD);
+    }
+
+    /**
+     * Static method alias(es) for Actions trait
+     */
+    public static function __callStaticActions(string $method, array $parameters): mixed
+    {
+        if ($method === 'can' || $method === 'cannot') {
+            return static::make()->{$method}(...$parameters);
+        }
+
+        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_STATIC_METHOD);
+    }
+
+    /**
      * Alias for setAction()
      */
     public function action(string|Closure|Action $action, array $arguments = [], int $order = null): static
@@ -68,7 +101,6 @@ trait HasActions
     /**
      * Register a single action for this story.
      * Optionally pass in arguments (matched by name) if the action supports them.
-r
      */
     public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): static
     {
@@ -145,11 +177,9 @@ r
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires WithInheritance
-     *
      * @return array<string,StoryAction>
      */
-    public function allActions(): array
+    public function resolveInheritedActions(): array
     {
         $all = [];
 
@@ -160,14 +190,6 @@ r
         }
 
         return $all;
-    }
-
-    /**
-     * Inherit all actions from this story's parent
-     */
-    public function inheritActions(): void
-    {
-        $this->actions = $this->allActions();
     }
 
     /**
@@ -188,8 +210,6 @@ r
 
     /**
      * Boot all registered actions for this test.
-     *
-     * @requires WithInheritance
      */
     public function bootActions(): static
     {
@@ -262,7 +282,7 @@ r
     }
 
     /**
-     * Set whether this task can run (i.e. passes)
+     * Specify that you expect that this task 'can run' or 'will pass'
      *
      * The name and callback can be passed in in either order.
      */
@@ -286,7 +306,9 @@ r
     }
 
     /**
-     * Set that this task cannot run (i.e. fails)
+     * Specify that you expect that this task 'cannot run' or 'will fail'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static
     {
@@ -317,8 +339,6 @@ r
 
     /**
      * Perform the assertions
-     *
-     * @requires Story
      */
     public function perform(): static
     {
@@ -335,13 +355,13 @@ r
         }
 
         if ($this->can === null) {
-            throw StoryBoardException::assertionNotFound($this);
+            throw StoryBoardException::expectationNotSpecified($this);
         }
 
         $callback = $this->can ? 'can' : 'cannot';
 
         if (! $this->hasCallback($callback)) {
-            throw StoryBoardException::assertionCheckerNotFound($this);
+            throw StoryBoardException::assertionCheckerNotSpecified($this);
         }
 
         try {
@@ -365,5 +385,25 @@ r
     public function getResult(): Result
     {
         return $this->result ??= new Result();
+    }
+
+    /**
+     * Inherit all actions from this story's parent
+     */
+    public function inheritActions(): void
+    {
+        $this->actions = $this->resolveInheritedActions();
+    }
+
+    /**
+     * Inherit assertions from ancestors
+     */
+    public function inheritAssertions(): void
+    {
+        $can = $this->inheritPropertyBool('can');
+
+        if ($can !== null) {
+            $this->can = $can;
+        }
     }
 }

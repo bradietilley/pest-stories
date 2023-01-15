@@ -181,12 +181,24 @@ abstract class AbstractAction
     }
 
     /**
+     * Get the alias for this type of action (for use in config)
+     */
+    public static function getAliasName(): string
+    {
+        return '';
+    }
+
+    /**
      * Make and register this action
      */
-    public static function make(): static
+    public static function make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null): static
     {
-        /** @phpstan-ignore-next-line */
-        return (new static(...func_get_args()))->store();
+        $class = Config::getAliasClass(static::getAliasName(), AbstractAction::class);
+
+        /** @var static $action */
+        $action = new $class($name, $generator, $variable, $order);
+
+        return $action->store();
     }
 
     /**

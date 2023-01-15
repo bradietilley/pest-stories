@@ -8,6 +8,9 @@ use Closure;
 use Illuminate\Container\Container;
 
 /**
+ * This object has custom callbacks (e.g. before, booting, etc) that
+ * you can add callbacks to.
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasCallbacks
@@ -120,6 +123,9 @@ trait HasCallbacks
         return isset(static::$registeredStaticCallbacks[$name]);
     }
 
+    /**
+     * Inherit all callbacks from this items's parents
+     */
     public function inheritCallbacks(): void
     {
         if (! $this instanceof WithInheritance) {
@@ -141,5 +147,13 @@ trait HasCallbacks
         }
 
         $this->registeredCallbacks = $all;
+    }
+
+    /**
+     * Get parameters available for DI callbacks
+     */
+    public function getParameters(array $additional = []): array
+    {
+        return $additional;
     }
 }

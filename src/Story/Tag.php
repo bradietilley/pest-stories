@@ -30,6 +30,19 @@ class Tag implements Stringable
         }
     }
 
+    /**
+     * Create a new tag
+     */
+    public static function make(string $name, Closure|string|int|float|bool|null $value, ?int $order = null): static
+    {
+        $class = Config::getAliasClass('tag', Tag::class);
+
+        /** @var static $tag */
+        $tag = new $class($name, $value, $order);
+
+        return $tag;
+    }
+
     public function __toString(): string
     {
         return $this->getTag();

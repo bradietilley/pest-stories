@@ -28,6 +28,14 @@ class Action extends AbstractAction
     }
 
     /**
+     * Get the alias for this type of action (for use in config)
+     */
+    public static function getAliasName(): string
+    {
+        return 'action';
+    }
+
+    /**
      * Action not found
      */
     protected static function notFound(string $name): ActionNotFoundException

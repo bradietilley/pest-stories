@@ -2,11 +2,9 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Builder;
-use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use PHPUnit\Framework\Assert;
@@ -14,19 +12,25 @@ use PHPUnit\Framework\TestCase;
 use Throwable;
 
 /**
+ * This object (story) has facility to register a test via
+ * the `->test()` method. Once the test is registered and Pest
+ * invokes it, the TestCase can be provided via the `->setTest()`
+ * method and later retrieved via `->getTest()`.
+ *
+ * Therefore, during the registration/creation of a Story test,
+ * there is no TestCase available. Any even after registration
+ * will have access to the TestCase.
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithStories
  */
 trait HasTest
 {
-    protected bool $inherited = false;
-
-    protected bool $registered = false;
-
-    protected bool $booted = false;
-
+    /**
+     * This is the TestCase responsible for running the Story.
+     *
+     * Accessible only when Pest boots the test created via `->test()`
+     */
     protected ?TestCase $test = null;
-
-    protected static string $testFunction = 'test';
 
     /**
      * Register this story actions
@@ -118,22 +122,17 @@ trait HasTest
      */
     public function test(): static
     {
-        if (! Builder::hasRun()) {
-            Builder::run();
-        }
+        StoryApplication::boot();
 
         if (! $this->hasStories()) {
             return $this->testSingle();
         }
 
         if (Config::datasetsEnabled()) {
-            $function = Story::getTestFunction();
+            $function = Config::getAliasFunction('test');
+
             $parentName = $this->getName();
             $stories = $this->allStories();
-
-            if (! is_callable($function)) {
-                throw StoryBoardException::testFunctionNotFound($function);
-            }
 
             $function($parentName, function (Story $story) {
                 /** @var Story $story */
@@ -159,7 +158,7 @@ trait HasTest
     {
         $story = $this;
 
-        $function = self::getTestFunction();
+        $function = Config::getAliasFunction('test');
         $args = [
             $this->getTestName(),
             function () use ($story) {
@@ -175,10 +174,6 @@ trait HasTest
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
-        if (! is_callable($function)) {
-            throw StoryBoardException::testFunctionNotFound($function);
-        }
-
         $function(...$args);
 
         return $this;
@@ -211,29 +206,6 @@ trait HasTest
         }
 
         return $name;
-    }
-
-    /**
-     * Set the name of the function that powers the testing. Default: `test`
-
-     *
-     * @throws TestFunctionNotFoundException
-     */
-    public static function setTestFunction(string $function = 'test'): void
-    {
-        if (! function_exists($function)) {
-            throw StoryBoardException::testFunctionNotFound($function);
-        }
-
-        self::$testFunction = $function;
-    }
-
-    /**
-     * Get the name of the function that powers the testing. Default: `test`
-     */
-    public static function getTestFunction(): string
-    {
-        return self::$testFunction;
     }
 
     /**
@@ -274,18 +246,6 @@ trait HasTest
         $this->inheritPendingContext();
 
         return $this;
-    }
-
-    /**
-     * Inherit assertions from ancestord
-     */
-    public function inheritAssertions(): void
-    {
-        $can = $this->inheritPropertyBool('can');
-
-        if ($can !== null) {
-            $this->can = $can;
-        }
     }
 
     /**

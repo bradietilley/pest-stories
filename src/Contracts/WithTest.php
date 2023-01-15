@@ -2,10 +2,19 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
-use BradieTilley\StoryBoard\Exceptions\TestFunctionNotFoundException;
 use Closure;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * This object (story) has facility to register a test via
+ * the `->test()` method. Once the test is registered and Pest
+ * invokes it, the TestCase can be provided via the `->setTest()`
+ * method and later retrieved via `->getTest()`.
+ *
+ * Therefore, during the registration/creation of a Story test,
+ * there is no TestCase available. Any even after registration
+ * will have access to the TestCase.
+ */
 interface WithTest
 {
     /**
@@ -44,26 +53,9 @@ interface WithTest
     public function getTestName(): string;
 
     /**
-     * Set the name of the function that powers the testing. Default: `test`
-     *
-     * @throws TestFunctionNotFoundException
-     */
-    public static function setTestFunction(string $function = 'test'): void;
-
-    /**
-     * Get the name of the function that powers the testing. Default: `test`
-     */
-    public static function getTestFunction(): string;
-
-    /**
      * Inherit all properties that are inheritable
      */
     public function inherit(): static;
-
-    /**
-     * Inherit assertions from ancestord
-     */
-    public function inheritAssertions(): void;
 
     /**
      * Run this story from start to finish

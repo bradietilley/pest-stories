@@ -2,6 +2,11 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * This object can be ordered by auto incrementing
+ * order via getNextOrder or by manually specifying
+ * an order.
+ */
 interface WithOrder
 {
     /**

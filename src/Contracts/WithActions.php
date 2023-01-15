@@ -7,6 +7,11 @@ use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
 
+/**
+ * This object has actions, expectations and assertions
+ *
+ * @mixin WithInheritance
+ */
 interface WithActions
 {
     /**
@@ -57,16 +62,9 @@ interface WithActions
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires HasInheritance
-     *
      * @return array<string,StoryAction>
      */
-    public function allActions(): array;
-
-    /**
-     * Inherit all actions from this story's parent
-     */
-    public function inheritActions(): void;
+    public function resolveInheritedActions(): array;
 
     /**
      * Resolve all actions that are inherited
@@ -75,8 +73,6 @@ interface WithActions
 
     /**
      * Boot all registered actions for this test.
-     *
-     * @requires HasInheritance
      */
     public function bootActions(): static;
 
@@ -97,12 +93,16 @@ interface WithActions
     public function noAssertion(): static;
 
     /**
-     * Set whether this task can run (i.e. passes)
+     * Specify that you expect that this task 'can run' or 'will pass'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static;
 
     /**
-     * Set that this task cannot run (i.e. fails)
+     * Specify that you expect that this task 'cannot run' or 'will fail'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static;
 
@@ -113,8 +113,6 @@ interface WithActions
 
     /**
      * Perform the assertions
-     *
-     * @requires Story
      */
     public function perform(): static;
 
@@ -122,4 +120,14 @@ interface WithActions
      * Get the result from the task(s) if already run
      */
     public function getResult(): Result;
+
+    /**
+     * Inherit all actions from this story's parent
+     */
+    public function inheritActions(): void;
+
+    /**
+     * Inherit assertions from ancestors
+     */
+    public function inheritAssertions(): void;
 }

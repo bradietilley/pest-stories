@@ -2,18 +2,26 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+/**
+ * Restricts certain things from being run more than once when
+ * you check via the `alreadyRun()` method.
+ *
+ * Supports multiple 'run once' checks by using different `$identifier`
+ */
 trait HasSingleRunner
 {
     /**
      * Container of already-run
+     *S
      *
-     * @var array
+     * @var array<int, string> (value = that have run)
      */
     private array $alreadyRun = [];
 
     /**
      * Determine if this is the first time the given identifier
-     * action is run on this object.
+     * action is run on this object. Running this will
+     * automatically flag this identifier as being run.
      */
     public function alreadyRun(string $identifier): bool
     {

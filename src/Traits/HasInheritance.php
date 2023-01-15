@@ -3,12 +3,16 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 /**
+ * This object has hierarchy (parent -> children -> etc) and
+ * can inherit properties from its parent(s)
+
+ *
  * @property ?static $parent
  */
 trait HasInheritance
 {
     /**
-     * Does this story have a parent?
+     * Does this object have a parent?
      */
     public function hasParent(): bool
     {
@@ -16,7 +20,7 @@ trait HasInheritance
     }
 
     /**
-     * Get the parent Story
+     * Get the parent of this object
      */
     public function getParent(): ?static
     {
@@ -24,9 +28,9 @@ trait HasInheritance
     }
 
     /**
-     * Set the parent of this story
+     * Set the parent of this object
      *
-     * @param  static  $parent
+     * @param  static  $parent Parent must be of the same class type
      */
     public function setParent($parent): static
     {

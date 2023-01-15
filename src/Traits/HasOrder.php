@@ -2,8 +2,17 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+/**
+ * This object can be ordered by auto incrementing
+ * order via getNextOrder or by manually specifying
+ * an order.
+ */
 trait HasOrder
 {
+    /**
+     * Internal counter for the maximum order value encountered
+     * so that the next auto increment can be this value + one
+     */
     protected static int $orderCounter = 0;
 
     /**
