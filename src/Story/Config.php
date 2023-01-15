@@ -43,7 +43,7 @@ class Config
      *
      * @return class-string
      */
-    public static function getAliasClass(string $name): string
+    public static function getAliasClass(string $name, string $subclass): string
     {
         /** @var string $class */
         $class = Settings::get(self::KEY.'aliases.'.$name);
@@ -54,6 +54,14 @@ class Config
 
         if (! class_exists($class)) {
             throw StoryBoardException::aliasClassNotFound($name, $class);
+        }
+
+        if ($class === $subclass) {
+            return $class;
+        }
+
+        if (! is_subclass_of($class, $subclass)) {
+            throw StoryBoardException::aliasClassNotValid($name, $class, $subclass);
         }
 
         return $class;

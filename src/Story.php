@@ -127,7 +127,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
      */
     public static function make(?string $name = null, ?Story $parent = null): static
     {
-        $class = Config::getAliasClass('story');
+        $class = Config::getAliasClass('story', Story::class);
 
         /** @phpstan-ignore-next-line */
         return new $class($name, $parent);

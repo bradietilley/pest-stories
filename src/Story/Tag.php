@@ -35,7 +35,7 @@ class Tag implements Stringable
      */
     public static function make(string $name, Closure|string|int|float|bool|null $value, ?int $order = null): static
     {
-        $class = Config::getAliasClass('tag');
+        $class = Config::getAliasClass('tag', Tag::class);
 
         /** @var static $tag */
         $tag = new $class($name, $value, $order);

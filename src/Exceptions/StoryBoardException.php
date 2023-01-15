@@ -92,4 +92,16 @@ abstract class StoryBoardException extends Exception
             sprintf('The `%s` alias function `%s` was not found', $alias, $function),
         );
     }
+
+    public static function aliasClassNotValid(string $alias, string $class, string $subclass): AliasNotFoundException
+    {
+        return new AliasNotFoundException(
+            sprintf(
+                'The `%s` alias class `%s` is not a subclass of `%s`',
+                $alias,
+                $class,
+                $subclass,
+            ),
+        );
+    }
 }

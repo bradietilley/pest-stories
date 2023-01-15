@@ -193,7 +193,7 @@ abstract class AbstractAction
      */
     public static function make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null): static
     {
-        $class = Config::getAliasClass(static::getAliasName());
+        $class = Config::getAliasClass(static::getAliasName(), AbstractAction::class);
 
         /** @var static $action */
         $action = new $class($name, $generator, $variable, $order);
