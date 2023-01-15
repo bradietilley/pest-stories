@@ -28,7 +28,7 @@
         "orchestra/testbench": "^7.0",
         "symfony/var-dumper": "^6.1.5",
         "laravel/pint": "dev-main",
-        "phpstan/phpstan": "1.10.x-dev"
+        "phpstan/phpstan": "^1.8"
     },
     "require": {
         "illuminate/support": "^8.0|^9.0",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d1559eb50b69612b5a310d5e81175fa",
+    "content-hash": "0664c79c4ef4b792cd8b6db2ed753c45",
     "packages": [
         {
             "name": "brick/math",
@@ -5857,12 +5857,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "aa1f34ee29b8a0c26e0ff36298dea71332bded6e"
+                "reference": "dba57ee3194099245548bb073751ffbe2b7e4bd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/aa1f34ee29b8a0c26e0ff36298dea71332bded6e",
-                "reference": "aa1f34ee29b8a0c26e0ff36298dea71332bded6e",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/dba57ee3194099245548bb073751ffbe2b7e4bd3",
+                "reference": "dba57ee3194099245548bb073751ffbe2b7e4bd3",
                 "shasum": ""
             },
             "require": {
@@ -5909,7 +5909,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-11T14:27:50+00:00"
+            "time": "2023-01-14T14:28:40+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -8253,8 +8253,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "laravel/pint": 20,
-        "phpstan/phpstan": 20
+        "laravel/pint": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
