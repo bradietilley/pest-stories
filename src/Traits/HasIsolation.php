@@ -26,7 +26,7 @@ trait HasIsolation
     private ?string $isolationId = null;
 
     /**
-     * Flush isolation flags
+     * Flush isolation flags (don't isolate any objects/stories)
      */
     public static function flushIsolation(): void
     {
@@ -44,7 +44,7 @@ trait HasIsolation
     }
 
     /**
-     * Does this objec type (e.g. Stories) have isolation enabled?
+     * Does this object type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool
     {

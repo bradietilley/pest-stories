@@ -16,8 +16,7 @@ interface WithStories
      * Get stories (direct-children) as a collection.
      *
      * @see ->getStories()
-     *
-     * @return Collection<int,Story>
+     * @return Collection<int, Story>
      */
     public function collectGetStories(): Collection;
 
@@ -25,8 +24,7 @@ interface WithStories
      * Get stories (child-most) as a collection.
      *
      * @see ->allStories()
-     *
-     * @return Collection<string,Story>
+     * @return Collection<string, Story>
      */
     public function collectAllStories(): Collection;
 
@@ -57,7 +55,7 @@ interface WithStories
     public function getStories(): array;
 
     /**
-     * Does this Story/Storyboard have children stories?
+     * Does this Story have children stories?
      */
     public function hasStories(): bool;
 

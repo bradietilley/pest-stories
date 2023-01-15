@@ -34,7 +34,7 @@ interface WithTimeout
 {
     /**
      * Set a timeout for this story.
-     * Any value under 1 millisecond will set to 1 millisecond.
+     * Any value under 1 microsecond will set to 1 microsecond.
      */
     public function timeout(int|float $timeout, TimerUnit $unit = TimerUnit::SECOND): static;
 

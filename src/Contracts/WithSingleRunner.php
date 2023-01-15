@@ -3,7 +3,7 @@
 namespace BradieTilley\StoryBoard\Contracts;
 
 /**
- * Restricts certain actions from being run more than once when
+ * Restricts certain things from being run more than once when
  * you check via the `alreadyRun()` method.
  *
  * Supports multiple 'run once' checks by using different `$identifier`

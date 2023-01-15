@@ -11,7 +11,7 @@ namespace BradieTilley\StoryBoard\Contracts;
 interface WithIsolation
 {
     /**
-     * Flush isolation flags
+     * Flush isolation flags (don't isolate any objects/stories)
      */
     public static function flushIsolation(): void;
 
@@ -21,7 +21,7 @@ interface WithIsolation
     public function isolate(): static;
 
     /**
-     * Does this objec type (e.g. Stories) have isolation enabled?
+     * Does this object type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool;
 

@@ -2,14 +2,36 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+/**
+ * This object (action) can be repeated several times.
+ *
+ * By providing a repeat count, the `repeating()` method will
+ * return `true` *count* times.
+ *
+ * By providing no repeat, the repeating method will return `true`
+ * once, and `false` thereafter.
+ *
+ * The dontRepeat is an alias for resetting the repeat (no repeat)
+ */
 trait HasRepeater
 {
+    /**
+     * The counter to record how many times this has been run
+     */
     protected int $repeatNum = 0;
 
+    /**
+     * The maxium times this can be run.
+     */
     protected ?int $repeatMax = null;
 
     /**
      * Repeat the execution of this object several times
+     *
+     * Examples:
+     *     2 = Runs twice
+     *     1 = Runs once
+     *     0 = Never runs
      */
     public function repeat(int $times): static
     {
@@ -20,7 +42,9 @@ trait HasRepeater
     }
 
     /**
-     * Do not repeat the execution of this object
+     * Do not repeat the execution of this object.
+     *
+     * i.e. Run once.
      */
     public function dontRepeat(): static
     {
@@ -31,6 +55,12 @@ trait HasRepeater
 
     /**
      * Does this object repeat its execution?
+     *
+     * Examples:
+     *      2 = true
+     *      1 = true
+     *      0 = true
+     *      null = false
      */
     public function repeats(): bool
     {
@@ -58,6 +88,10 @@ trait HasRepeater
         return $this->repeatNum <= $this->repeatMax;
     }
 
+    /**
+     * Reset the repeater so that this object can be re-repeated, should
+     * that ever be an option.
+     */
     public function resetRepeater(): void
     {
         $this->repeatNum = 0;

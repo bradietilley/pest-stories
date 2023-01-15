@@ -30,12 +30,12 @@ interface WithPerformer
     public function user(Authenticatable|null $user): static;
 
     /**
-     * Set the user to perform this test
+     * Set the user to perform this test as
      */
     public function setUser(Authenticatable|null $user): static;
 
     /**
-     * Get the user to perform this test
+     * Get the user to perform this test as
      */
     public function getUser(): Authenticatable|null;
 }

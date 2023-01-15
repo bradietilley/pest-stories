@@ -12,16 +12,24 @@ use PHPUnit\Framework\TestCase;
 use Throwable;
 
 /**
+ * This object (story) has facility to register a test via
+ * the `->test()` method. Once the test is registered and Pest
+ * invokes it, the TestCase can be provided via the `->setTest()`
+ * method and later retrieved via `->getTest()`.
+ *
+ * Therefore, during the registration/creation of a Story test,
+ * there is no TestCase available. Any even after registration
+ * will have access to the TestCase.
+ * 
  * @mixin \BradieTilley\StoryBoard\Contracts\WithStories
  */
 trait HasTest
 {
-    protected bool $inherited = false;
-
-    protected bool $registered = false;
-
-    protected bool $booted = false;
-
+    /**
+     * This is the TestCase responsible for running the Story.
+     * 
+     * Accessible only when Pest boots the test created via `->test()`
+     */
     protected ?TestCase $test = null;
 
     /**
