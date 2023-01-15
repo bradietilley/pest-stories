@@ -7,13 +7,10 @@ use Exception;
 
 abstract class StoryBoardException extends Exception
 {
-    public static function actionNotFound(string $action): ActionNotFoundException
-    {
-        return new ActionNotFoundException(
-            sprintf('The `%s` action could not be found.', $action),
-        );
-    }
-
+    /**
+     * Exception for when an `AbstractAction` generator callback is
+     * not specified.
+     */
     public static function actionGeneratorNotFound(string $action): ActionGeneratorNotFoundException
     {
         return new ActionGeneratorNotFoundException(
@@ -21,45 +18,26 @@ abstract class StoryBoardException extends Exception
         );
     }
 
-    public static function actionNotSpecified(Story $story): ActionNotSpecifiedException
+    /**
+     * Exception for when an action added to a story cannot not found.
+     *
+     * Likely causes of this is a referenced action contains a spelling mistake
+     * or the Action you're referencing was never created.
+     */
+    public static function actionNotFound(string $action): ActionNotFoundException
     {
-        return new ActionNotSpecifiedException(
-            sprintf('No action was found for the story `%s`', $story->getFullName()),
-        );
-    }
-
-    public static function invalidStory(): InvalidStoryException
-    {
-        return new InvalidStoryException(
-            'You must only provide Story classes to the stories() method.',
-        );
-    }
-
-    public static function assertionNotFound(Story $story): AssertionNotFoundException
-    {
-        return new AssertionNotFoundException(
-            sprintf('No assertion was found for the story `%s`', $story->getFullName()),
-        );
-    }
-
-    public static function assertionCheckerNotFound(Story $story): AssertionCheckerNotFoundException
-    {
-        $term = $story->itCan() ? 'can' : 'cannot';
-
-        return new AssertionCheckerNotFoundException(
-            sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),
+        return new ActionNotFoundException(
+            sprintf('The `%s` action could not be found.', $action),
         );
     }
 
     /**
-     * Internally used for when a Trait's magic method handler doesn't know what to do with a
-     * given property or method call.
+     * Exception for when a Story contains no actions (but requires at least one)
      */
-    public static function invalidMagicAliasException(string $name, string $type): InvalidMagicAliasException
+    public static function actionNotSpecified(Story $story): ActionNotSpecifiedException
     {
-        return new InvalidMagicAliasException(
-            name: $name,
-            type: $type,
+        return new ActionNotSpecifiedException(
+            sprintf('No action was found for the story `%s`', $story->getFullName()),
         );
     }
 
@@ -93,6 +71,10 @@ abstract class StoryBoardException extends Exception
         );
     }
 
+    /**
+     * When config `storyboard.aliases.$alias` is a class that is
+     * not a subclass of the expected class
+     */
     public static function aliasClassNotValid(string $alias, string $class, string $subclass): AliasNotFoundException
     {
         return new AliasNotFoundException(
@@ -102,6 +84,51 @@ abstract class StoryBoardException extends Exception
                 $class,
                 $subclass,
             ),
+        );
+    }
+
+    /**
+     * Exception for when a Story contains no assertions (but requires one
+     * for the given expectation of can or cannot).
+     */
+    public static function assertionCheckerNotSpecified(Story $story): AssertionCheckerNotSpecifiedException
+    {
+        $term = $story->itCan() ? 'can' : 'cannot';
+
+        return new AssertionCheckerNotSpecifiedException(
+            sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),
+        );
+    }
+
+    /**
+     * Exception for when a Story contains no expectation (can or cannot).
+     */
+    public static function expectationNotSpecified(Story $story): ExpectationNotSpecifiedException
+    {
+        return new ExpectationNotSpecifiedException(
+            sprintf('No expectation was found for the story `%s`', $story->getFullName()),
+        );
+    }
+
+    /**
+     * Exception for when a Trait handles a magic method (e.g. __get, __call, etc)
+     * but does not "know" what to do with the given magic method call.
+     */
+    public static function invalidMagicMethodHandlerException(string $name, string $type): InvalidMagicMethodHandlerException
+    {
+        return new InvalidMagicMethodHandlerException(
+            name: $name,
+            type: $type,
+        );
+    }
+
+    /**
+     * Exception for when an invalid story object is supplied to another Story
+     */
+    public static function invalidStoryProvided(): InvalidStoryProvidedException
+    {
+        return new InvalidStoryProvidedException(
+            'You must only provide Story classes to the stories() method.',
         );
     }
 }

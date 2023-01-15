@@ -4,7 +4,11 @@ namespace BradieTilley\StoryBoard\Exceptions;
 
 use Exception;
 
-class InvalidMagicAliasException extends Exception
+/**
+ * Exception for when a Trait handles a magic method (e.g. __get, __call, etc)
+ * but does not "know" what to do with the given magic method call.
+ */
+class InvalidMagicMethodHandlerException extends Exception
 {
     public const TYPE_PROPERTY = 'property';
 

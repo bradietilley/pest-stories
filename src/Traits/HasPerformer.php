@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Config;
 use Closure;
@@ -40,7 +40,7 @@ trait HasPerformer
             return $this->user;
         }
 
-        throw StoryBoardException::invalidMagicAliasException($name, InvalidMagicAliasException::TYPE_PROPERTY);
+        throw StoryBoardException::invalidMagicMethodHandlerException($name, InvalidMagicMethodHandlerException::TYPE_PROPERTY);
     }
 
     /**

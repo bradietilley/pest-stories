@@ -1,6 +1,6 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\InvalidStoryException;
+use BradieTilley\StoryBoard\Exceptions\InvalidStoryProvidedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use Illuminate\Support\Collection;
@@ -152,7 +152,7 @@ test('a story cannot accept children that are not story classes', function (stri
     'when given string' => 'string',
     'when given action' => 'action',
     'when given a story and a string' => 'mixed',
-])->throws(InvalidStoryException::class, 'You must only provide Story classes to the stories() method.');
+])->throws(InvalidStoryProvidedException::class, 'You must only provide Story classes to the stories() method.');
 
 test('a story can fetch its children stories via collection methods and property proxies', function () {
     $storyboard = Story::make()

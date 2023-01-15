@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Exceptions\InvalidMagicAliasException;
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
@@ -59,7 +59,7 @@ trait HasActions
             return $this->{$method}(...$parameters);
         }
 
-        throw StoryBoardException::invalidMagicAliasException($method, InvalidMagicAliasException::TYPE_METHOD);
+        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_METHOD);
     }
 
     /**
@@ -71,7 +71,7 @@ trait HasActions
             return static::make()->{$method}(...$parameters);
         }
 
-        throw StoryBoardException::invalidMagicAliasException($method, InvalidMagicAliasException::TYPE_STATIC_METHOD);
+        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_STATIC_METHOD);
     }
 
     /**
@@ -355,13 +355,13 @@ trait HasActions
         }
 
         if ($this->can === null) {
-            throw StoryBoardException::assertionNotFound($this);
+            throw StoryBoardException::expectationNotSpecified($this);
         }
 
         $callback = $this->can ? 'can' : 'cannot';
 
         if (! $this->hasCallback($callback)) {
-            throw StoryBoardException::assertionCheckerNotFound($this);
+            throw StoryBoardException::assertionCheckerNotSpecified($this);
         }
 
         try {
