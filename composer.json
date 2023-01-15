@@ -23,11 +23,12 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require-dev": {
         "pestphp/pest": "^1.22",
         "orchestra/testbench": "^7.0",
         "symfony/var-dumper": "^6.1.5",
-        "laravel/pint": "dev-main",
+        "laravel/pint": "^1.4",
         "phpstan/phpstan": "^1.8"
     },
     "require": {
