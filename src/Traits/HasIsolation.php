@@ -39,19 +39,6 @@ trait HasIsolation
         return ! empty(static::$isolationStories);
     }
 
-    public function inheritIsolation(): void
-    {
-        foreach ($this->getAncestors() as $ancestor) {
-            if ($ancestor === $this) {
-                continue;
-            }
-
-            if ($ancestor->inIsolation()) {
-                $this->isolate();
-            }
-        }
-    }
-
     /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
@@ -78,5 +65,22 @@ trait HasIsolation
     public function isolationId(): string
     {
         return $this->isolationId ??= Str::random(64);
+    }
+
+    /**
+     * Inherit isolation flags (i.e. run in isolation) from
+     * this item's parents
+     */
+    public function inheritIsolation(): void
+    {
+        foreach ($this->getAncestors() as $ancestor) {
+            if ($ancestor === $this) {
+                continue;
+            }
+
+            if ($ancestor->inIsolation()) {
+                $this->isolate();
+            }
+        }
     }
 }

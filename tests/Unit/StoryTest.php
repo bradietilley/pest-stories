@@ -125,7 +125,7 @@ test('a story with multiple nested stories can collate required actions', functi
     $actual = [];
 
     foreach ($tests as $key => $story) {
-        $actions = array_keys($story->allActions());
+        $actions = array_keys($story->resolveInheritedActions());
 
         $actual[$key] = $actions;
     }

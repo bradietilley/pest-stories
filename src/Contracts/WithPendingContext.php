@@ -2,6 +2,13 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * Supply some deferred context to the given object (story)
+ * through means of setting existing cache entries, session
+ * values, or configuration.
+ *
+ * @mixin WithInheritance
+ */
 interface WithPendingContext
 {
     /**

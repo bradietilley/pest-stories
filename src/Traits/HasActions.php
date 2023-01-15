@@ -180,7 +180,7 @@ r
      *
      * @return array<string,StoryAction>
      */
-    public function allActions(): array
+    public function resolveInheritedActions(): array
     {
         $all = [];
 
@@ -191,14 +191,6 @@ r
         }
 
         return $all;
-    }
-
-    /**
-     * Inherit all actions from this story's parent
-     */
-    public function inheritActions(): void
-    {
-        $this->actions = $this->allActions();
     }
 
     /**
@@ -396,5 +388,25 @@ r
     public function getResult(): Result
     {
         return $this->result ??= new Result();
+    }
+
+    /**
+     * Inherit all actions from this story's parent
+     */
+    public function inheritActions(): void
+    {
+        $this->actions = $this->resolveInheritedActions();
+    }
+
+    /**
+     * Inherit assertions from ancestord
+     */
+    public function inheritAssertions(): void
+    {
+        $can = $this->inheritPropertyBool('can');
+
+        if ($can !== null) {
+            $this->can = $can;
+        }
     }
 }

@@ -58,7 +58,7 @@ test('a storyboard with multiple nested stories can collate required actions', f
     $actual = [];
 
     foreach ($tests as $key => $story) {
-        $actions = array_keys($story->allActions());
+        $actions = array_keys($story->resolveInheritedActions());
 
         $actual[$key] = $actions;
     }
@@ -102,7 +102,7 @@ test('action callbacks are executed when a story boots its actions', function ()
         ]);
 
     $story->registerActions();
-    $actions = $story->allActions();
+    $actions = $story->resolveInheritedActions();
 
     foreach ($actions as $action => $storyAction) {
         $actions[$action] = $storyAction->getArguments();

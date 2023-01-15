@@ -241,18 +241,6 @@ trait HasTest
     }
 
     /**
-     * Inherit assertions from ancestord
-     */
-    public function inheritAssertions(): void
-    {
-        $can = $this->inheritPropertyBool('can');
-
-        if ($can !== null) {
-            $this->can = $can;
-        }
-    }
-
-    /**
      * Run this story from start to finish
      */
     public function run(): static

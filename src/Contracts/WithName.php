@@ -2,6 +2,11 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * This object has a name
+ *
+ * @mixin WithInheritance
+ */
 interface WithName
 {
     /**
@@ -15,17 +20,17 @@ interface WithName
     public function name(string $name): static;
 
     /**
-     * Set the name (or name fragment) of this story
+     * Set the name of this story
      */
     public function setName(string $name): static;
 
     /**
-     * Get the name (or name fragment) of this story
+     * Get the name of this story
      */
     public function getName(): ?string;
 
     /**
-     * Get the name (or name fragment) of this story.
+     * Require the name of this story.
      */
     public function getNameString(): string;
 
@@ -35,9 +40,10 @@ interface WithName
     public function inheritName(): void;
 
     /**
-     * Get full name, minus expectation
+     * Get full name, without:
      *
-     * @return string
+     * - expectation (e.g. `[Can]`)
+     * - tags (e.g. `issue: 123`)
      */
     public function getFullName(): string;
 

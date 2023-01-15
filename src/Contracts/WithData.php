@@ -2,6 +2,12 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+/**
+ * This object has a variables/data container that you can
+ * write to and read from
+ *
+ * @mixin WithInheritance
+ */
 interface WithData
 {
     /**

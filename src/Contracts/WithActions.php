@@ -7,6 +7,11 @@ use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
 
+/**
+ * This object has actions, expectations and assertions
+ *
+ * @mixin WithInheritance
+ */
 interface WithActions
 {
     /**
@@ -57,16 +62,9 @@ interface WithActions
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires HasInheritance
-     *
      * @return array<string,StoryAction>
      */
-    public function allActions(): array;
-
-    /**
-     * Inherit all actions from this story's parent
-     */
-    public function inheritActions(): void;
+    public function resolveInheritedActions(): array;
 
     /**
      * Resolve all actions that are inherited
@@ -122,4 +120,14 @@ interface WithActions
      * Get the result from the task(s) if already run
      */
     public function getResult(): Result;
+
+    /**
+     * Inherit all actions from this story's parent
+     */
+    public function inheritActions(): void;
+
+    /**
+     * Inherit assertions from ancestord
+     */
+    public function inheritAssertions(): void;
 }
