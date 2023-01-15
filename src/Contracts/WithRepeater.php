@@ -5,13 +5,13 @@ namespace BradieTilley\StoryBoard\Contracts;
 /**
  * This object (action) can be repeated several times.
  *
- * By providing a `->repeat($x)`, the `repeating()` method will
- * return true X times.
+ * By providing a repeat count, the `repeating()` method will
+ * return `true` *count* times.
  *
- * By providing no repeat, the repeating method will return true
- * once, and false thereafter.
+ * By providing no repeat, the repeating method will return `true`
+ * once, and `false` thereafter.
  *
- * By providing dontRepeat
+ * The dontRepeat is an alias for resetting the repeat (no repeat)
  */
 interface WithRepeater
 {
