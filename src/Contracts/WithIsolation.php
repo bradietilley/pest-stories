@@ -21,15 +21,13 @@ interface WithIsolation
     public function isolate(): static;
 
     /**
-     * Does this group (class type) have isolation enabled?
+     * Does this objec type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool;
 
     /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
-     *
-     * @requires HasInheritance
      */
     public function inIsolation(): bool;
 

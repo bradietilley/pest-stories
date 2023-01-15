@@ -73,8 +73,6 @@ interface WithActions
 
     /**
      * Boot all registered actions for this test.
-     *
-     * @requires HasInheritance
      */
     public function bootActions(): static;
 
@@ -95,12 +93,16 @@ interface WithActions
     public function noAssertion(): static;
 
     /**
-     * Set whether this task can run (i.e. passes)
+     * Specify that you expect that this task 'can run' or 'will pass'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static;
 
     /**
-     * Set that this task cannot run (i.e. fails)
+     * Specify that you expect that this task 'cannot run' or 'will fail'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static;
 
@@ -111,8 +113,6 @@ interface WithActions
 
     /**
      * Perform the assertions
-     *
-     * @requires Story
      */
     public function perform(): static;
 
@@ -127,7 +127,7 @@ interface WithActions
     public function inheritActions(): void;
 
     /**
-     * Inherit assertions from ancestord
+     * Inherit assertions from ancestors
      */
     public function inheritAssertions(): void;
 }

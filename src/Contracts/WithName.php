@@ -35,11 +35,6 @@ interface WithName
     public function getNameString(): string;
 
     /**
-     * Inherit the name from parents
-     */
-    public function inheritName(): void;
-
-    /**
      * Get full name, without:
      *
      * - expectation (e.g. `[Can]`)
@@ -51,4 +46,9 @@ interface WithName
      * Get the name of this ancestory level
      */
     public function getLevelName(): string;
+
+    /**
+     * Inherit the name from parents
+     */
+    public function inheritName(): void;
 }

@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
 /**
+ * Supply some deferred context to the given object (story)
+ * through means of setting existing cache entries, session
+ * values, or configuration.
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasPendingContext
@@ -18,7 +22,7 @@ trait HasPendingContext
     protected array $pendingContext = [];
 
     /**
-     * Set some pending context
+     * Record some pending context
      */
     private function setPendingContext(string $context, string|array $key, mixed $value = null): static
     {
@@ -64,7 +68,7 @@ trait HasPendingContext
     }
 
     /**
-     * Inherit any config and session data
+     * Inherit any pending context data
      */
     public function inheritPendingContext(): void
     {
@@ -78,7 +82,7 @@ trait HasPendingContext
     }
 
     /**
-     * Boot the config and session data
+     * Boot the pending context data
      */
     public function bootPendingContext(): void
     {

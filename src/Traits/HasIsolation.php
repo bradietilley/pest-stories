@@ -5,12 +5,24 @@ namespace BradieTilley\StoryBoard\Traits;
 use Illuminate\Support\Str;
 
 /**
+ * This object (Story) can be target to run in isolatation.
+ * This means only it and its children will run/boot.
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithInheritance
  */
 trait HasIsolation
 {
+    /**
+     * Container of recorded story IDs (Story isolation IDs)
+     * that are to be run as part of the current isolation mode.
+     *
+     * When empty, all stories are run.
+     */
     protected static array $isolationStories = [];
 
+    /**
+     * The Story's isolation ID
+     */
     private ?string $isolationId = null;
 
     /**
@@ -32,7 +44,7 @@ trait HasIsolation
     }
 
     /**
-     * Does this group (class type) have isolation enabled?
+     * Does this objec type (e.g. Stories) have isolation enabled?
      */
     public function isolationEnabled(): bool
     {
@@ -42,8 +54,6 @@ trait HasIsolation
     /**
      * Is this instance in the isolation group?
      * i.e. should this instance run?
-     *
-     * @requires HasInheritance
      */
     public function inIsolation(): bool
     {

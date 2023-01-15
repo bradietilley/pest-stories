@@ -12,6 +12,8 @@ use Illuminate\Support\Collection;
 use Throwable;
 
 /**
+ * This object has actions, expectations and assertions
+ *
  * @method static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
@@ -99,7 +101,6 @@ trait HasActions
     /**
      * Register a single action for this story.
      * Optionally pass in arguments (matched by name) if the action supports them.
-r
      */
     public function setAction(string|Closure|Action $action, array $arguments = [], int $order = null): static
     {
@@ -176,8 +177,6 @@ r
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @requires WithInheritance
-     *
      * @return array<string,StoryAction>
      */
     public function resolveInheritedActions(): array
@@ -211,8 +210,6 @@ r
 
     /**
      * Boot all registered actions for this test.
-     *
-     * @requires WithInheritance
      */
     public function bootActions(): static
     {
@@ -285,7 +282,7 @@ r
     }
 
     /**
-     * Set whether this task can run (i.e. passes)
+     * Specify that you expect that this task 'can run' or 'will pass'
      *
      * The name and callback can be passed in in either order.
      */
@@ -309,7 +306,9 @@ r
     }
 
     /**
-     * Set that this task cannot run (i.e. fails)
+     * Specify that you expect that this task 'cannot run' or 'will fail'
+     *
+     * The name and callback can be passed in in either order.
      */
     public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static
     {
@@ -340,8 +339,6 @@ r
 
     /**
      * Perform the assertions
-     *
-     * @requires Story
      */
     public function perform(): static
     {
@@ -399,7 +396,7 @@ r
     }
 
     /**
-     * Inherit assertions from ancestord
+     * Inherit assertions from ancestors
      */
     public function inheritAssertions(): void
     {
