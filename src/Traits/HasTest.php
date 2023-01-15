@@ -20,14 +20,14 @@ use Throwable;
  * Therefore, during the registration/creation of a Story test,
  * there is no TestCase available. Any even after registration
  * will have access to the TestCase.
- * 
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithStories
  */
 trait HasTest
 {
     /**
      * This is the TestCase responsible for running the Story.
-     * 
+     *
      * Accessible only when Pest boots the test created via `->test()`
      */
     protected ?TestCase $test = null;

@@ -12,13 +12,14 @@ use Illuminate\Support\Collection;
  *
  * @property-read Collection<int,Story> $storiesDirect
  * @property-read Collection<string,Story> $storiesAll
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithName
  */
 trait HasStories
 {
     /**
      * List of all children stories.
-     * 
+     *
      * Before registering, this is the direct child you specify.
      * After registering, this is all children/grandchildren.
      */
@@ -44,6 +45,7 @@ trait HasStories
      * Get stories (direct-children) as a collection
      *
      * @see ->getStories()
+     *
      * @return Collection<int,Story>
      */
     public function collectGetStories(): Collection
@@ -55,6 +57,7 @@ trait HasStories
      * Get stories (child-most) as a collection.
      *
      * @see ->allStories()
+     *
      * @return Collection<string,Story>
      */
     public function collectAllStories(): Collection

@@ -40,7 +40,7 @@ trait HasTimeout
 
     /**
      * Is the timeout enabled?
-     * 
+     *
      * true = yes
      * false = no
      * null = inherit

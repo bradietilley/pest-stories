@@ -13,7 +13,8 @@ trait HasSingleRunner
     /**
      * Container of already-run
      *S
-     * @var array<int, string> (value = $identifiers that have run)
+     *
+     * @var array<int, string> (value = that have run)
      */
     private array $alreadyRun = [];
 

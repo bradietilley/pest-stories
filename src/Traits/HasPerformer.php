@@ -21,6 +21,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
  * of the provided user.
  *
  * @property-read ?Authenticatable $user
+ *
  * @mixin \BradieTilley\StoryBoard\Contracts\WithCallbacks
  */
 trait HasPerformer

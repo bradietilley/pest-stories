@@ -22,6 +22,7 @@ trait HasTestCaseShortcuts
 {
     /**
      * Pending list of test case shortcuts to apply
+     *
      * @var array<string, string|bool>
      */
     protected array $testCaseShortcuts = [];
