@@ -25,6 +25,10 @@ return [
      */
     'datasets' => false,
 
+    /**
+     * Aliases allow you to choose which classes and functions to use when
+     * using Pest StoryBoard.
+     */
     'aliases' => [
         /**
          * The `test` function for StoryBoard is the function that is used to run
@@ -48,21 +52,21 @@ return [
         'auth' => 'auth',
 
         /**
-         * The class to use when creating Stories via the `story()` method.
+         * The class to use when creating Stories via `Story::make()` method or the `story()` function.
          *
          * The class returned must be an instance of `\BradieTilley\StoryBoard\Story`
          */
         'story' => \BradieTilley\StoryBoard\Story::class,
 
         /**
-         * The class to use when creating Actions via the `action()` method.
+         * The class to use when creating Actions via `Action::make()` method or the `action()` function.
          *
-         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\Action`
+         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\AbstractAction`
          */
         'action' => \BradieTilley\StoryBoard\Story\Action::class,
 
         /**
-         * The class to use when creating Tags via the `tag()` method.
+         * The class to use when creating Tags via `Tag::make()` method or the `tag()` function.
          *
          * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\Tag`
          */
