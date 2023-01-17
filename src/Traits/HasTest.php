@@ -2,11 +2,14 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
+use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
+use Pest\PendingObjects\TestCall;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -117,6 +120,11 @@ trait HasTest
         return $this;
     }
 
+    // private function runTest(string $name, Closure $callback, array $with = null): void
+    // {
+
+    // }
+
     /**
      * Create test cases for all tests
      */
@@ -134,7 +142,7 @@ trait HasTest
             $parentName = $this->getName();
             $stories = $this->allStories();
 
-            $function($parentName, function (Story $story) {
+            $testCall = $function($parentName, function (Story $story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
 
@@ -142,6 +150,12 @@ trait HasTest
                 $story->setTest($this)->boot()->perform();
                 // @codeCoverageIgnoreEnd
             })->with($stories);
+
+            if ($this instanceof WithTestCaseShortcuts) {
+                if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                    $this->forwardTestCaseShortcutsToTestCall($testCall);
+                }
+            }
         } else {
             foreach ($this->allStories() as $story) {
                 $story->test();
@@ -174,7 +188,13 @@ trait HasTest
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
-        $function(...$args);
+        $testCall = $function(...$args);
+
+        if ($this instanceof WithTestCaseShortcuts) {
+            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                $this->forwardTestCaseShortcutsToTestCall($testCall);
+            }
+        }
 
         return $this;
     }
