@@ -10,11 +10,27 @@ class Config
     public const KEY = 'storyboard.';
 
     /**
+     * Get a given storyboard configuration value
+     */
+    public static function get(string $key, mixed $default = null): mixed
+    {
+        return Settings::get(sprintf('%s%s', self::KEY, $key), $default);
+    }
+
+    /**
+     * Set a given storyboard configuration value
+     */
+    public static function set(string $key, mixed $value): void
+    {
+        Settings::set(sprintf('%s%s', self::KEY, $key), $value);
+    }
+
+    /**
      * Alias of Config::get() for `datasets` config
      */
     public static function datasetsEnabled(): bool
     {
-        return (bool) Settings::get(self::KEY.'datasets', false);
+        return (bool) self::get('datasets', false);
     }
 
     /**
@@ -22,7 +38,7 @@ class Config
      */
     public static function enableDatasets(): void
     {
-        Settings::set(self::KEY.'datasets', true);
+        self::set('datasets', true);
     }
 
     /**
@@ -30,12 +46,15 @@ class Config
      */
     public static function disableDatasets(): void
     {
-        Settings::set(self::KEY.'datasets', false);
+        self::set('datasets', false);
     }
 
+    /**
+     * Set a replacement function or class for the given alias
+     */
     public static function setAlias(string $alias, string $value): void
     {
-        Settings::set(self::KEY.'aliases.'.$alias, $value);
+        self::set('aliases.'.$alias, $value);
     }
 
     /**
@@ -46,7 +65,7 @@ class Config
     public static function getAliasClass(string $name, string $subclass): string
     {
         /** @var string $class */
-        $class = Settings::get(self::KEY.'aliases.'.$name);
+        $class = self::get('aliases.'.$name);
 
         if (empty($class)) {
             throw StoryBoardException::aliasNotFound($name);
@@ -75,7 +94,7 @@ class Config
     public static function getAliasFunction(string $name): string
     {
         /** @var string $function */
-        $function = Settings::get(self::KEY.'aliases.'.$name);
+        $function = self::get('aliases.'.$name);
 
         if (empty($function)) {
             throw StoryBoardException::aliasNotFound($name);

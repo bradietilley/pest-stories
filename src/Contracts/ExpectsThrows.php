@@ -12,12 +12,12 @@ interface ExpectsThrows
     /**
      * Asserts that the test throws the given `$exception` class when called.
      */
-    public function throws(string $exception, string $exceptionMessage = null): mixed;
+    public function throws(string $exception, string $exceptionMessage = null): static;
 
     /**
      * Asserts that the test throws the given `$exception` class when called if the given $condition is true.
      *
      * @param (callable(): bool)|bool $condition
      */
-    public function throwsIf($condition, string $exception, string $exceptionMessage = null): mixed;
+    public function throwsIf($condition, string $exception, string $exceptionMessage = null): static;
 }
