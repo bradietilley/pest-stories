@@ -310,6 +310,8 @@ trait HasTest
             throw $e;
         }
 
+        $this->status = StoryStatus::SUCCESS;
+
         return $this;
     }
 
