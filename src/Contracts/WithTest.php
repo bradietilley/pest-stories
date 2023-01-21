@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+use BradieTilley\StoryBoard\Enums\StoryStatus;
 use Closure;
 use PHPUnit\Framework\TestCase;
 
@@ -86,4 +87,9 @@ interface WithTest
      * Register a callback to run when the test the teared down
      */
     public function tearDown(?Closure $callback): static;
+
+    /**
+     * Get the status of the test
+     */
+    public function getStatus(): StoryStatus;
 }
