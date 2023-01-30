@@ -2,12 +2,19 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
+use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
+use BradieTilley\StoryBoard\Enums\StoryStatus;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
+use Pest\PendingObjects\TestCall;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\IncompleteTestError;
+use PHPUnit\Framework\RiskyTestError;
+use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -31,6 +38,11 @@ trait HasTest
      * Accessible only when Pest boots the test created via `->test()`
      */
     protected ?TestCase $test = null;
+
+    /**
+     * The status of the story's test case
+     */
+    protected StoryStatus $status = StoryStatus::PENDING;
 
     /**
      * Register this story actions
@@ -134,7 +146,7 @@ trait HasTest
             $parentName = $this->getName();
             $stories = $this->allStories();
 
-            $function($parentName, function (Story $story) {
+            $testCall = $function($parentName, function (Story $story) {
                 /** @var Story $story */
                 /** @var TestCase $this */
 
@@ -142,6 +154,12 @@ trait HasTest
                 $story->setTest($this)->boot()->perform();
                 // @codeCoverageIgnoreEnd
             })->with($stories);
+
+            if ($this instanceof WithTestCaseShortcuts) {
+                if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                    $this->forwardTestCaseShortcutsToTestCall($testCall);
+                }
+            }
         } else {
             foreach ($this->allStories() as $story) {
                 $story->test();
@@ -174,7 +192,13 @@ trait HasTest
          * relevant backtrace and therefore Pest cannot operate. So instead we'll call
          * the function directly. Not super nice, but hey.
          */
-        $function(...$args);
+        $testCall = $function(...$args);
+
+        if ($this instanceof WithTestCaseShortcuts) {
+            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                $this->forwardTestCaseShortcutsToTestCall($testCall);
+            }
+        }
 
         return $this;
     }
@@ -213,6 +237,8 @@ trait HasTest
      */
     public function inherit(): static
     {
+        $this->status = StoryStatus::RUNNING;
+
         /**
          * If this story has children then it should not be inherited; instead,
          * each of its children should run the `->inherit()` method.
@@ -278,7 +304,13 @@ trait HasTest
             // @codeCoverageIgnoreStart
             throw $e;
             // @codeCoverageIgnoreEnd
+        } catch (\Throwable $e) {
+            $this->setStatusFromException($e);
+
+            throw $e;
         }
+
+        $this->status = StoryStatus::SUCCESS;
 
         return $this;
     }
@@ -324,6 +356,8 @@ trait HasTest
                 'e' => $e,
                 'exception' => $e,
             ];
+
+            $this->setStatusFromException($e);
         }
 
         $this->runTearDown($args);
@@ -333,6 +367,19 @@ trait HasTest
         }
 
         return $this;
+    }
+
+    private function setStatusFromException(Throwable $error): void
+    {
+        if ($error instanceof RiskyTestError) {
+            $this->status = StoryStatus::RISKY;
+        } elseif ($error instanceof IncompleteTestError) {
+            $this->status = StoryStatus::INCOMPLETE;
+        } elseif ($error instanceof SkippedTestError) {
+            $this->status = StoryStatus::SKIPPED;
+        } else {
+            $this->status = StoryStatus::FAILURE;
+        }
     }
 
     /**
@@ -349,5 +396,13 @@ trait HasTest
     public function tearDown(?Closure $callback): static
     {
         return $this->setCallback('tearDown', $callback);
+    }
+
+    /**
+     * Get the status of the test
+     */
+    public function getStatus(): StoryStatus
+    {
+        return $this->status;
     }
 }

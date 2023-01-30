@@ -1,6 +1,8 @@
 <?php
 
+use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Config;
 use PHPUnit\Framework\IncompleteTestError;
 use PHPUnit\Framework\RiskyTestError;
 use PHPUnit\Framework\SkippedTestError;
@@ -92,3 +94,113 @@ test('you can fetch the testcase shortcuts from a story', function () {
         'risky' => 'c',
     ]);
 });
+
+// if (! class_exists('PestStoryBoardTestFunctionWithThrows')) {
+//     class PestStoryBoardTestFunctionWithThrows implements ExpectsThrows
+//     {
+//         public static ?array $throws = null;
+
+//         public static ?array $throwsIf = null;
+
+//         public function __construct(public string $name, public callable $callback)
+//         {
+//         }
+
+//         public function throws(string $exception, ?string $exceptionMessage = null)
+//         {
+//             static::$throws = func_get_args();
+//         }
+
+//         public function throwsIf($condition, string $exception, ?string $exceptionMessage = null)
+//         {
+//             static::$throwsIf = func_get_args();
+//         }
+
+//         public function test(): void
+//         {
+//             if ($this->)
+//         }
+
+//         public function __destruct()
+//         {
+//             $this->test();
+//         }
+//     }
+
+//     function newPestStoryBoardTestFunctionWithThrows(string $testName, callable $callback): PestStoryBoardTestFunctionWithThrows
+//     {
+//         return new PestStoryBoardTestFunctionWithThrows();
+//     }
+// }
+
+if (! class_exists(PestStoryBoardTestCall::class)) {
+    class PestStoryBoardTestCall implements ExpectsThrows
+    {
+        public static ?string $exception = null;
+
+        public static ?string $message = null;
+
+        public function __construct(private Closure $callback)
+        {
+        }
+
+        public function throws(string $exception, ?string $message = null): static
+        {
+            static::$exception = $exception;
+            static::$message = $message;
+
+            return $this;
+        }
+
+        public function throwsIf($condition, string $exception, ?string $message = null): static
+        {
+            if ($condition) {
+                $this->throws($exception, $message);
+            }
+
+            return $this;
+        }
+
+        public static function flush(): void
+        {
+            static::$exception = null;
+            static::$message = null;
+        }
+    }
+}
+
+if (! function_exists('pest_storyboard_test_function')) {
+    function pest_storyboard_test_function(string $description, Closure $callback): PestStoryBoardTestCall
+    {
+        return new PestStoryBoardTestCall($callback);
+    }
+}
+
+test('a story that is tested will have the expected exception passed to it', function (string $class, string $message = null, bool $success = false) {
+    PestStoryBoardTestCall::flush();
+
+    $story = Story::make('test')
+        ->can(fn () => null)
+        ->throws($class, $message)
+        ->action(fn () => throw new InvalidArgumentException('Woohoo'));
+
+    try {
+        Config::setAlias('test', 'pest_storyboard_test_function');
+
+        $story->test();
+    } catch (Throwable $e) {
+        //
+    }
+
+    expect(PestStoryBoardTestCall::$exception)->toBe($class);
+    expect(PestStoryBoardTestCall::$message)->toBe($message);
+})->with([
+    'an exception with no message' => [
+        'class' => InvalidArgumentException::class,
+        'message' => null,
+    ],
+    'an exception with a message' => [
+        'class' => JsonException::class,
+        'message' => 'an example',
+    ],
+]);

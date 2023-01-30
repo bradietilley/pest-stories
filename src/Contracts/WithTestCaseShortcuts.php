@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+use Pest\PendingObjects\TestCall;
+
 /**
  * Allows a shortcut to running various TestCase-specific methods.
  *
@@ -31,6 +33,36 @@ interface WithTestCaseShortcuts
      * Alias of throw new RiskyTestError()
      */
     public function risky(): static;
+
+    /**
+     * Asserts that the test throws the given `$exception` class when called.
+     *
+     * Proxies it to `test('this story test', fn () => ...)->throws()`;
+     * If you have specified a different `test` function alias in your config
+     * then it must return an object that has the same signature as this method:
+     *
+     *      throws(string $exception, string $exceptionMessage = null)
+     */
+    public function throws(string $exception, string $exceptionMessage = null): static;
+
+    /**
+     * Asserts that the test throws the given `$exception` class when called if the given $condition is true.
+     *
+     * Proxies it to `test('this story test', fn () => ...)->throwsIf()`;
+     * If you have specified a different `test` function alias in your config
+     * then it must return an object that has the same signature as this method:
+     *
+     *      throwsIf($condition, string $exception, string $exceptionMessage = null)
+     *
+     * @param (callable(): bool)|bool $condition
+     */
+    public function throwsIf($condition, string $exception, string $exceptionMessage = null): static;
+
+    /**
+     * Forwards previously registered/inherited `throws` and `throwsIf` expectations
+     * to the created TestCall (or object that expects throws).
+     */
+    public function forwardTestCaseShortcutsToTestCall(TestCall|ExpectsThrows $test): void;
 
     /**
      * Get this story's TestCase shortcuts
