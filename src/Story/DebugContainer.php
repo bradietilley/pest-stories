@@ -10,39 +10,42 @@ use Illuminate\Support\Str;
 class DebugContainer extends Collection
 {
     public const LEVEL_DEBUG = 'debug';
+
     public const LEVEL_INFO = 'info';
+
     public const LEVEL_WARNING = 'warning';
+
     public const LEVEL_ERROR = 'error';
 
     public static ?DebugContainer $instance = null;
 
-    public function debug(): self
+    public function debug(mixed ...$arguments): self
     {
-        return $this->addDebug(self::LEVEL_DEBUG, ...func_get_args());
+        return $this->addDebug(self::LEVEL_DEBUG, ...$arguments);
     }
 
-    public function info(): self
+    public function info(mixed ...$arguments): self
     {
-        return $this->addDebug(self::LEVEL_INFO, ...func_get_args());
+        return $this->addDebug(self::LEVEL_INFO, ...$arguments);
     }
 
-    public function warning(): self
+    public function warning(mixed ...$arguments): self
     {
-        return $this->addDebug(self::LEVEL_WARNING, ...func_get_args());
+        return $this->addDebug(self::LEVEL_WARNING, ...$arguments);
     }
 
-    public function error(): self
+    public function error(mixed ...$arguments): self
     {
-        return $this->addDebug(self::LEVEL_ERROR, ...func_get_args());
+        return $this->addDebug(self::LEVEL_ERROR, ...$arguments);
     }
 
-    public function addDebug(string $level, ...$args): self
+    public function addDebug(string $level, mixed ...$arguments): self
     {
-        foreach ($args as $arg) {
+        foreach ($arguments as $argument) {
             $this->push([
                 'level' => $level,
                 'time' => (new DateTime(timezone: new DateTimeZone('UTC')))->format('Y-m-d H:i:s.u'),
-                'data' => $arg
+                'data' => $argument,
             ]);
         }
 
@@ -66,6 +69,7 @@ class DebugContainer extends Collection
 
     public function prepareForDumping(): self
     {
+        /** @phpstan-ignore-next-line */
         return $this->mapWithKeys(function (array $data) {
             $key = sprintf('[%s: %s] %s', $data['time'], Str::random(8), $data['level']);
             $value = $data['data'];
@@ -76,8 +80,13 @@ class DebugContainer extends Collection
         });
     }
 
+    /**
+     * Dump the container
+     *
+     * @phpstan-ignore-next-line
+     */
     public function dump(): void
     {
-        dump($this->prepareForDumping());
+        dump($this->prepareForDumping()->all());
     }
 }

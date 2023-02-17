@@ -18,6 +18,7 @@ use BradieTilley\StoryBoard\Contracts\WithTest;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
@@ -63,8 +64,11 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
     private static int $idCounter = 0;
 
+    protected DebugContainer $debug;
+
     public function __construct(protected ?string $name = null, protected ?Story $parent = null)
     {
+        $this->debug = (new DebugContainer([]))->debug('Story created');
         $this->id = ++self::$idCounter;
     }
 
@@ -149,5 +153,17 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         ], $additional);
 
         return $data;
+    }
+
+    public function getDebugContainer(): DebugContainer
+    {
+        return $this->debug;
+    }
+
+    public function assignDebugContainer(): self
+    {
+        DebugContainer::swap($this->getDebugContainer());
+
+        return $this;
     }
 }

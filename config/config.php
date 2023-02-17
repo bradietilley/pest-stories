@@ -28,7 +28,7 @@ return [
     /**
      * Enable or disable debug mode. For each failed test, this will print
      * out debug information such as actions ran, resolved variables, etc.
-     * 
+     *
      * This is a shortcut to adding `->debug()` to all Story objects.
      */
     'debug' => [

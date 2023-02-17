@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story\DebugContainer;
+use function BradieTilley\StoryBoard\debug;
 
 /**
  * Restricts certain things from being run more than once when
@@ -32,7 +32,7 @@ trait HasSingleRunner
         // Prevent this from running again
         $this->alreadyRun[] = $identifier;
 
-        DebugContainer::instance()->debug(
+        debug(
             sprintf(
                 'Checking if `%s` has already run: %s',
                 $identifier,

@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story\DebugContainer;
+use function BradieTilley\StoryBoard\debug;
 
 /**
  * This object (action) can be repeated several times.
@@ -84,8 +84,8 @@ trait HasRepeater
         // If this object isn't meant to repeat, allow true once, then false thereafter
         if ($this->repeats() === false) {
             $repeating = ($this->repeatNum === 1);
-            
-            DebugContainer::instance()->debug(
+
+            debug(
                 sprintf(
                     'Repeater disabled: %s',
                     $repeating ? 'run this once' : 'not running',
@@ -97,7 +97,7 @@ trait HasRepeater
 
         $repeating = $this->repeatNum <= $this->repeatMax;
 
-        DebugContainer::instance()->debug(
+        debug(
             sprintf(
                 'Repeater enabled (%d of %d): %s',
                 $this->repeatNum,

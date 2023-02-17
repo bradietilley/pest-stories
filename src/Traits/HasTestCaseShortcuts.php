@@ -3,7 +3,7 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
-use BradieTilley\StoryBoard\Story\DebugContainer;
+use function BradieTilley\StoryBoard\debug;
 use Pest\PendingObjects\TestCall;
 use PHPUnit\Framework\RiskyTestError;
 
@@ -166,7 +166,7 @@ trait HasTestCaseShortcuts
             /** @var ?string $exceptionMessage */
             $exceptionMessage = $throws['exceptionMessage'];
 
-            DebugContainer::instance()->debug(
+            debug(
                 sprintf(
                     'This story is expected to throw %s exception%s',
                     $exception,
@@ -198,7 +198,7 @@ trait HasTestCaseShortcuts
             /** @var ?string $exceptionMessage */
             $exceptionMessage = $throws['exceptionMessage'];
 
-            DebugContainer::instance()->debug(
+            debug(
                 sprintf(
                     'This story is expected to throw %s exception%s if condition is true [condition is %s]',
                     $exception,

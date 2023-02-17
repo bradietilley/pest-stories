@@ -3,8 +3,8 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\WithInheritance;
+use function BradieTilley\StoryBoard\debug;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\DebugContainer;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Support\Str;
@@ -75,7 +75,7 @@ trait HasCallbacks
         }
 
         self::debugLog($name, $args);
-        
+
         return static::callOptional($this->getCallback($name), $args);
     }
 
@@ -102,13 +102,13 @@ trait HasCallbacks
     {
         static::$registeredStaticCallbacks[$name] = $callback;
     }
- 
+
     /**
      * Internal: debug the callback being run
      */
     private static function debugLog(string $name, array $args): void
     {
-        DebugContainer::instance()->debug(
+        debug(
             sprintf(
                 'Running %s::%s callback with args:',
                 Str::title(Str::afterLast(static::class, '\\')),

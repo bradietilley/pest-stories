@@ -2,10 +2,10 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use function BradieTilley\StoryBoard\debug;
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Config;
-use BradieTilley\StoryBoard\Story\DebugContainer;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -66,25 +66,29 @@ trait HasPerformer
     public function setUser(?Authenticatable $user): static
     {
         if ($user === null) {
-            DebugContainer::instance()->debug('Setting the performer to null (logging out)');
+            debug('Setting the performer to null (logging out)');
         } else {
-            DebugContainer::instance()->debug(
+            /** @var string $authIdentifierName */
+            $authIdentifierName = $user->getAuthIdentifierName();
+            /** @var string $authIdentifier */
+            $authIdentifier = $user->getAuthIdentifier();
+
+            debug(
                 sprintf(
                     'Setting the performer to user (%s: %s)',
-                    $user->getAuthIdentifierName(),
-                    $user->getAuthIdentifier(),
+                    $authIdentifierName,
+                    $authIdentifier,
                 ),
             );
         }
 
         $this->user = $user; /** @phpstan-ignore-line */
-
         if (static::hasStaticCallback('actingAs')) {
             static::runStaticCallback('actingAs', $this->getParameters());
         } else {
             $authFunction = Config::getAliasFunction('auth');
 
-            DebugContainer::instance()->debug(
+            debug(
                 sprintf('Auth function resolved as `%s()`', $authFunction),
             );
 

@@ -4,10 +4,11 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
+use function BradieTilley\StoryBoard\debug;
 use BradieTilley\StoryBoard\Enums\StoryStatus;
+use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
-use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
@@ -142,11 +143,11 @@ trait HasTest
         }
 
         if (Config::datasetsEnabled()) {
-            DebugContainer::instance()->debug('Datasets enabled');
+            debug('Datasets enabled');
 
             $function = Config::getAliasFunction('test');
 
-            DebugContainer::instance()->debug(
+            debug(
                 sprintf('Test function resolved as `%s()`', $function),
             );
 
@@ -168,7 +169,7 @@ trait HasTest
                 }
             }
         } else {
-            DebugContainer::instance()->debug('Datasets disabled');
+            debug('Datasets disabled');
 
             foreach ($this->allStories() as $story) {
                 $story->test();
@@ -183,11 +184,14 @@ trait HasTest
      */
     public function testSingle(): static
     {
+        /** @var Story $this */
+        $this->assignDebugContainer();
+
         $story = $this;
 
         $function = Config::getAliasFunction('test');
 
-        DebugContainer::instance()->debug(
+        debug(
             sprintf('Test function resolved as `%s()`', $function),
         );
 
@@ -214,6 +218,7 @@ trait HasTest
             }
         }
 
+        /** @phpstan-ignore-next-line */
         return $this;
     }
 
@@ -251,7 +256,7 @@ trait HasTest
      */
     public function inherit(): static
     {
-        DebugContainer::instance()->debug('Inheriting from parent stories');
+        debug('Inheriting from parent stories');
 
         $this->status = StoryStatus::RUNNING;
 
@@ -295,21 +300,21 @@ trait HasTest
      */
     public function run(): static
     {
-        DebugContainer::instance()->debug('Test::run() start');
+        debug('Test::run() start');
 
         try {
             if ($this->timeoutEnabled && $this->timeout > 0) {
-                DebugContainer::instance()->debug('Timeout enabled; running story via Timer');
-                
+                debug('Timeout enabled; running story via Timer');
+
                 $this->timer = $this->createTimer(fn () => $this->fullRun());
                 $this->timer->run();
             } else {
-                DebugContainer::instance()->debug('Timeout disabled, running story directly');
+                debug('Timeout disabled, running story directly');
 
                 $this->fullRun();
             }
         } catch (TimerUpException $e) {
-            DebugContainer::instance()->error('Test::run() timeout reached', $e);
+            error('Test::run() timeout reached', $e);
 
             $taken = $e->getTimeTaken();
             $timeout = $e->getTimeout();
@@ -329,7 +334,7 @@ trait HasTest
             throw $e;
             // @codeCoverageIgnoreEnd
         } catch (\Throwable $e) {
-            DebugContainer::instance()->error('Test::run() unexpected error', $e);
+            error('Test::run() unexpected error', $e);
 
             $this->setStatusFromException($e);
 
@@ -338,7 +343,7 @@ trait HasTest
 
         $this->status = StoryStatus::SUCCESS;
 
-        DebugContainer::instance()->debug('Test::run() success');
+        debug('Test::run() success');
 
         return $this;
     }
@@ -372,7 +377,7 @@ trait HasTest
      */
     public function fullRun(): static
     {
-        DebugContainer::instance()->debug('Running test');
+        debug('Running test');
 
         $this->boot();
         $this->runSetUp();
@@ -393,12 +398,12 @@ trait HasTest
         $this->runTearDown($args);
 
         if (isset($e)) {
-            DebugContainer::instance()->debug('Ran test with error', $e);
-        
+            debug('Ran test with error', $e);
+
             throw $e;
         }
 
-        DebugContainer::instance()->debug('Ran test successfully');
+        debug('Ran test successfully');
 
         return $this;
     }

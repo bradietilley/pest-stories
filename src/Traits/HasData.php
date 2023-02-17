@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
-use BradieTilley\StoryBoard\Story\DebugContainer;
+use function BradieTilley\StoryBoard\debug;
 
 /**
  * This object has a variables/data container that you can
@@ -31,7 +31,7 @@ trait HasData
             return $this;
         }
 
-        DebugContainer::instance()->debug(
+        debug(
             sprintf('Setting variable `%s` to', $key),
             $value,
         );
