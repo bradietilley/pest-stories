@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Story\DebugContainer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
@@ -88,18 +89,33 @@ trait HasPendingContext
     {
         if (! empty($data = $this->allPendingContext()['cache'] ?? [])) {
             foreach ($data as $key => $value) {
+                DebugContainer::instance()->debug(
+                    sprintf('Setting cache value `%s` to', $key),
+                    $value
+                );
+
                 Cache::set($key, $value);
             }
         }
 
         if (! empty($data = $this->allPendingContext()['config'] ?? [])) {
             foreach ($data as $key => $value) {
+                DebugContainer::instance()->debug(
+                    sprintf('Setting config value `%s` to', $key),
+                    $value
+                );
+
                 Config::set($key, $value);
             }
         }
 
         if (! empty($data = $this->allPendingContext()['session'] ?? [])) {
             foreach ($data as $key => $value) {
+                DebugContainer::instance()->debug(
+                    sprintf('Setting session value `%s` to', $key),
+                    $value
+                );
+
                 Session::put($key, $value);
             }
         }

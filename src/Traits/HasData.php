@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Story\DebugContainer;
+
 /**
  * This object has a variables/data container that you can
  * write to and read from
@@ -22,10 +24,17 @@ trait HasData
     public function setData(string|array $key, mixed $value = null): static
     {
         if (is_array($key)) {
-            $this->data = array_replace($this->data, $key);
+            foreach ($key as $internalKey => $internalValue) {
+                $this->setData((string) $internalKey, $internalValue);
+            }
 
             return $this;
         }
+
+        DebugContainer::instance()->debug(
+            sprintf('Setting variable `%s` to', $key),
+            $value,
+        );
 
         $this->data[$key] = $value;
 

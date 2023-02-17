@@ -106,4 +106,9 @@ class Config
 
         return $function;
     }
+
+    public static function debugEnabled(): bool
+    {
+        return self::get('debug.enabled', false);
+    }
 }
