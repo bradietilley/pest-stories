@@ -131,6 +131,8 @@ trait HasTestCaseShortcuts
     /**
      * Forwards previously registered/inherited `throws` and `throwsIf` expectations
      * to the created TestCall (or object that expects throws).
+     *
+     * @phpstan-ignore-next-line
      */
     public function forwardTestCaseShortcutsToTestCall(TestCallDeprecated|TestCall|ExpectsThrows $test): void
     {
@@ -147,6 +149,7 @@ trait HasTestCaseShortcuts
             $exceptionMessage = $throws['exceptionMessage'];
 
             // Add expected throw
+            /** @phpstan-ignore-next-line */
             $test->throws($exception, $exceptionMessage);
         }
 
@@ -171,6 +174,7 @@ trait HasTestCaseShortcuts
             $exceptionMessage = $throws['exceptionMessage'];
 
             // Add expected throw
+            /** @phpstan-ignore-next-line */
             $test->throwsIf($condition, $exception, $exceptionMessage);
         }
     }

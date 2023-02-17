@@ -57,6 +57,8 @@ interface WithTestCaseShortcuts
     /**
      * Forwards previously registered/inherited `throws` and `throwsIf` expectations
      * to the created TestCall (or object that expects throws).
+     *
+     * @phpstan-ignore-next-line
      */
     public function forwardTestCaseShortcutsToTestCall(TestCallDeprecated|TestCall|ExpectsThrows $test): void;
 

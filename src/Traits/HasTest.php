@@ -157,6 +157,7 @@ trait HasTest
             })->with($stories);
 
             if ($this instanceof WithTestCaseShortcuts) {
+                /** @phpstan-ignore-next-line */
                 if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                     $this->forwardTestCaseShortcutsToTestCall($testCall);
                 }
@@ -196,6 +197,7 @@ trait HasTest
         $testCall = $function(...$args);
 
         if ($this instanceof WithTestCaseShortcuts) {
+            /** @phpstan-ignore-next-line */
             if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                 $this->forwardTestCaseShortcutsToTestCall($testCall);
             }
@@ -374,6 +376,7 @@ trait HasTest
     {
         if ($error instanceof IncompleteTestError) {
             $this->status = StoryStatus::INCOMPLETE;
+            /** @phpstan-ignore-next-line */
         } elseif ($error instanceof SkippedTestErrorDeprecated || $error instanceof SkippedWithMessageException) {
             $this->status = StoryStatus::SKIPPED;
         } else {
