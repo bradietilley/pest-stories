@@ -52,13 +52,20 @@ if (! function_exists('pest_storyboard_test_dump_fn')) {
     }
 }
 
-test('debug information is printed when debug function is called', function () {
+test('debug information is printed when debug function is called', function (string $how) {
     $exception = new InvalidArgumentException('Test');
 
     $story = Story::make()
         ->action(fn () => throw $exception)
-        ->can(fn () => null)
-        ->debug();
+        ->can(fn () => null);
+
+    if ($how === 'method') {
+        $story->debug();
+    }
+
+    if ($how === 'config') {
+        Config::set('debug.enabled', true);
+    }
 
     Config::setAlias('dump', 'pest_storyboard_test_dump_fn');
     PestStoryBoardDumpFunction::flush();
@@ -131,4 +138,8 @@ test('debug information is printed when debug function is called', function () {
     ];
 
     expect($all->values()->all())->toBe($expect);
-});
+})->with([
+    'config debug.enabled set to true' => 'config',
+    'chained ->debug method' => 'method',
+
+]);
