@@ -87,6 +87,8 @@ class DebugContainer extends Collection
      */
     public function dump(): void
     {
-        dump($this->prepareForDumping()->all());
+        $dump = Config::getAliasFunction('dump');
+
+        $dump($this->prepareForDumping()->all());
     }
 }

@@ -34,6 +34,7 @@ return [
     'debug' => [
         'enabled' => false,
 
+        // @todo: split by type of debug
         'actions' => true,
         'data' => true,
     ],
@@ -63,6 +64,13 @@ return [
          *     public function logout(): mixed;
          */
         'auth' => 'auth',
+
+        /**
+         * The `dump` function for StoryBoard is the function that is used to
+         * present debug information when a story fails, if configured to dump
+         * the debug information.
+         */
+        'dump' => 'dump',
 
         /**
          * The class to use when creating Stories via `Story::make()` method or the `story()` function.

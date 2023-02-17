@@ -3,6 +3,7 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
+use BradieTilley\StoryBoard\Contracts\WithDebug;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use function BradieTilley\StoryBoard\debug;
 use BradieTilley\StoryBoard\Enums\StoryStatus;
@@ -327,6 +328,13 @@ trait HasTest
                 message: $message,
             );
 
+            // Dump debug information
+            if ($this instanceof WithDebug) {
+                if ($this->debugEnabled()) {
+                    $this->printDebug();
+                }
+            }
+
             /**
              * Fallback to rethrowing the exception
              */
@@ -379,31 +387,41 @@ trait HasTest
     {
         debug('Running test');
 
-        $this->boot();
-        $this->runSetUp();
-
-        $args = [];
-
         try {
-            $this->perform();
-        } catch (Throwable $e) {
-            $args = [
-                'e' => $e,
-                'exception' => $e,
-            ];
+            $this->boot();
+            $this->runSetUp();
 
-            $this->setStatusFromException($e);
-        }
+            $args = [];
 
-        $this->runTearDown($args);
+            try {
+                $this->perform();
+            } catch (Throwable $e) {
+                $args = [
+                    'e' => $e,
+                    'exception' => $e,
+                ];
 
-        if (isset($e)) {
-            debug('Ran test with error', $e);
+                $this->setStatusFromException($e);
+            }
+
+            $this->runTearDown($args);
+
+            if (isset($e)) {
+                debug('Ran test with error', $e);
+
+                throw $e;
+            }
+
+            debug('Ran test successfully');
+        } catch (\Throwable $e) {
+            if ($this instanceof WithDebug) {
+                if ($this->debugEnabled()) {
+                    $this->printDebug();
+                }
+            }
 
             throw $e;
         }
-
-        debug('Ran test successfully');
 
         return $this;
     }

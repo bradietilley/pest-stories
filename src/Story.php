@@ -5,6 +5,7 @@ namespace BradieTilley\StoryBoard;
 use BradieTilley\StoryBoard\Contracts\WithActions;
 use BradieTilley\StoryBoard\Contracts\WithCallbacks;
 use BradieTilley\StoryBoard\Contracts\WithData;
+use BradieTilley\StoryBoard\Contracts\WithDebug;
 use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Contracts\WithIsolation;
 use BradieTilley\StoryBoard\Contracts\WithName;
@@ -22,6 +23,7 @@ use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
+use BradieTilley\StoryBoard\Traits\HasDebug;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
 use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
@@ -37,11 +39,12 @@ use BradieTilley\StoryBoard\Traits\HasTimeout;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
+class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
 {
     use Conditionable;
     use HasCallbacks;
     use HasData;
+    use HasDebug;
     use HasName;
     use HasNameShortcuts;
     use HasInheritance;
@@ -63,8 +66,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
     public readonly int $id;
 
     private static int $idCounter = 0;
-
-    protected DebugContainer $debug;
 
     public function __construct(protected ?string $name = null, protected ?Story $parent = null)
     {
@@ -153,17 +154,5 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
         ], $additional);
 
         return $data;
-    }
-
-    public function getDebugContainer(): DebugContainer
-    {
-        return $this->debug;
-    }
-
-    public function assignDebugContainer(): self
-    {
-        DebugContainer::swap($this->getDebugContainer());
-
-        return $this;
     }
 }
