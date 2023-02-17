@@ -135,8 +135,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
     /**
      * Get parameters available for DI callbacks
-     *
-     * @return array
      */
     public function getParameters(array $additional = []): array
     {

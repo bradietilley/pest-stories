@@ -132,7 +132,6 @@ abstract class AbstractAction
     /**
      * Fetch a action from the registrar
      *
-     * @return static
      *
      * @throws StoryBoardException
      */

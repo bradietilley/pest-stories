@@ -3,8 +3,8 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
-use Pest\PendingObjects\TestCall as TestCallDeprecated;
 use Pest\PendingCalls\TestCall;
+use Pest\PendingObjects\TestCall as TestCallDeprecated;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
