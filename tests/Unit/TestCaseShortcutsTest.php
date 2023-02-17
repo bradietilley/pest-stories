@@ -4,8 +4,9 @@ use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\RiskyTestError;
-use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Framework\RiskyTestError as RiskyTestErrorDeprecated;
+use PHPUnit\Framework\SkippedTestError as SkippedTestErrorDeprecated;
+use PHPUnit\Framework\SkippedWithMessageException;
 use Tests\TestCase;
 
 test('a story can be marked as incomplete', function (string $message) {
@@ -46,7 +47,7 @@ test('a story can be marked as skipped', function (string $message) {
         $story->setTest($test)->run();
 
         $this->fail();
-    } catch (SkippedTestError $e) {
+    } catch (SkippedTestErrorDeprecated|SkippedWithMessageException $e) {
         expect($e->getMessage())->toBe($message);
     }
 })->with([
@@ -69,7 +70,7 @@ test('a story can be marked as risky', function (string $message) {
         $story->setTest($test)->run();
 
         $this->fail();
-    } catch (RiskyTestError $e) {
+    } catch (RiskyTestErrorDeprecated $e) {
         expect($e->getMessage())->toBe($message);
     }
 })->with([

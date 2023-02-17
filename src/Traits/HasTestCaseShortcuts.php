@@ -3,8 +3,9 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
-use Pest\PendingObjects\TestCall;
-use PHPUnit\Framework\RiskyTestError;
+use Pest\PendingObjects\TestCall as TestCallDeprecated;
+use Pest\PendingCalls\TestCall;
+use PHPUnit\Framework\RiskyTestError as RiskyTestErrorDeprecated;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
@@ -125,7 +126,7 @@ trait HasTestCaseShortcuts
         $risky = $this->testCaseShortcuts['risky'] ?? null;
 
         if (is_string($risky)) {
-            throw new RiskyTestError($risky);
+            throw new RiskyTestErrorDeprecated($risky);
         }
 
         /**
@@ -151,7 +152,7 @@ trait HasTestCaseShortcuts
      * Forwards previously registered/inherited `throws` and `throwsIf` expectations
      * to the created TestCall (or object that expects throws).
      */
-    public function forwardTestCaseShortcutsToTestCall(TestCall|ExpectsThrows $test): void
+    public function forwardTestCaseShortcutsToTestCall(TestCallDeprecated|TestCall|ExpectsThrows $test): void
     {
         /**
          * Add ->throws() to TestCall if `throws` was registered

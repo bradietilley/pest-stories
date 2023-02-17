@@ -10,11 +10,13 @@ use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
-use Pest\PendingObjects\TestCall;
+use Pest\PendingObjects\TestCall as TestCallDeprecated;
+use Pest\PendingCalls\TestCall;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\RiskyTestError;
-use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Framework\RiskyTestError as RiskyTestErrorDeprecated;
+use PHPUnit\Framework\SkippedTestError as SkippedTestErrorDeprecated;
+use PHPUnit\Framework\SkippedWithMessageException;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -156,7 +158,7 @@ trait HasTest
             })->with($stories);
 
             if ($this instanceof WithTestCaseShortcuts) {
-                if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                     $this->forwardTestCaseShortcutsToTestCall($testCall);
                 }
             }
@@ -195,7 +197,7 @@ trait HasTest
         $testCall = $function(...$args);
 
         if ($this instanceof WithTestCaseShortcuts) {
-            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+            if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                 $this->forwardTestCaseShortcutsToTestCall($testCall);
             }
         }
@@ -371,11 +373,11 @@ trait HasTest
 
     private function setStatusFromException(Throwable $error): void
     {
-        if ($error instanceof RiskyTestError) {
+        if ($error instanceof RiskyTestErrorDeprecated) {
             $this->status = StoryStatus::RISKY;
         } elseif ($error instanceof IncompleteTestError) {
             $this->status = StoryStatus::INCOMPLETE;
-        } elseif ($error instanceof SkippedTestError) {
+        } elseif ($error instanceof SkippedTestErrorDeprecated || $error instanceof SkippedWithMessageException) {
             $this->status = StoryStatus::SKIPPED;
         } else {
             $this->status = StoryStatus::FAILURE;

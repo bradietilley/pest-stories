@@ -2,7 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
-use Pest\PendingObjects\TestCall;
+use Pest\PendingObjects\TestCall as TestCallDeprecated;
+use Pest\PendingCalls\TestCall;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
@@ -62,7 +63,7 @@ interface WithTestCaseShortcuts
      * Forwards previously registered/inherited `throws` and `throwsIf` expectations
      * to the created TestCall (or object that expects throws).
      */
-    public function forwardTestCaseShortcutsToTestCall(TestCall|ExpectsThrows $test): void;
+    public function forwardTestCaseShortcutsToTestCall(TestCallDeprecated|TestCall|ExpectsThrows $test): void;
 
     /**
      * Get this story's TestCase shortcuts
