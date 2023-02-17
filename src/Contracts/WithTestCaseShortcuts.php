@@ -31,11 +31,6 @@ interface WithTestCaseShortcuts
     public function incomplete(string $message = ''): static;
 
     /**
-     * Alias of throw new RiskyTestError()
-     */
-    public function risky(): static;
-
-    /**
      * Asserts that the test throws the given `$exception` class when called.
      *
      * Proxies it to `test('this story test', fn () => ...)->throws()`;
