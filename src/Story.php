@@ -5,6 +5,7 @@ namespace BradieTilley\StoryBoard;
 use BradieTilley\StoryBoard\Contracts\WithActions;
 use BradieTilley\StoryBoard\Contracts\WithCallbacks;
 use BradieTilley\StoryBoard\Contracts\WithData;
+use BradieTilley\StoryBoard\Contracts\WithDebug;
 use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Contracts\WithIsolation;
 use BradieTilley\StoryBoard\Contracts\WithName;
@@ -18,9 +19,11 @@ use BradieTilley\StoryBoard\Contracts\WithTest;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\Traits\HasActions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
+use BradieTilley\StoryBoard\Traits\HasDebug;
 use BradieTilley\StoryBoard\Traits\HasInheritance;
 use BradieTilley\StoryBoard\Traits\HasIsolation;
 use BradieTilley\StoryBoard\Traits\HasName;
@@ -36,11 +39,12 @@ use BradieTilley\StoryBoard\Traits\HasTimeout;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 
-class Story implements WithActions, WithCallbacks, WithData, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
+class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
 {
     use Conditionable;
     use HasCallbacks;
     use HasData;
+    use HasDebug;
     use HasName;
     use HasNameShortcuts;
     use HasInheritance;
@@ -65,6 +69,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
     public function __construct(protected ?string $name = null, protected ?Story $parent = null)
     {
+        $this->debug = (new DebugContainer([]))->debug('Story created');
         $this->id = ++self::$idCounter;
     }
 
@@ -135,8 +140,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithInheritance, Wi
 
     /**
      * Get parameters available for DI callbacks
-     *
-     * @return array
      */
     public function getParameters(array $additional = []): array
     {

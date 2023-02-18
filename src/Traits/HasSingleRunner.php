@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use function BradieTilley\StoryBoard\debug;
+
 /**
  * Restricts certain things from being run more than once when
  * you check via the `alreadyRun()` method.
@@ -29,6 +31,14 @@ trait HasSingleRunner
 
         // Prevent this from running again
         $this->alreadyRun[] = $identifier;
+
+        debug(
+            sprintf(
+                'Checking if `%s` has already run: %s',
+                $identifier,
+                $alreadyRun ? 'Already run' : 'First time running',
+            ),
+        );
 
         return $alreadyRun;
     }

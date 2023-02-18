@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use function BradieTilley\StoryBoard\debug;
 use Illuminate\Support\Str;
 
 /**
@@ -89,6 +90,8 @@ trait HasIsolation
             }
 
             if ($ancestor->inIsolation()) {
+                debug('Isolation inherited from parent');
+
                 $this->isolate();
             }
         }

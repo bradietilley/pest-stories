@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use function BradieTilley\StoryBoard\debug;
+
 /**
  * This object (action) can be repeated several times.
  *
@@ -81,11 +83,31 @@ trait HasRepeater
 
         // If this object isn't meant to repeat, allow true once, then false thereafter
         if ($this->repeats() === false) {
-            return $this->repeatNum === 1;
+            $repeating = ($this->repeatNum === 1);
+
+            debug(
+                sprintf(
+                    'Repeater disabled: %s',
+                    $repeating ? 'run this once' : 'not running',
+                ),
+            );
+
+            return $repeating;
         }
 
+        $repeating = $this->repeatNum <= $this->repeatMax;
+
+        debug(
+            sprintf(
+                'Repeater enabled (%d of %d): %s',
+                $this->repeatNum,
+                $this->repeatMax,
+                ($repeating) ? 'repeating' : 'not repeating',
+            ),
+        );
+
         // Continue repeating until repeats counter is repeatMax
-        return $this->repeatNum <= $this->repeatMax;
+        return $repeating;
     }
 
     /**
