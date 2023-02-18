@@ -15,16 +15,16 @@ use BradieTilley\StoryBoard\Story\DebugContainer;
  */
 trait HasDebug
 {
-    protected bool $debugOnFailure = false;
+    protected ?string $debugLevel = null;
 
     protected DebugContainer $debug;
 
     /**
      * Enable dumping of debug on failure
      */
-    public function debug(): static
+    public function debug(string $level = 'debug'): static
     {
-        $this->debugOnFailure = true;
+        $this->debugLevel = $level;
 
         return $this;
     }
@@ -54,7 +54,7 @@ trait HasDebug
      */
     public function debugEnabled(): bool
     {
-        return $this->debugOnFailure || Config::debugEnabled();
+        return $this->debugLevel || Config::debugEnabled();
     }
 
     /**
@@ -62,6 +62,13 @@ trait HasDebug
      */
     public function printDebug(): void
     {
-        $this->getDebugContainer()->dump();
+        $storyLevel = $this->debugLevel ?? 'debug';
+        $configLevel = Config::getString('debug.level', 'debug');
+
+        $level = (DebugContainer::levelHierarchy($storyLevel) >= DebugContainer::levelHierarchy($configLevel))
+            ? $storyLevel
+            : $configLevel;
+
+        $this->getDebugContainer()->printDebug($level);
     }
 }

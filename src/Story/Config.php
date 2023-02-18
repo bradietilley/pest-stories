@@ -2,6 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Story;
 
+use BradieTilley\StoryBoard\Exceptions\InvalidConfigurationException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use Illuminate\Support\Facades\Config as Settings;
 
@@ -107,10 +108,41 @@ class Config
         return $function;
     }
 
+    public static function getString(string $key, string $default): string
+    {
+        $value = self::get($key, $default);
+
+        if (! is_string($value)) {
+            throw InvalidConfigurationException::mustBeString($key, $value);
+        }
+
+        return $value;
+    }
+
+    public static function getInteger(string $key, int $default): int
+    {
+        $value = self::get($key, $default);
+
+        if (! is_int($value)) {
+            throw InvalidConfigurationException::mustBeInteger($key, $value);
+        }
+
+        return $value;
+    }
+
+    public static function getBoolean(string $key, bool $default): bool
+    {
+        $value = self::get($key, $default);
+
+        if (! is_bool($value)) {
+            throw InvalidConfigurationException::mustBeBoolean($key, $value);
+        }
+
+        return $value;
+    }
+
     public static function debugEnabled(): bool
     {
-        $enabled = self::get('debug.enabled', false);
-
-        return $enabled === true;
+        return self::getBoolean('debug.enabled', false);
     }
 }

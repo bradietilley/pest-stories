@@ -82,13 +82,32 @@ class DebugContainer extends Collection
 
     /**
      * Dump the container
-     *
-     * @phpstan-ignore-next-line
      */
-    public function dump(): void
+    public function printDebug(string $level = 'debug'): void
     {
-        $dump = Config::getAliasFunction('dump');
+        $hierarchy = self::levelHierarchy($level);
 
-        $dump($this->prepareForDumping()->all());
+        /** @phpstan-ignore-next-line */
+        $debug = $this->filter(fn (array $data) => self::levelHierarchy($data['level']) >= $hierarchy)
+            ->prepareForDumping()
+            ->all();
+
+        $dump = Config::getAliasFunction('dump');
+        $dump($debug);
+    }
+
+    /**
+     * Get the hierarchy of the level (lower = more verbose)
+     */
+    public static function levelHierarchy(string $level): int
+    {
+        $levels = [
+            'debug',
+            'info',
+            'warning',
+            'error',
+        ];
+
+        return array_search($level, $levels) ?: 0; // debug by default
     }
 }

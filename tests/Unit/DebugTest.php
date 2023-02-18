@@ -1,9 +1,13 @@
 <?php
 
 use function BradieTilley\StoryBoard\debug;
+use function BradieTilley\StoryBoard\error;
+use function BradieTilley\StoryBoard\info;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Config;
+use function BradieTilley\StoryBoard\warning;
+use Illuminate\Support\Str;
 
 test('debug information is available after a story is run', function () {
     Action::make('do_something', fn () => 'test', 'something');
@@ -141,5 +145,154 @@ test('debug information is printed when debug function is called', function (str
 })->with([
     'config debug.enabled set to true' => 'config',
     'chained ->debug method' => 'method',
+]);
 
+test('debug information is printed depending on the configured debug levels', function (
+    ?string $configLevel = null,
+    ?string $methodLevel = null,
+    ?string $expectLevel = null,
+) {
+    $exception = new InvalidArgumentException('Test');
+
+    $story = Story::make()
+        ->action(fn () => debug('This is a test debug'))
+        ->action(fn () => info('This is a test info'))
+        ->action(fn () => warning('This is a test warning'))
+        ->action(fn () => error('This is a test error'))
+        ->action(fn () => throw $exception)
+        ->can(fn () => null);
+
+    if ($methodLevel) {
+        $story->debug($methodLevel);
+    }
+
+    if ($configLevel) {
+        Config::set('debug.enabled', true);
+        Config::Set('debug.level', $configLevel);
+    }
+
+    Config::setAlias('dump', 'pest_storyboard_test_dump_fn');
+    PestStoryBoardDumpFunction::flush();
+
+    try {
+        $story->assignDebugContainer()->run();
+    } catch (Throwable $e) {
+        //
+    }
+
+    $all = PestStoryBoardDumpFunction::all();
+
+    if ($expectLevel === null) {
+        expect($all)->toHaveCount(0);
+
+        return;
+    }
+
+    // Only called once
+    expect($all)->toBeArray()->toHaveCount(1)->toHaveKey(0);
+
+    // dump args
+    $all = collect($all[0]);
+
+    $levelsFound = $all->keys()
+        ->map(fn (string $key) => (string) Str::afterLast($key, '] '))
+        ->unique()
+        ->values();
+
+    if ($expectLevel === 'debug') {
+        expect($levelsFound)
+            ->toContain(
+                'error',
+                'warning',
+                'info',
+                'debug',
+            );
+    }
+
+    if ($expectLevel === 'info') {
+        expect($levelsFound)
+            ->toContain(
+                'error',
+                'warning',
+                'info',
+            )
+            ->not()->toContain(
+                'debug',
+            );
+    }
+
+    if ($expectLevel === 'warning') {
+        expect($levelsFound)
+            ->toContain(
+                'error',
+                'warning',
+            )
+            ->not()->toContain(
+                'debug',
+                'info',
+            );
+    }
+
+    if ($expectLevel === 'error') {
+        expect($levelsFound)
+            ->toContain(
+                'error',
+            )
+            ->not()->toContain(
+                'debug',
+                'info',
+                'warning',
+            );
+    }
+})->with([
+    'config=null, method=null' => [
+        'config' => null,
+        'method' => null,
+        'expect' => null,
+    ],
+    'config=null, method=debug' => [
+        'config' => null,
+        'method' => 'debug',
+        'expect' => 'debug',
+    ],
+    'config=null, method=info' => [
+        'config' => null,
+        'method' => 'info',
+        'expect' => 'info',
+    ],
+    'config=null, method=warning' => [
+        'config' => null,
+        'method' => 'warning',
+        'expect' => 'warning',
+    ],
+    'config=null, method=error' => [
+        'config' => null,
+        'method' => 'error',
+        'expect' => 'error',
+    ],
+    'config=debug, method=null' => [
+        'config' => 'debug',
+        'method' => null,
+        'expect' => 'debug',
+    ],
+    'config=debug, method=debug' => [
+        'config' => 'debug',
+        'method' => 'debug',
+        'expect' => 'debug',
+    ],
+    'config=debug, method=info' => [
+        'config' => 'debug',
+        'method' => 'info',
+        'expect' => 'info',
+    ],
+    'config=debug, method=warning' => [
+        'config' => 'debug',
+        'method' => 'warning',
+        'expect' => 'warning',
+    ],
+    'config=debug, method=error' => [
+        'config' => 'debug',
+        'method' => 'error',
+        'expect' => 'error',
+    ],
 ]);
