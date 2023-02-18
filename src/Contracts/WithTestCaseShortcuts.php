@@ -2,7 +2,7 @@
 
 namespace BradieTilley\StoryBoard\Contracts;
 
-use Pest\PendingObjects\TestCall;
+use Pest\PendingCalls\TestCall;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
@@ -28,11 +28,6 @@ interface WithTestCaseShortcuts
      * Alias of TestCase::markTestIncomplete().
      */
     public function incomplete(string $message = ''): static;
-
-    /**
-     * Alias of throw new RiskyTestError()
-     */
-    public function risky(): static;
 
     /**
      * Asserts that the test throws the given `$exception` class when called.

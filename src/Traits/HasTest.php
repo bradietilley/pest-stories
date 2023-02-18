@@ -13,11 +13,10 @@ use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
-use Pest\PendingObjects\TestCall;
+use Pest\PendingCalls\TestCall;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\RiskyTestError;
-use PHPUnit\Framework\SkippedTestError;
+use PHPUnit\Framework\SkippedWithMessageException;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
@@ -428,11 +427,9 @@ trait HasTest
 
     private function setStatusFromException(Throwable $error): void
     {
-        if ($error instanceof RiskyTestError) {
-            $this->status = StoryStatus::RISKY;
-        } elseif ($error instanceof IncompleteTestError) {
+        if ($error instanceof IncompleteTestError) {
             $this->status = StoryStatus::INCOMPLETE;
-        } elseif ($error instanceof SkippedTestError) {
+        } elseif ($error instanceof SkippedWithMessageException) {
             $this->status = StoryStatus::SKIPPED;
         } else {
             $this->status = StoryStatus::FAILURE;

@@ -62,21 +62,6 @@ test('a story status is incomplete when the story is incomplete', function () {
     expect($story->getStatus())->toBe(StoryStatus::INCOMPLETE);
 });
 
-test('a story status is risky when the story is risky', function () {
-    $story = createStory()->risky('test');
-    expect($story->getStatus())->toBe(StoryStatus::PENDING);
-
-    try {
-        /** @var TestCase $this */
-        $test = $this;
-
-        $story->setTest($test)->run();
-    } catch (Throwable $e) {
-    }
-
-    expect($story->getStatus())->toBe(StoryStatus::RISKY);
-});
-
 test('a story status is success when the story completes with no exceptions', function () {
     $story = createStory();
     expect($story->getStatus())->toBe(StoryStatus::PENDING);

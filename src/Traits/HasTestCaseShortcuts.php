@@ -4,8 +4,7 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use function BradieTilley\StoryBoard\debug;
-use Pest\PendingObjects\TestCall;
-use PHPUnit\Framework\RiskyTestError;
+use Pest\PendingCalls\TestCall;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
@@ -46,16 +45,6 @@ trait HasTestCaseShortcuts
     public function incomplete(string $message = ''): static
     {
         $this->testCaseShortcuts['incomplete'] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Alias of throw new RiskyTestError()
-     */
-    public function risky(string $message = ''): static
-    {
-        $this->testCaseShortcuts['risky'] = $message;
 
         return $this;
     }
@@ -118,15 +107,6 @@ trait HasTestCaseShortcuts
 
         if ($test === null) {
             return;
-        }
-
-        /**
-         * Get the risky() message
-         */
-        $risky = $this->testCaseShortcuts['risky'] ?? null;
-
-        if (is_string($risky)) {
-            throw new RiskyTestError($risky);
         }
 
         /**

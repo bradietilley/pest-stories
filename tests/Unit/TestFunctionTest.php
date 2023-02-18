@@ -5,32 +5,38 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use Illuminate\Support\Collection;
 
-$testExecutions = Collection::make([]);
-
 if (! class_exists('PestStoryBoardTestFunction')) {
     class PestStoryBoardTestFunction
     {
+        protected static ?Collection $testExecutions = null;
+
+        public static function testExecutions(): Collection
+        {
+            return self::$testExecutions ??= Collection::make();
+        }
+
+        public static function flush(): void
+        {
+            self::$testExecutions = Collection::make();
+        }
+
         public function __construct(string $description, Closure $callback)
         {
-            global $testExecutions;
-
-            $testExecutions[] = [
+            self::testExecutions()->push([
                 'type' => 'function',
                 'value' => [
                     'description' => $description,
                     'callback' => $callback,
                 ],
-            ];
+            ]);
         }
 
         public function with(string|array $dataset): self
         {
-            global $testExecutions;
-
-            $testExecutions[] = [
+            self::testExecutions()->push([
                 'type' => 'dataset',
                 'value' => $dataset,
-            ];
+            ]);
 
             return $this;
         }
@@ -47,7 +53,7 @@ test('storyboard test function will call upon the pest test function for each st
     Config::setAlias('test', 'test_alternative');
 
     // clean slate
-    $testExecutions->forget($testExecutions->keys()->toArray());
+    PestStoryBoardTestFunction::flush();
 
     if ($datasetEnabled) {
         Config::enableDatasets();
@@ -69,6 +75,8 @@ test('storyboard test function will call upon the pest test function for each st
             ]),
         ])
         ->test();
+
+    $testExecutions = PestStoryBoardTestFunction::testExecutions();
 
     if ($datasetEnabled) {
         $names = [
@@ -104,10 +112,7 @@ test('storyboard test function will call upon the pest test function for each st
         expect($testExecutions->keys()->toArray())->toBe($names);
     }
 
-    foreach ($testExecutions as $key => $value) {
-        $testExecutions->forget($key);
-    }
-
+    PestStoryBoardTestFunction::flush();
     Config::setAlias('test', 'test');
 })->with([
     'datasets enabled' => true,
