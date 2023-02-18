@@ -4,7 +4,6 @@ use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\SkippedTestError as SkippedTestErrorDeprecated;
 use PHPUnit\Framework\SkippedWithMessageException;
 use Tests\TestCase;
 
@@ -46,7 +45,7 @@ test('a story can be marked as skipped', function (string $message) {
         $story->setTest($test)->run();
 
         $this->fail();
-    } catch (SkippedTestErrorDeprecated|SkippedWithMessageException $e) {
+    } catch (SkippedWithMessageException $e) {
         expect($e->getMessage())->toBe($message);
     }
 })->with([

@@ -4,7 +4,6 @@ namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
 use Pest\PendingCalls\TestCall;
-use Pest\PendingObjects\TestCall as TestCallDeprecated;
 
 /**
  * Allows a shortcut to running various TestCase-specific methods.
@@ -131,10 +130,8 @@ trait HasTestCaseShortcuts
     /**
      * Forwards previously registered/inherited `throws` and `throwsIf` expectations
      * to the created TestCall (or object that expects throws).
-     *
-     * @phpstan-ignore-next-line
      */
-    public function forwardTestCaseShortcutsToTestCall(TestCallDeprecated|TestCall|ExpectsThrows $test): void
+    public function forwardTestCaseShortcutsToTestCall(TestCall|ExpectsThrows $test): void
     {
         /**
          * Add ->throws() to TestCall if `throws` was registered
@@ -149,7 +146,6 @@ trait HasTestCaseShortcuts
             $exceptionMessage = $throws['exceptionMessage'];
 
             // Add expected throw
-            /** @phpstan-ignore-next-line */
             $test->throws($exception, $exceptionMessage);
         }
 
@@ -174,7 +170,6 @@ trait HasTestCaseShortcuts
             $exceptionMessage = $throws['exceptionMessage'];
 
             // Add expected throw
-            /** @phpstan-ignore-next-line */
             $test->throwsIf($condition, $exception, $exceptionMessage);
         }
     }

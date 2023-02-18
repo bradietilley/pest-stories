@@ -11,10 +11,8 @@ use BradieTilley\StoryBoard\StoryApplication;
 use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use Closure;
 use Pest\PendingCalls\TestCall;
-use Pest\PendingObjects\TestCall as TestCallDeprecated;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\IncompleteTestError;
-use PHPUnit\Framework\SkippedTestError as SkippedTestErrorDeprecated;
 use PHPUnit\Framework\SkippedWithMessageException;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -157,8 +155,7 @@ trait HasTest
             })->with($stories);
 
             if ($this instanceof WithTestCaseShortcuts) {
-                /** @phpstan-ignore-next-line */
-                if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                     $this->forwardTestCaseShortcutsToTestCall($testCall);
                 }
             }
@@ -197,8 +194,7 @@ trait HasTest
         $testCall = $function(...$args);
 
         if ($this instanceof WithTestCaseShortcuts) {
-            /** @phpstan-ignore-next-line */
-            if ($testCall instanceof TestCallDeprecated || $testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
                 $this->forwardTestCaseShortcutsToTestCall($testCall);
             }
         }
@@ -376,8 +372,7 @@ trait HasTest
     {
         if ($error instanceof IncompleteTestError) {
             $this->status = StoryStatus::INCOMPLETE;
-            /** @phpstan-ignore-next-line */
-        } elseif ($error instanceof SkippedTestErrorDeprecated || $error instanceof SkippedWithMessageException) {
+        } elseif ($error instanceof SkippedWithMessageException) {
             $this->status = StoryStatus::SKIPPED;
         } else {
             $this->status = StoryStatus::FAILURE;
