@@ -2,6 +2,8 @@
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use function BradieTilley\StoryBoard\debug;
+use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
@@ -244,10 +246,14 @@ trait HasActions
             /* Call after listener */
             $this->runCallback('after', $this->getParameters($resultData));
         } catch (Throwable $e) {
+            error('Failed to boot actions with error', $e);
+
             $result->setError($e);
 
             throw $e;
         }
+
+        debug('Successfully booted actions');
 
         return $this;
     }

@@ -3,8 +3,11 @@
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
+use BradieTilley\StoryBoard\Contracts\WithDebug;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
+use function BradieTilley\StoryBoard\debug;
 use BradieTilley\StoryBoard\Enums\StoryStatus;
+use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\StoryApplication;
@@ -140,7 +143,13 @@ trait HasTest
         }
 
         if (Config::datasetsEnabled()) {
+            debug('Datasets enabled');
+
             $function = Config::getAliasFunction('test');
+
+            debug(
+                sprintf('Test function resolved as `%s()`', $function),
+            );
 
             $parentName = $this->getName();
             $stories = $this->allStories();
@@ -160,6 +169,8 @@ trait HasTest
                 }
             }
         } else {
+            debug('Datasets disabled');
+
             foreach ($this->allStories() as $story) {
                 $story->test();
             }
@@ -173,9 +184,17 @@ trait HasTest
      */
     public function testSingle(): static
     {
+        /** @var Story $this */
+        $this->assignDebugContainer();
+
         $story = $this;
 
         $function = Config::getAliasFunction('test');
+
+        debug(
+            sprintf('Test function resolved as `%s()`', $function),
+        );
+
         $args = [
             $this->getTestName(),
             function () use ($story) {
@@ -199,6 +218,7 @@ trait HasTest
             }
         }
 
+        /** @phpstan-ignore-next-line */
         return $this;
     }
 
@@ -236,6 +256,8 @@ trait HasTest
      */
     public function inherit(): static
     {
+        debug('Inheriting from parent stories');
+
         $this->status = StoryStatus::RUNNING;
 
         /**
@@ -278,14 +300,22 @@ trait HasTest
      */
     public function run(): static
     {
+        debug('Test::run() start');
+
         try {
             if ($this->timeoutEnabled && $this->timeout > 0) {
+                debug('Timeout enabled; running story via Timer');
+
                 $this->timer = $this->createTimer(fn () => $this->fullRun());
                 $this->timer->run();
             } else {
+                debug('Timeout disabled, running story directly');
+
                 $this->fullRun();
             }
         } catch (TimerUpException $e) {
+            error('Test::run() timeout reached', $e);
+
             $taken = $e->getTimeTaken();
             $timeout = $e->getTimeout();
             $timeoutFormatted = $e->getTimeoutFormatted();
@@ -297,6 +327,13 @@ trait HasTest
                 message: $message,
             );
 
+            // Dump debug information
+            if ($this instanceof WithDebug) {
+                if ($this->debugEnabled()) {
+                    $this->printDebug();
+                }
+            }
+
             /**
              * Fallback to rethrowing the exception
              */
@@ -304,12 +341,16 @@ trait HasTest
             throw $e;
             // @codeCoverageIgnoreEnd
         } catch (\Throwable $e) {
+            error('Test::run() unexpected error', $e);
+
             $this->setStatusFromException($e);
 
             throw $e;
         }
 
         $this->status = StoryStatus::SUCCESS;
+
+        debug('Test::run() success');
 
         return $this;
     }
@@ -343,25 +384,41 @@ trait HasTest
      */
     public function fullRun(): static
     {
-        $this->boot();
-        $this->runSetUp();
-
-        $args = [];
+        debug('Running test');
 
         try {
-            $this->perform();
-        } catch (Throwable $e) {
-            $args = [
-                'e' => $e,
-                'exception' => $e,
-            ];
+            $this->boot();
+            $this->runSetUp();
 
-            $this->setStatusFromException($e);
-        }
+            $args = [];
 
-        $this->runTearDown($args);
+            try {
+                $this->perform();
+            } catch (Throwable $e) {
+                $args = [
+                    'e' => $e,
+                    'exception' => $e,
+                ];
 
-        if (isset($e)) {
+                $this->setStatusFromException($e);
+            }
+
+            $this->runTearDown($args);
+
+            if (isset($e)) {
+                debug('Ran test with error', $e);
+
+                throw $e;
+            }
+
+            debug('Ran test successfully');
+        } catch (\Throwable $e) {
+            if ($this instanceof WithDebug) {
+                if ($this->debugEnabled()) {
+                    $this->printDebug();
+                }
+            }
+
             throw $e;
         }
 
