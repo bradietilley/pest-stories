@@ -147,3 +147,23 @@ test('a setting value that is expected to be a array will fail on a non-array', 
             ->toBe("Invalid config: The `test.key.here` key must be a array; {$type} found.");
     }
 })->with(getValueTypes('array'));
+
+test('a setting value that is expected to be a boolean will accept a boolean', function () {
+    Config::set('test.key.here', $expect = false);
+    $actual = Config::getBoolean('test.key.here', true);
+
+    expect($actual)->toBe($expect);
+});
+
+test('a setting value that is expected to be a boolean will fail on a non-boolean', function (string $type, mixed $expect) {
+    Config::set('test.key.here', $expect);
+
+    try {
+        Config::getBoolean('test.key.here', false);
+
+        $this->fail();
+    } catch (InvalidConfigurationException $e) {
+        expect($e->getMessage())
+            ->toBe("Invalid config: The `test.key.here` key must be a boolean; {$type} found.");
+    }
+})->with(getValueTypes('boolean'));
