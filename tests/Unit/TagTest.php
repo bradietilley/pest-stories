@@ -94,7 +94,7 @@ test('a story can have tags resolved by callback', function () {
 
 test('a story can have shared instance-based tags', function () {
     $tags = [
-        '123' => new Tag('issue', '123'),
+        '123' => Tag::make('issue', '123'),
         '456' => new Tag('issue', '456'),
         'something' => new Tag('something', 'nice'),
     ];
@@ -161,4 +161,18 @@ test('stories may be suffixed with tags', function () {
     $story->run();
 
     expect($story->getTestName())->toBe('[Can] a parent a child | issue: 123 | client_approved: false | something else');
+});
+
+test('tags can have values derived from a story object', function () {
+    $story = Story::make('Test Story')->can(fn () => null)->action(fn () => null)->tag('Issue', function (Story $story) {
+        return $story->getName();
+    });
+
+    $tags = $story->getTags();
+    expect($tags)->toHaveCount(1);
+
+    $tag = $tags['Issue'];
+    $tag->value($story);
+
+    expect($tag)->getValue()->toBe('Test Story');
 });
