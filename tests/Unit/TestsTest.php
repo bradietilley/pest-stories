@@ -29,7 +29,6 @@ test('nested stories will automatically inherit when the parent is inherited', f
     expect($result->unique()->values()->toArray())->toBe([true]);
 });
 
-
 test('nested stories will automatically boot when the parent is booted', function () {
     $stories = collect();
 
