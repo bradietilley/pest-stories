@@ -7,6 +7,8 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Story\DebugContainer;
+use BradieTilley\StoryBoard\Testing\Timer\Timer;
+use BradieTilley\StoryBoard\Testing\Timer\TimerUpException;
 use function BradieTilley\StoryBoard\warning;
 use Illuminate\Support\Str;
 
@@ -57,9 +59,7 @@ if (! function_exists('pest_storyboard_test_dump_fn')) {
     }
 }
 
-test('debug information is printed when debug function is called', function (string $how) {
-    $exception = new InvalidArgumentException('Test');
-
+test('debug information is printed when debug function is called', function (string $how, Throwable $exception, string $error) {
     $story = Story::make()
         ->action(fn () => throw $exception)
         ->can(fn () => null);
@@ -140,14 +140,32 @@ test('debug information is printed when debug function is called', function (str
         ],
         17 => 'Failed to boot actions with error',
         18 => $exception,
-        19 => 'Test::run() unexpected error',
+        19 => $error,
         20 => $exception,
     ];
 
     expect($all->values()->all())->toBe($expect);
 })->with([
-    'config debug.enabled set to true' => 'config',
-    'chained ->debug method' => 'method',
+    'standard exception config debug.enabled set to true' => [
+        'how' => 'config',
+        'exception' => new InvalidArgumentException('Test'),
+        'error' => 'Test::run() unexpected error',
+    ],
+    'standard exception chained ->debug method' => [
+        'how' => 'method',
+        'exception' => new InvalidArgumentException('Test'),
+        'error' => 'Test::run() unexpected error',
+    ],
+    'timer up exception config debug.enabled set to true' => [
+        'how' => 'config',
+        'exception' => new TimerUpException(Timer::make(fn () => null)),
+        'error' => 'Test::run() timeout reached',
+    ],
+    'timer up exception chained ->debug method' => [
+        'how' => 'method',
+        'exception' => new TimerUpException(Timer::make(fn () => null)),
+        'error' => 'Test::run() timeout reached',
+    ],
 ]);
 
 test('debug information is printed depending on the configured debug levels', function (
