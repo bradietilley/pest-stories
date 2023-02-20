@@ -13,12 +13,22 @@ class InvalidConfigurationException extends Exception
 
     public static function mustBeInteger(string $key, mixed $value): self
     {
-        return self::mustBe('string', $key, $value);
+        return self::mustBe('integer', $key, $value);
+    }
+
+    public static function mustBeFloat(string $key, mixed $value): self
+    {
+        return self::mustBe('float', $key, $value);
+    }
+
+    public static function mustBeArray(string $key, mixed $value): self
+    {
+        return self::mustBe('array', $key, $value);
     }
 
     public static function mustBeBoolean(string $key, mixed $value): self
     {
-        return self::mustBe('string', $key, $value);
+        return self::mustBe('boolean', $key, $value);
     }
 
     public static function mustBe(string $type, string $key, mixed $value): self
@@ -36,13 +46,13 @@ class InvalidConfigurationException extends Exception
     private static function identifyType(mixed $value): string
     {
         return match (true) {
+            is_resource($value) => 'resource',
             is_string($value) => 'string',
             is_int($value) => 'integer',
             is_float($value) => 'float',
             is_bool($value) => 'boolean',
             is_array($value) => 'array',
             is_object($value) => 'object',
-            is_resource($value) => 'resource',
             default => 'unknown',
         };
     }
