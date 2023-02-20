@@ -272,7 +272,7 @@ trait HasTest
             return $this;
         }
 
-        if ($this->alreadyRun('inherited')) {
+        if ($this->alreadyRun('inherit')) {
             // @codeCoverageIgnoreStart
             return $this;
             // @codeCoverageIgnoreEnd
