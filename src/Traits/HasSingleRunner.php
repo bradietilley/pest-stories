@@ -29,7 +29,7 @@ trait HasSingleRunner
      */
     public function alreadyRun(string $identifier): bool
     {
-        $alreadyRun = in_array($identifier, $this->alreadyRun);
+        $alreadyRun = $this->alreadyRunSafe($identifier);
 
         // Prevent this from running again
         $this->alreadyRun[] = $identifier;
@@ -41,6 +41,19 @@ trait HasSingleRunner
                 $alreadyRun ? 'Already run' : 'First time running',
             ),
         );
+
+        return $alreadyRun;
+    }
+
+    /**
+     * Determine if this is the first time the given identifier
+     * action is run on this object. Running this will NOT
+     * automatically flag this identifier as being run unlike
+     * `alreadyRun()`
+     */
+    public function alreadyRunSafe(string $identifier): bool
+    {
+        $alreadyRun = in_array($identifier, $this->alreadyRun);
 
         return $alreadyRun;
     }

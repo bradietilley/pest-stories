@@ -182,7 +182,8 @@ test('an object with HasCallbacks will return only the additional parameters by 
         3,
     ];
 
-    $class = new class() {
+    $class = new class()
+    {
         use HasCallbacks;
     };
 
@@ -190,7 +191,8 @@ test('an object with HasCallbacks will return only the additional parameters by 
 });
 
 test('an object with HasCallbacks but without WithInheritance will safely not inherit', function () {
-    $class = new class() {
+    $class = new class()
+    {
         use HasCallbacks;
     };
     $class->inheritCallbacks();

@@ -140,7 +140,8 @@ test('can inherit name from parents', function () {
 });
 
 test('an object with HasName but without WithInheritance will safely not inherit', function () {
-    $class = new class() {
+    $class = new class()
+    {
         use HasName;
     };
     $class->inheritName();
