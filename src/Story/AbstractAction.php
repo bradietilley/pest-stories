@@ -184,10 +184,7 @@ abstract class AbstractAction
     /**
      * Get the alias for this type of action (for use in config)
      */
-    public static function getAliasName(): string
-    {
-        return '';
-    }
+    abstract public static function getAliasName(): string;
 
     /**
      * Make and register this action

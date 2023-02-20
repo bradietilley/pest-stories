@@ -1,7 +1,7 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException as Error;
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
+use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException as Error;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 
 test('can instantiate an InvalidMagicMethodHandlerException for a missing property handler', function () {
@@ -21,7 +21,6 @@ test('can instantiate an InvalidMagicMethodHandlerException for a missing static
 
     expect($exception->getMessage())->toBe('Failed to locate the `::example()` magic static method shandler');
 });
-
 
 test('can thrown an InvalidMagicMethodHandlerException via StoryBoardException', function () {
     throw StoryBoardException::invalidMagicMethodHandlerException('something', 'property');

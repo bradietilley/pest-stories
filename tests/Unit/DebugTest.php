@@ -6,6 +6,7 @@ use function BradieTilley\StoryBoard\info;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\Story\DebugContainer;
 use function BradieTilley\StoryBoard\warning;
 use Illuminate\Support\Str;
 
@@ -296,3 +297,15 @@ test('debug information is printed depending on the configured debug levels', fu
         'expect' => 'error',
     ],
 ]);
+
+test('can flush DebugContainer', function () {
+    $story = Story::make('test')->can(fn () => null)->action(fn () => null);
+
+    DebugContainer::swap($instance = $story->getDebugContainer());
+
+    expect(DebugContainer::instance())->toBe($instance);
+
+    DebugContainer::flush();
+
+    expect(DebugContainer::instance())->not()->toBe($instance);
+});
