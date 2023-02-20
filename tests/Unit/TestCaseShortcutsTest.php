@@ -141,14 +141,12 @@ test('a story that is tested will have the expected exception passed to it', fun
     ],
 ]);
 
-test('a story that is tested will have the expected exception passed to it conditionally', function (string $class, string $message = null, bool $success = false) {
+test('a story that is tested will have the expected exception passed to it conditionally', function (bool|Closure $condition, string $class, string $message = null, bool $success = false) {
     PestStoryBoardTestCall::flush();
-
-    $bool = true;
 
     $story = Story::make('test')
         ->can(fn () => null)
-        ->throwsIf($bool, $class, $message)
+        ->throwsIf($condition, $class, $message)
         ->action(fn () => throw new InvalidArgumentException('Woohoo'));
 
     try {
@@ -162,11 +160,23 @@ test('a story that is tested will have the expected exception passed to it condi
     expect(PestStoryBoardTestCall::$exception)->toBe($class);
     expect(PestStoryBoardTestCall::$message)->toBe($message);
 })->with([
-    'an exception with no message' => [
+    'an exception with no message conditional by boolean' => [
+        'condition' => true,
         'class' => InvalidArgumentException::class,
         'message' => null,
     ],
-    'an exception with a message' => [
+    'an exception with a message conditional by boolean' => [
+        'condition' => true,
+        'class' => JsonException::class,
+        'message' => 'an example',
+    ],
+    'an exception with no message conditional by callable' => [
+        'condition' => fn () => true,
+        'class' => InvalidArgumentException::class,
+        'message' => null,
+    ],
+    'an exception with a message conditional by callable' => [
+        'condition' => fn () => true,
         'class' => JsonException::class,
         'message' => 'an example',
     ],
