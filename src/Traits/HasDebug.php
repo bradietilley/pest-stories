@@ -67,9 +67,9 @@ trait HasDebug
         $storyLevel = $this->debugLevel ?? 'debug';
         $configLevel = Config::getString('debug.level', 'debug');
 
-        $level = (DebugContainer::levelHierarchy($storyLevel) >= DebugContainer::levelHierarchy($configLevel))
-            ? $storyLevel
-            : $configLevel;
+        $actual = DebugContainer::levelHierarchy($storyLevel);
+        $expect = DebugContainer::levelHierarchy($configLevel);
+        $level = ($actual >= $expect) ? $storyLevel : $configLevel;
 
         $this->getDebugContainer()->printDebug($level);
     }
