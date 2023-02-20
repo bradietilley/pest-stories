@@ -321,9 +321,7 @@ trait HasTest
 
             // Dump debug information
             if ($this instanceof WithDebug) {
-                if ($this->debugEnabled()) {
-                    $this->printDebug();
-                }
+                $this->printDebugIfEnabled();
             }
 
             /**
@@ -336,6 +334,11 @@ trait HasTest
             error('Test::run() unexpected error', $e);
 
             $this->setStatusFromException($e);
+
+            // Dump debug information
+            if ($this instanceof WithDebug) {
+                $this->printDebugIfEnabled();
+            }
 
             throw $e;
         }
@@ -378,41 +381,31 @@ trait HasTest
     {
         debug('Running test');
 
+        $this->boot();
+        $this->runSetUp();
+
+        $args = [];
+
         try {
-            $this->boot();
-            $this->runSetUp();
+            $this->perform();
+        } catch (Throwable $e) {
+            $args = [
+                'e' => $e,
+                'exception' => $e,
+            ];
 
-            $args = [];
+            $this->setStatusFromException($e);
+        }
 
-            try {
-                $this->perform();
-            } catch (Throwable $e) {
-                $args = [
-                    'e' => $e,
-                    'exception' => $e,
-                ];
+        $this->runTearDown($args);
 
-                $this->setStatusFromException($e);
-            }
-
-            $this->runTearDown($args);
-
-            if (isset($e)) {
-                debug('Ran test with error', $e);
-
-                throw $e;
-            }
-
-            debug('Ran test successfully');
-        } catch (\Throwable $e) {
-            if ($this instanceof WithDebug) {
-                if ($this->debugEnabled()) {
-                    $this->printDebug();
-                }
-            }
+        if (isset($e)) {
+            debug('Ran test with error', $e);
 
             throw $e;
         }
+
+        debug('Ran test successfully');
 
         return $this;
     }

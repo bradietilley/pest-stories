@@ -73,4 +73,14 @@ trait HasDebug
 
         $this->getDebugContainer()->printDebug($level);
     }
+
+    /**
+     * Print out the debug container if debug mode is enabled
+     */
+    public function printDebugIfEnabled(): void
+    {
+        if ($this->debugEnabled()) {
+            $this->printDebug();
+        }
+    }
 }

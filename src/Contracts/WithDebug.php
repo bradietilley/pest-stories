@@ -38,4 +38,9 @@ interface WithDebug
      * Print out the debug container
      */
     public function printDebug(): void;
+
+    /**
+     * Print out the debug container if debug mode is enabled
+     */
+    public function printDebugIfEnabled(): void;
 }

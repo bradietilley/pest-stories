@@ -140,6 +140,8 @@ test('debug information is printed when debug function is called', function (str
         ],
         17 => 'Failed to boot actions with error',
         18 => $exception,
+        19 => 'Test::run() unexpected error',
+        20 => $exception,
     ];
 
     expect($all->values()->all())->toBe($expect);
