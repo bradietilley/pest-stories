@@ -2,7 +2,17 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Tag;
+use function BradieTilley\StoryBoard\tag;
 use Illuminate\Support\Collection;
+
+test('can create tags using global functions', function () {
+    $tag = tag('Issue', '1234', 5);
+
+    expect($tag)->toBeInstanceOf(Tag::class)
+        ->and($tag->getName())->toBe('Issue')
+        ->and($tag->getValue())->toBe('1234')
+        ->and($tag->getOrder())->toBe(5);
+});
 
 test('a story can have tags applied', function () {
     $story = Story::make()->assert(fn () => null)->can()->tag('issue', '123');
