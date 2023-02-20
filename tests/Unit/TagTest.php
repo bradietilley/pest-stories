@@ -163,6 +163,26 @@ test('stories may be suffixed with tags', function () {
     expect($story->getTestName())->toBe('[Can] a parent a child | issue: 123 | client_approved: false | something else');
 });
 
+test('stories may be not suffixed with tags', function () {
+    Story::make('a parent')
+        ->can()
+        ->assert(fn () => null)
+        ->action(fn () => null)
+        ->tag([
+            'issue' => '123',
+            'client_approved' => false,
+            'something else',
+        ])
+        ->appendTags()
+        ->stories([
+            $story = Story::make('a child')->dontAppendTags(),
+        ]);
+
+    $story->run();
+
+    expect($story->getTestName())->toBe('[Can] a parent a child');
+});
+
 test('tags can have values derived from a story object', function () {
     $story = Story::make('Test Story')->can(fn () => null)->action(fn () => null)->tag('Issue', function (Story $story) {
         return $story->getName();
