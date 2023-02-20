@@ -40,7 +40,9 @@ trait HasStories
             return $this->collectGetStories();
         }
 
+        // @codeCoverageIgnoreStart
         throw StoryBoardException::invalidMagicMethodHandlerException($name, InvalidMagicMethodHandlerException::TYPE_PROPERTY);
+        // @codeCoverageIgnoreEnd
     }
 
     /**

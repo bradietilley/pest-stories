@@ -43,7 +43,9 @@ trait HasPerformer
             return $this->user;
         }
 
+        // @codeCoverageIgnoreStart
         throw StoryBoardException::invalidMagicMethodHandlerException($name, InvalidMagicMethodHandlerException::TYPE_PROPERTY);
+        // @codeCoverageIgnoreEnd
     }
 
     /**

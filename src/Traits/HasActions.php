@@ -63,7 +63,9 @@ trait HasActions
             return $this->{$method}(...$parameters);
         }
 
+        // @codeCoverageIgnoreStart
         throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_METHOD);
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -75,7 +77,9 @@ trait HasActions
             return static::make()->{$method}(...$parameters);
         }
 
+        // @codeCoverageIgnoreStart
         throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_STATIC_METHOD);
+        // @codeCoverageIgnoreEnd
     }
 
     /**
