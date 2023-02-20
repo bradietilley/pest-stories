@@ -101,7 +101,7 @@ test('debug information is printed when debug function is called', function (str
         2 => 'Timeout disabled, running story directly',
         3 => 'Running test',
         4 => 'Inheriting from parent stories',
-        5 => 'Checking if `inherited` has already run: First time running',
+        5 => 'Checking if `inherit` has already run: First time running',
         6 => 'Checking if `register` has already run: First time running',
         7 => 'Running Action::register callback with args:',
         8 => [
