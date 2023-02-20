@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard;
 
 use Illuminate\Foundation\Application;
@@ -28,6 +30,8 @@ class StoryApplication
             return;
         }
 
+        // @codeCoverageIgnoreStart
         (new self())->createApplication();
+        // @codeCoverageIgnoreEnd
     }
 }

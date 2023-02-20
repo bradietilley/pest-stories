@@ -1,6 +1,7 @@
 <?php
 
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use Illuminate\Support\Collection;
 
 test('a story can have a before callback', function () {
@@ -172,4 +173,30 @@ test('you cannot setup or teardown a story more than once', function () {
         'setUp',
         'tearDown',
     ]);
+});
+
+test('an object with HasCallbacks will return only the additional parameters by default', function () {
+    $additional = [
+        1,
+        2,
+        3,
+    ];
+
+    $class = new class()
+    {
+        use HasCallbacks;
+    };
+
+    expect($class->getParameters($additional))->toBe($additional);
+});
+
+test('an object with HasCallbacks but without WithInheritance will safely not inherit', function () {
+    $class = new class()
+    {
+        use HasCallbacks;
+    };
+    $class->inheritCallbacks();
+
+    // no error
+    expect(true)->toBeTrue();
 });

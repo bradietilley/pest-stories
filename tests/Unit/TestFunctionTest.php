@@ -123,3 +123,20 @@ test('using an alternative test function will throw an exception if it does not 
     Config::setAlias('test', 'pest_storyboard_test_function_that_does_not_exist');
     Config::getAliasFunction('test');
 })->throws(AliasNotFoundException::class, 'The `test` alias function `pest_storyboard_test_function_that_does_not_exist` was not found');
+
+test('the test function is given a callback that sets the testcase and runs the story', function () {
+    $ran = collect();
+    $story = Story::make('test')->can(fn () => null)->action(fn () => $ran[] = 'ran');
+
+    $reflect = new ReflectionMethod($story, 'getTestCallback');
+    $reflect->setAccessible(true);
+
+    $callback = $reflect->invoke($story);
+
+    Closure::bind($callback, $this)($story);
+
+    expect($story->getTest())->toBe($this);
+    expect($ran->toArray())->toBe([
+        'ran',
+    ]);
+});

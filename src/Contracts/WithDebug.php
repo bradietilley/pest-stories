@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Contracts;
 
 use BradieTilley\StoryBoard\Story\DebugContainer;
@@ -36,4 +38,9 @@ interface WithDebug
      * Print out the debug container
      */
     public function printDebug(): void;
+
+    /**
+     * Print out the debug container if debug mode is enabled
+     */
+    public function printDebugIfEnabled(): void;
 }

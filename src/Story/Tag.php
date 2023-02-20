@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Story;
@@ -33,7 +35,7 @@ class Tag implements Stringable
     /**
      * Create a new tag
      */
-    public static function make(string $name, Closure|string|int|float|bool|null $value, ?int $order = null): static
+    public static function make(string $name, Closure|string|int|float|bool|null $value = null, ?int $order = null): static
     {
         $class = Config::getAliasClass('tag', Tag::class);
 

@@ -2,6 +2,7 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
+use BradieTilley\StoryBoard\Traits\HasName;
 use Illuminate\Support\Collection;
 
 test('a story can be given a name using different shortcuts', function () {
@@ -136,4 +137,15 @@ test('can inherit name from parents', function () {
 
     // Disable datasets for remainder of tests
     Config::disableDatasets();
+});
+
+test('an object with HasName but without WithInheritance will safely not inherit', function () {
+    $class = new class()
+    {
+        use HasName;
+    };
+    $class->inheritName();
+
+    // no error
+    expect(true)->toBeTrue();
 });

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
@@ -38,7 +40,9 @@ trait HasStories
             return $this->collectGetStories();
         }
 
+        // @codeCoverageIgnoreStart
         throw StoryBoardException::invalidMagicMethodHandlerException($name, InvalidMagicMethodHandlerException::TYPE_PROPERTY);
+        // @codeCoverageIgnoreEnd
     }
 
     /**

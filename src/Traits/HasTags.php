@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Story\Tag;

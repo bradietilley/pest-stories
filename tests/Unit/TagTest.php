@@ -2,7 +2,17 @@
 
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Tag;
+use function BradieTilley\StoryBoard\tag;
 use Illuminate\Support\Collection;
+
+test('can create tags using global functions', function () {
+    $tag = tag('Issue', '1234', 5);
+
+    expect($tag)->toBeInstanceOf(Tag::class)
+        ->and($tag->getName())->toBe('Issue')
+        ->and($tag->getValue())->toBe('1234')
+        ->and($tag->getOrder())->toBe(5);
+});
 
 test('a story can have tags applied', function () {
     $story = Story::make()->assert(fn () => null)->can()->tag('issue', '123');
@@ -84,7 +94,7 @@ test('a story can have tags resolved by callback', function () {
 
 test('a story can have shared instance-based tags', function () {
     $tags = [
-        '123' => new Tag('issue', '123'),
+        '123' => Tag::make('issue', '123'),
         '456' => new Tag('issue', '456'),
         'something' => new Tag('something', 'nice'),
     ];
@@ -151,4 +161,38 @@ test('stories may be suffixed with tags', function () {
     $story->run();
 
     expect($story->getTestName())->toBe('[Can] a parent a child | issue: 123 | client_approved: false | something else');
+});
+
+test('stories may be not suffixed with tags', function () {
+    Story::make('a parent')
+        ->can()
+        ->assert(fn () => null)
+        ->action(fn () => null)
+        ->tag([
+            'issue' => '123',
+            'client_approved' => false,
+            'something else',
+        ])
+        ->appendTags()
+        ->stories([
+            $story = Story::make('a child')->dontAppendTags(),
+        ]);
+
+    $story->run();
+
+    expect($story->getTestName())->toBe('[Can] a parent a child');
+});
+
+test('tags can have values derived from a story object', function () {
+    $story = Story::make('Test Story')->can(fn () => null)->action(fn () => null)->tag('Issue', function (Story $story) {
+        return $story->getName();
+    });
+
+    $tags = $story->getTags();
+    expect($tags)->toHaveCount(1);
+
+    $tag = $tags['Issue'];
+    $tag->value($story);
+
+    expect($tag)->getValue()->toBe('Test Story');
 });

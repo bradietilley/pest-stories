@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Traits;
 
 use function BradieTilley\StoryBoard\debug;
@@ -65,10 +67,20 @@ trait HasDebug
         $storyLevel = $this->debugLevel ?? 'debug';
         $configLevel = Config::getString('debug.level', 'debug');
 
-        $level = (DebugContainer::levelHierarchy($storyLevel) >= DebugContainer::levelHierarchy($configLevel))
-            ? $storyLevel
-            : $configLevel;
+        $actual = DebugContainer::levelHierarchy($storyLevel);
+        $expect = DebugContainer::levelHierarchy($configLevel);
+        $level = ($actual >= $expect) ? $storyLevel : $configLevel;
 
         $this->getDebugContainer()->printDebug($level);
+    }
+
+    /**
+     * Print out the debug container if debug mode is enabled
+     */
+    public function printDebugIfEnabled(): void
+    {
+        if ($this->debugEnabled()) {
+            $this->printDebug();
+        }
     }
 }

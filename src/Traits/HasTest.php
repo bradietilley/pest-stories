@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\ExpectsThrows;
@@ -131,6 +133,46 @@ trait HasTest
         return $this;
     }
 
+    private function getTestCallback(): Closure
+    {
+        return function (Story $story) {
+            /** @var Story $story */
+            /** @var TestCase $this */
+
+            // @codeCoverageIgnoreStart
+            $story->setTest($this)->run();
+            // @codeCoverageIgnoreEnd
+        };
+    }
+
+    private function createTestCall(string $name, array $with = []): static
+    {
+        $function = Config::getAliasFunction('test');
+
+        debug(
+            sprintf('Test function resolved as `%s()`', $function),
+        );
+
+        $args = [
+            $name,
+            $this->getTestCallback(),
+        ];
+
+        $testCall = $function(...$args);
+
+        if (! empty($with)) {
+            $testCall->with($with);
+        }
+
+        if ($this instanceof WithTestCaseShortcuts) {
+            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
+                $this->forwardTestCaseShortcutsToTestCall($testCall);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * Create test cases for all tests
      */
@@ -145,35 +187,16 @@ trait HasTest
         if (Config::datasetsEnabled()) {
             debug('Datasets enabled');
 
-            $function = Config::getAliasFunction('test');
-
-            debug(
-                sprintf('Test function resolved as `%s()`', $function),
-            );
-
-            $parentName = $this->getName();
+            $parentName = (string) $this->getName();
             $stories = $this->allStories();
 
-            $testCall = $function($parentName, function (Story $story) {
-                /** @var Story $story */
-                /** @var TestCase $this */
+            return $this->createTestCall($parentName, $stories);
+        }
 
-                // @codeCoverageIgnoreStart
-                $story->setTest($this)->boot()->perform();
-                // @codeCoverageIgnoreEnd
-            })->with($stories);
+        debug('Datasets disabled');
 
-            if ($this instanceof WithTestCaseShortcuts) {
-                if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
-                    $this->forwardTestCaseShortcutsToTestCall($testCall);
-                }
-            }
-        } else {
-            debug('Datasets disabled');
-
-            foreach ($this->allStories() as $story) {
-                $story->test();
-            }
+        foreach ($this->allStories() as $story) {
+            $story->test();
         }
 
         return $this;
@@ -187,39 +210,8 @@ trait HasTest
         /** @var Story $this */
         $this->assignDebugContainer();
 
-        $story = $this;
-
-        $function = Config::getAliasFunction('test');
-
-        debug(
-            sprintf('Test function resolved as `%s()`', $function),
-        );
-
-        $args = [
-            $this->getTestName(),
-            function () use ($story) {
-                /** @var Story $story */
-                /** @var TestCase $this */
-                $story->setTest($this)->run();
-            },
-        ];
-
-        /**
-         * Pest uses a Backtrace class which expects the most recent backtrace items
-         * to each include a file. By running call_user_func we lose the 'file' in the
-         * relevant backtrace and therefore Pest cannot operate. So instead we'll call
-         * the function directly. Not super nice, but hey.
-         */
-        $testCall = $function(...$args);
-
-        if ($this instanceof WithTestCaseShortcuts) {
-            if ($testCall instanceof TestCall || $testCall instanceof ExpectsThrows) {
-                $this->forwardTestCaseShortcutsToTestCall($testCall);
-            }
-        }
-
         /** @phpstan-ignore-next-line */
-        return $this;
+        return $this->createTestCall($this->getTestName());
     }
 
     /**
@@ -270,7 +262,7 @@ trait HasTest
             return $this;
         }
 
-        if ($this->alreadyRun('inherited')) {
+        if ($this->alreadyRun('inherit')) {
             // @codeCoverageIgnoreStart
             return $this;
             // @codeCoverageIgnoreEnd
@@ -329,9 +321,7 @@ trait HasTest
 
             // Dump debug information
             if ($this instanceof WithDebug) {
-                if ($this->debugEnabled()) {
-                    $this->printDebug();
-                }
+                $this->printDebugIfEnabled();
             }
 
             /**
@@ -344,6 +334,11 @@ trait HasTest
             error('Test::run() unexpected error', $e);
 
             $this->setStatusFromException($e);
+
+            // Dump debug information
+            if ($this instanceof WithDebug) {
+                $this->printDebugIfEnabled();
+            }
 
             throw $e;
         }
@@ -386,41 +381,31 @@ trait HasTest
     {
         debug('Running test');
 
+        $this->boot();
+        $this->runSetUp();
+
+        $args = [];
+
         try {
-            $this->boot();
-            $this->runSetUp();
+            $this->perform();
+        } catch (Throwable $e) {
+            $args = [
+                'e' => $e,
+                'exception' => $e,
+            ];
 
-            $args = [];
+            $this->setStatusFromException($e);
+        }
 
-            try {
-                $this->perform();
-            } catch (Throwable $e) {
-                $args = [
-                    'e' => $e,
-                    'exception' => $e,
-                ];
+        $this->runTearDown($args);
 
-                $this->setStatusFromException($e);
-            }
-
-            $this->runTearDown($args);
-
-            if (isset($e)) {
-                debug('Ran test with error', $e);
-
-                throw $e;
-            }
-
-            debug('Ran test successfully');
-        } catch (\Throwable $e) {
-            if ($this instanceof WithDebug) {
-                if ($this->debugEnabled()) {
-                    $this->printDebug();
-                }
-            }
+        if (isset($e)) {
+            debug('Ran test with error', $e);
 
             throw $e;
         }
+
+        debug('Ran test successfully');
 
         return $this;
     }

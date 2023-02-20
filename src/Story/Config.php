@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Exceptions\InvalidConfigurationException;
@@ -125,6 +127,28 @@ class Config
 
         if (! is_int($value)) {
             throw InvalidConfigurationException::mustBeInteger($key, $value);
+        }
+
+        return $value;
+    }
+
+    public static function getFloat(string $key, float $default): float
+    {
+        $value = self::get($key, $default);
+
+        if (! is_float($value)) {
+            throw InvalidConfigurationException::mustBeFloat($key, $value);
+        }
+
+        return $value;
+    }
+
+    public static function getArray(string $key, array $default): array
+    {
+        $value = self::get($key, $default);
+
+        if (! is_array($value)) {
+            throw InvalidConfigurationException::mustBeArray($key, $value);
         }
 
         return $value;
