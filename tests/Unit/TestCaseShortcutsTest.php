@@ -69,44 +69,6 @@ test('you can fetch the testcase shortcuts from a story', function () {
     ]);
 });
 
-// if (! class_exists('PestStoryBoardTestFunctionWithThrows')) {
-//     class PestStoryBoardTestFunctionWithThrows implements ExpectsThrows
-//     {
-//         public static ?array $throws = null;
-
-//         public static ?array $throwsIf = null;
-
-//         public function __construct(public string $name, public callable $callback)
-//         {
-//         }
-
-//         public function throws(string $exception, ?string $exceptionMessage = null)
-//         {
-//             static::$throws = func_get_args();
-//         }
-
-//         public function throwsIf($condition, string $exception, ?string $exceptionMessage = null)
-//         {
-//             static::$throwsIf = func_get_args();
-//         }
-
-//         public function test(): void
-//         {
-//             if ($this->)
-//         }
-
-//         public function __destruct()
-//         {
-//             $this->test();
-//         }
-//     }
-
-//     function newPestStoryBoardTestFunctionWithThrows(string $testName, callable $callback): PestStoryBoardTestFunctionWithThrows
-//     {
-//         return new PestStoryBoardTestFunctionWithThrows();
-//     }
-// }
-
 if (! class_exists(PestStoryBoardTestCall::class)) {
     class PestStoryBoardTestCall implements ExpectsThrows
     {
@@ -156,6 +118,37 @@ test('a story that is tested will have the expected exception passed to it', fun
     $story = Story::make('test')
         ->can(fn () => null)
         ->throws($class, $message)
+        ->action(fn () => throw new InvalidArgumentException('Woohoo'));
+
+    try {
+        Config::setAlias('test', 'pest_storyboard_test_function');
+
+        $story->test();
+    } catch (Throwable $e) {
+        //
+    }
+
+    expect(PestStoryBoardTestCall::$exception)->toBe($class);
+    expect(PestStoryBoardTestCall::$message)->toBe($message);
+})->with([
+    'an exception with no message' => [
+        'class' => InvalidArgumentException::class,
+        'message' => null,
+    ],
+    'an exception with a message' => [
+        'class' => JsonException::class,
+        'message' => 'an example',
+    ],
+]);
+
+test('a story that is tested will have the expected exception passed to it conditionally', function (string $class, string $message = null, bool $success = false) {
+    PestStoryBoardTestCall::flush();
+
+    $bool = true;
+
+    $story = Story::make('test')
+        ->can(fn () => null)
+        ->throwsIf($bool, $class, $message)
         ->action(fn () => throw new InvalidArgumentException('Woohoo'));
 
     try {
