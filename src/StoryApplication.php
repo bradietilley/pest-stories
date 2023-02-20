@@ -30,6 +30,8 @@ class StoryApplication
             return;
         }
 
+        // @codeCoverageIgnoreStart
         (new self())->createApplication();
+        // @codeCoverageIgnoreEnd
     }
 }
