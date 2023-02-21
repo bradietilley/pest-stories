@@ -1,6 +1,6 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\AssertionCheckerNotSpecifiedException;
+use BradieTilley\StoryBoard\Exceptions\AssertionNotSpecifiedException;
 use BradieTilley\StoryBoard\Exceptions\ExpectationNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 
@@ -26,7 +26,7 @@ test('a story must have at least one assertion checker', function () {
     foreach ($story->allStories() as $story) {
         $story->run();
     }
-})->throws(AssertionCheckerNotSpecifiedException::class, 'No "can" assertion checker was found for the story `parent child`');
+})->throws(AssertionNotSpecifiedException::class, 'No "can" assertion checker was found for the story `parent child`');
 
 test('you may create a story with an assertion and unset the assertion for a child story', function () {
     $story = Story::make()

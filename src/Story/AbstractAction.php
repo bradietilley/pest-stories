@@ -234,4 +234,12 @@ abstract class AbstractAction
 
         return $this;
     }
+
+    /**
+     * Get the generator callback
+     */
+    public function getGenerator(): ?Closure
+    {
+        return $this->getCallback('generator');
+    }
 }

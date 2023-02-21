@@ -20,6 +20,7 @@ use BradieTilley\StoryBoard\Contracts\WithTags;
 use BradieTilley\StoryBoard\Contracts\WithTest;
 use BradieTilley\StoryBoard\Contracts\WithTestCaseShortcuts;
 use BradieTilley\StoryBoard\Contracts\WithTimeout;
+use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\Traits\HasActions;
@@ -38,6 +39,7 @@ use BradieTilley\StoryBoard\Traits\HasTags;
 use BradieTilley\StoryBoard\Traits\HasTest;
 use BradieTilley\StoryBoard\Traits\HasTestCaseShortcuts;
 use BradieTilley\StoryBoard\Traits\HasTimeout;
+use Closure;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 
@@ -154,5 +156,17 @@ class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInhe
         ], $additional);
 
         return $data;
+    }
+
+    /**
+     * Set a callback in the same way as WithCallbacks::setCallback() except
+     * if the action is an AbstractAction then boot the action for the callback
+     */
+    public function setCallbackAction(string $name, Closure|AbstractAction|null $action): static
+    {
+        return $this->setCallback(
+            $name,
+            ($action instanceof AbstractAction) ? fn () => $action->boot($this) : $action,
+        );
     }
 }

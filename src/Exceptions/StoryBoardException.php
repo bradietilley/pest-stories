@@ -44,6 +44,40 @@ abstract class StoryBoardException extends Exception
     }
 
     /**
+     * Exception for when an `AbstractAssertion` generator callback is
+     * not specified.
+     */
+    public static function assertionGeneratorNotFound(string $assertion): AssertionGeneratorNotFoundException
+    {
+        return new AssertionGeneratorNotFoundException(
+            sprintf('The `%s` assertion generator callback could not be found.', $assertion),
+        );
+    }
+
+    /**
+     * Exception for when an assertion added to a story cannot not found.
+     *
+     * Likely causes of this is a referenced assertion contains a spelling mistake
+     * or the Assertion you're referencing was never created.
+     */
+    public static function assertionNotFound(string $assertion): AssertionNotFoundException
+    {
+        return new AssertionNotFoundException(
+            sprintf('The `%s` assertion could not be found.', $assertion),
+        );
+    }
+
+    /**
+     * Exception for when a Story contains no assertions (but requires at least one)
+     */
+    public static function assertionNotSpecified(Story $story): AssertionNotSpecifiedException
+    {
+        return new AssertionNotSpecifiedException(
+            sprintf('No assertion was found for the story `%s`', $story->getFullName()),
+        );
+    }
+
+    /**
      * When config `storyboard.aliases.$alias` is missing
      */
     public static function aliasNotFound(string $alias): AliasNotFoundException
@@ -93,11 +127,11 @@ abstract class StoryBoardException extends Exception
      * Exception for when a Story contains no assertions (but requires one
      * for the given expectation of can or cannot).
      */
-    public static function assertionCheckerNotSpecified(Story $story): AssertionCheckerNotSpecifiedException
+    public static function assertionCheckerNotSpecified(Story $story): AssertionNotSpecifiedException
     {
         $term = $story->itCan() ? 'can' : 'cannot';
 
-        return new AssertionCheckerNotSpecifiedException(
+        return new AssertionNotSpecifiedException(
             sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),
         );
     }

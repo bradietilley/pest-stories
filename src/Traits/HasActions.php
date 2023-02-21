@@ -9,6 +9,7 @@ use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
+use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
@@ -18,10 +19,10 @@ use Throwable;
 /**
  * This object has actions, expectations and assertions
  *
- * @method static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static can(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static cannot(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static can(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static cannot(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  *
  * @mixin \BradieTilley\StoryBoard\Story
  */
@@ -279,8 +280,8 @@ trait HasActions
 
     public function assert(Closure $can = null, Closure $cannot = null): static
     {
-        $this->setCallback('can', $can);
-        $this->setCallback('cannot', $cannot);
+        $this->setCallbackAction('can', $can);
+        $this->setCallbackAction('cannot', $cannot);
 
         return $this;
     }
@@ -297,19 +298,27 @@ trait HasActions
      * Specify that you expect that this task 'can run' or 'will pass'
      *
      * The name and callback can be passed in in either order.
+     *
+     *   string   = name of Assertion AbstractAction class
+     *   Closure  = assertion logic callback
+     *   null     = nothing
      */
-    public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static
+    public function setCan(string|Closure|Assertion|null $name = null, string|Closure|Assertion|null $callback = null): static
     {
         if (is_string($name)) {
-            $this->name($name);
-        } elseif (is_string($callback)) {
-            $this->name($callback);
+            $name = Assertion::fetch($name);
         }
 
         if ($name instanceof Closure) {
-            $this->setCallback('can', $name);
-        } elseif ($callback instanceof Closure) {
-            $this->setCallback('can', $callback);
+            $this->setCallbackAction('can', $name);
+        }
+
+        if (is_string($callback)) {
+            $callback = Assertion::fetch($callback);
+        }
+
+        if ($callback instanceof Closure) {
+            $this->setCallbackAction('can', $callback);
         }
 
         $this->can = true;
@@ -325,15 +334,19 @@ trait HasActions
     public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static
     {
         if (is_string($name)) {
-            $this->name($name);
-        } elseif (is_string($callback)) {
-            $this->name($callback);
+            $name = Assertion::fetch($name);
         }
 
         if ($name instanceof Closure) {
-            $this->setCallback('cannot', $name);
-        } elseif ($callback instanceof Closure) {
-            $this->setCallback('cannot', $callback);
+            $this->setCallbackAction('cannot', $name);
+        }
+
+        if (is_string($callback)) {
+            $callback = Assertion::fetch($callback);
+        }
+
+        if ($callback instanceof Closure) {
+            $this->setCallbackAction('cannot', $callback);
         }
 
         $this->can = false;
