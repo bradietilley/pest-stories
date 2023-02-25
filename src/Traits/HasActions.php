@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\WithAssertions;
+use BradieTilley\StoryBoard\Enums\Expectation;
+
 use function BradieTilley\StoryBoard\debug;
 use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
@@ -260,6 +262,14 @@ trait HasActions
 
         $key = $this->currentExpectation();
         $storyAssertions = $this->assertions[$key->value];
+
+        if ($key !== Expectation::ALWAYS) {
+            // Merge "always" assertions with the "can" or "cannot" assertions
+            $storyAssertions = array_merge(
+                $this->assertions[Expectation::ALWAYS->value],
+                $storyAssertions,
+            );
+        }
 
         if (empty($storyAssertions)) {
             throw StoryBoardException::assertionCheckerNotSpecified($this);

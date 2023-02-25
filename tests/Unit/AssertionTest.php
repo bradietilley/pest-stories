@@ -142,3 +142,31 @@ test('the current expectation can be fetched', function () {
     expect($storyCannot->currentExpectation())->toBe(Expectation::CANNOT);
     expect($storyDefault->currentExpectation())->toBe(Expectation::ALWAYS);
 });
+
+test('assertions added to the always-expectation are run regardless on expectation', function () {
+    $ran = collect();
+
+    $story = Story::make()
+        ->action(fn () => null)
+        ->assert(
+            can: fn (Story $story) => $ran[] = "can: {$story->getFullName()}",
+            cannot: fn (Story $story) => $ran[] = "cannot: {$story->getFullName()}",
+            always: fn (Story $story) => $ran[] = "always: {$story->getFullName()}",
+        )
+        ->stories([
+            Story::make('story-can')->can(),
+            Story::make('story-cannot')->cannot(),
+            // Story::make('story-blank'),
+        ])
+        ->storiesAll
+        ->each(function (Story $story) {
+            $story->boot()->perform();
+        });
+
+    expect($ran->toArray())->toBe([
+        'always: story-can',
+        'can: story-can',
+        'always: story-cannot',
+        'cannot: story-cannot',
+    ]);
+});
