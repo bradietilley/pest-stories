@@ -36,11 +36,7 @@ trait HasAssertions
      *
      * @var array<string,array<int,StoryAssertion>>
      */
-    protected array $assertions = [
-        Expectation::ALWAYS->value => [],
-        Expectation::CAN->value => [],
-        Expectation::CANNOT->value => [],
-    ];
+    protected array $assertions = [];
 
     /**
      * Current expectation of Can or Cannot
@@ -57,6 +53,15 @@ trait HasAssertions
      * story and its children.
      */
     protected bool $expectationHalt = false;
+
+    public function __constructAssertions(): void
+    {
+        $this->assertions = [
+            Expectation::ALWAYS->value => [],
+            Expectation::CAN->value => [],
+            Expectation::CANNOT->value => [],
+        ];
+    }
 
     /**
      * Method alias(es) for Assertions trait

@@ -78,6 +78,7 @@ class Story implements WithActions, WithAssertions, WithCallbacks, WithData, Wit
     {
         $this->debug = (new DebugContainer([]))->debug('Story created');
         $this->id = ++self::$idCounter;
+        $this->__constructAssertions();
     }
 
     /**
