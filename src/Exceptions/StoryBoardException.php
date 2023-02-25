@@ -72,8 +72,10 @@ abstract class StoryBoardException extends Exception
      */
     public static function assertionNotSpecified(Story $story): AssertionNotSpecifiedException
     {
+        $term = $story->itCan() ? 'can' : 'cannot';
+
         return new AssertionNotSpecifiedException(
-            sprintf('No assertion was found for the story `%s`', $story->getFullName()),
+            sprintf('No "%s" assertion was found for the story `%s`', $term, $story->getFullName()),
         );
     }
 
@@ -120,19 +122,6 @@ abstract class StoryBoardException extends Exception
                 $class,
                 $subclass,
             ),
-        );
-    }
-
-    /**
-     * Exception for when a Story contains no assertions (but requires one
-     * for the given expectation of can or cannot).
-     */
-    public static function assertionCheckerNotSpecified(Story $story): AssertionNotSpecifiedException
-    {
-        $term = $story->itCan() ? 'can' : 'cannot';
-
-        return new AssertionNotSpecifiedException(
-            sprintf('No "%s" assertion checker was found for the story `%s`', $term, $story->getFullName()),
         );
     }
 

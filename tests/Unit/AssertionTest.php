@@ -1,10 +1,13 @@
 <?php
 
 use BradieTilley\StoryBoard\Enums\Expectation;
+use BradieTilley\StoryBoard\Exceptions\AssertionGeneratorNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\AssertionNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\AssertionNotSpecifiedException;
 use BradieTilley\StoryBoard\Exceptions\ExpectationNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Assertion;
+use Illuminate\Support\Collection;
 
 test('a story must have at least one expectation', function () {
     $story = Story::make()
@@ -35,7 +38,7 @@ test('a story works with one expectation', function () {
     }
 })->throwsNoExceptions();
 
-test('a story must have at least one assertion checker', function () {
+test('a story must have at least one assertion', function () {
     $story = Story::make()->action(fn () => null)->can()->name('parent')->stories(
         Story::make('child'),
     );
@@ -43,7 +46,7 @@ test('a story must have at least one assertion checker', function () {
     foreach ($story->allStories() as $story) {
         $story->run();
     }
-})->throws(AssertionNotSpecifiedException::class, 'No "can" assertion checker was found for the story `parent child`');
+})->throws(AssertionNotSpecifiedException::class, 'No "can" assertion was found for the story `parent child`');
 
 test('you may create a story with an assertion and unset the assertion for a child story', function () {
     $story = Story::make()
@@ -170,3 +173,26 @@ test('assertions added to the always-expectation are run regardless on expectati
         'cannot: story-cannot',
     ]);
 });
+
+test('an exception is thrown when an assertion is referenced but not found', function () {
+    Assertion::make('found', fn () => null, 'var');
+
+    Story::make()->assertion('found')->assertion('not_found')->perform();
+})->throws(AssertionNotFoundException::class, 'The `not_found` assertion could not be found.');
+
+test('assertions that are missing a generator throw an exception when performed', function () {
+    $ran = Collection::make([]);
+
+    Assertion::make('something_cooler')->as(fn () => $ran[] = 'yes');
+    Assertion::make('something_cool');
+
+    $story = Story::make()
+        ->can()
+        ->action(fn () => null)
+        ->assertion('something_cooler')
+        ->assertion('something_cool');
+
+    // The assertion 'something_cooler' boots correctly
+    // The assertion 'something_cool' does not (no generator)
+    $story->perform();
+})->throws(AssertionGeneratorNotFoundException::class, 'The `something_cool` assertion generator callback could not be found.');

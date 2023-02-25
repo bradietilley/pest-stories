@@ -271,7 +271,7 @@ trait HasActions
         }
 
         if (empty($storyAssertions)) {
-            throw StoryBoardException::assertionCheckerNotSpecified($this);
+            throw StoryBoardException::assertionNotSpecified($this);
         }
 
         try {
