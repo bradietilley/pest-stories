@@ -30,7 +30,7 @@ interface WithAssertions
     /**
      * Get the default expectation key to append assertions to.
      */
-    public function getCurrentExpectationKey(): string;
+    public function currentExpectation(): Expectation;
 
     /**
      * Alias for setAssertions()

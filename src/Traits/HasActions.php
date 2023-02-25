@@ -258,8 +258,8 @@ trait HasActions
             throw StoryBoardException::expectationNotSpecified($this);
         }
 
-        $key = $this->getCurrentExpectationKey();
-        $storyAssertions = $this->assertions[$key];
+        $key = $this->currentExpectation();
+        $storyAssertions = $this->assertions[$key->value];
 
         if (empty($storyAssertions)) {
             throw StoryBoardException::assertionCheckerNotSpecified($this);

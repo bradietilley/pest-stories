@@ -37,9 +37,9 @@ trait HasAssertions
      * @var array<string,array<int,StoryAssertion>>
      */
     protected array $assertions = [
-        Expectation::EXPECT_ALWAYS->value => [],
-        Expectation::EXPECT_CAN->value => [],
-        Expectation::EXPECT_CANNOT->value => [],
+        Expectation::ALWAYS->value => [],
+        Expectation::CAN->value => [],
+        Expectation::CANNOT->value => [],
     ];
 
     /**
@@ -64,8 +64,8 @@ trait HasAssertions
     public function __callAssertions(string $method, array $parameters): mixed
     {
         if ($expectation = Expectation::tryFrom($method)) {
-            if ($expectation === Expectation::EXPECT_CAN || $expectation === Expectation::EXPECT_CANNOT) {
-                $this->expectation = ($expectation === Expectation::EXPECT_CAN);
+            if ($expectation === Expectation::CAN || $expectation === Expectation::CANNOT) {
+                $this->expectation = ($expectation === Expectation::CAN);
             }
 
             if (count($parameters)) {
@@ -94,7 +94,7 @@ trait HasAssertions
      */
     public static function __callStaticAssertions(string $method, array $parameters): mixed
     {
-        if ($method === Expectation::EXPECT_ALWAYS->value || $method === Expectation::EXPECT_CAN->value || $method === Expectation::EXPECT_CANNOT->value) {
+        if ($method === Expectation::ALWAYS->value || $method === Expectation::CAN->value || $method === Expectation::CANNOT->value) {
             return static::make()->{$method}(...$parameters);
         }
 
@@ -120,9 +120,9 @@ trait HasAssertions
         assert($this instanceof Story);
 
         $assertion = Assertion::prepare($assertion);
-        $key = $expectation ? $expectation->value : $this->getCurrentExpectationKey();
+        $expectation ??= $this->currentExpectation();
 
-        $this->assertions[$key][] = new StoryAssertion(
+        $this->assertions[$expectation->value][] = new StoryAssertion(
             story: $this,
             assertion: $assertion,
             arguments: $arguments,
@@ -135,12 +135,12 @@ trait HasAssertions
     /**
      * Get the default expectation key to append assertions to.
      */
-    public function getCurrentExpectationKey(): string
+    public function currentExpectation(): Expectation
     {
         return match ($this->expectation) {
-            null => Expectation::EXPECT_ALWAYS->value,
-            true => Expectation::EXPECT_CAN->value,
-            false => Expectation::EXPECT_CANNOT->value,
+            null => Expectation::ALWAYS,
+            true => Expectation::CAN,
+            false => Expectation::CANNOT,
         };
     }
 
@@ -211,7 +211,7 @@ trait HasAssertions
      */
     public function whenCan(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: Expectation::EXPECT_CAN);
+        $this->setAssertion($assertion, expectation: Expectation::CAN);
 
         return $this;
     }
@@ -222,7 +222,7 @@ trait HasAssertions
      */
     public function whenCannot(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: Expectation::EXPECT_CANNOT);
+        $this->setAssertion($assertion, expectation: Expectation::CANNOT);
 
         return $this;
     }
@@ -232,7 +232,7 @@ trait HasAssertions
      */
     public function whenAlways(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: Expectation::EXPECT_ALWAYS);
+        $this->setAssertion($assertion, expectation: Expectation::ALWAYS);
 
         return $this;
     }
@@ -268,14 +268,14 @@ trait HasAssertions
         }
 
         $all = [
-            Expectation::EXPECT_CAN->value => [],
-            Expectation::EXPECT_CANNOT->value => [],
-            Expectation::EXPECT_ALWAYS->value => [],
+            Expectation::CAN->value => [],
+            Expectation::CANNOT->value => [],
+            Expectation::ALWAYS->value => [],
         ];
 
         $keys = [
-            $this->getCurrentExpectationKey(),
-            Expectation::EXPECT_ALWAYS->value,
+            $this->currentExpectation()->value,
+            Expectation::ALWAYS->value,
         ];
 
         $keys = array_unique($keys);

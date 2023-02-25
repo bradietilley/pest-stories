@@ -5,9 +5,9 @@ namespace BradieTilley\StoryBoard\Enums;
 enum Expectation: string
 {
     /** Expectation: Always (Occurs in any scenario) */
-    case EXPECT_ALWAYS = 'always';
+    case ALWAYS = 'always';
     /** Expectation: Only occurs when a story is flagged as `can()` */
-    case EXPECT_CAN = 'can';
+    case CAN = 'can';
     /** Expectation: Only occurs when a story is flagged as `cannot()` */
-    case EXPECT_CANNOT = 'cannot';
+    case CANNOT = 'cannot';
 }

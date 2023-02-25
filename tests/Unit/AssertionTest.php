@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\StoryBoard\Enums\Expectation;
 use BradieTilley\StoryBoard\Exceptions\AssertionNotSpecifiedException;
 use BradieTilley\StoryBoard\Exceptions\ExpectationNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
@@ -130,4 +131,14 @@ test('assertions can be added to a story in various ways', function () {
         'setAssertions',
         'whenCan',
     ]);
+});
+
+test('the current expectation can be fetched', function () {
+    $storyCan = Story::make()->can();
+    $storyCannot = Story::make()->cannot();
+    $storyDefault = Story::make();
+
+    expect($storyCan->currentExpectation())->toBe(Expectation::CAN);
+    expect($storyCannot->currentExpectation())->toBe(Expectation::CANNOT);
+    expect($storyDefault->currentExpectation())->toBe(Expectation::ALWAYS);
 });
