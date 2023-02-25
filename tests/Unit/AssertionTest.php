@@ -196,3 +196,56 @@ test('assertions that are missing a generator throw an exception when performed'
     // The assertion 'something_cool' does not (no generator)
     $story->perform();
 })->throws(AssertionGeneratorNotFoundException::class, 'The `something_cool` assertion generator callback could not be found.');
+
+test('assertion variables are passed through to subsequent assertions', function () {
+    $ran = Collection::make([]);
+
+    Assertion::make('json_response_valid')->variable('json')->as(function () use ($ran) {
+        // Example assertion: Check JSON API response string looks good
+
+        $ran[] = '1';
+
+        return [
+            'data' => [
+                'attributes' => [
+                    'test' => 'foo',
+                ],
+            ],
+        ];
+    });
+
+    Assertion::make('test_is_foo')->variable('testValue')->as(function (array $json) use ($ran) {
+        // Example assertion: Check a specific field matches what you'd expect, by leveragin
+        // the previously returned JSON object
+
+        $ran[] = '2';
+
+        expect($json)->toBe([
+            'data' => [
+                'attributes' => [
+                    'test' => 'foo',
+                ],
+            ],
+        ]);
+
+        return $json['data']['attributes']['test'];
+    });
+
+    Story::make('test_assertions')
+        ->can()
+        ->action(fn () => null)
+        ->assert('json_response_valid')
+        ->assert('test_is_foo')
+        ->assert(function (string $testValue) use ($ran) {
+            $ran[] = '3';
+
+            expect($testValue)->toBe('foo');
+        })
+        ->runAssertions();
+
+    expect($ran->toArray())->toBe([
+        '1',
+        '2',
+        '3',
+    ]);
+});

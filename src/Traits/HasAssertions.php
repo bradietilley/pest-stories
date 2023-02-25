@@ -336,7 +336,10 @@ trait HasAssertions
                     'result' => $this->getResult()->getValue(),
                 ]);
 
-                $storyAssertion->boot($args);
+                $value = $storyAssertion->boot($args);
+
+                // Set the variable
+                $this->setData($storyAssertion->getVariable(), $value);
             }
         } catch (Throwable $e) {
             $this->getResult()->setError($e);
