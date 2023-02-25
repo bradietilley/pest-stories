@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Enums\Expectation;
 use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
@@ -29,15 +30,6 @@ use Closure;
  */
 trait HasAssertions
 {
-    /** Expectation: Always (Occurs in any scenario) */
-    public const EXPECT_ALWAYS = 'always';
-
-    /** Expectation: Only occurs when a story is flagged as `can()` */
-    public const EXPECT_CAN = 'can';
-
-    /** Expectation: Only occurs when a story is flagged as `cannot()` */
-    public const EXPECT_CANNOT = 'cannot';
-
     /**
      * All assertions stored as StoryAssertion objects, excluding
      * inheritance until story is registered.
@@ -45,9 +37,9 @@ trait HasAssertions
      * @var array<string,array<int,StoryAssertion>>
      */
     protected array $assertions = [
-        self::EXPECT_ALWAYS => [],
-        self::EXPECT_CAN => [],
-        self::EXPECT_CANNOT => [],
+        Expectation::EXPECT_ALWAYS->value => [],
+        Expectation::EXPECT_CAN->value => [],
+        Expectation::EXPECT_CANNOT->value => [],
     ];
 
     /**
@@ -71,16 +63,15 @@ trait HasAssertions
      */
     public function __callAssertions(string $method, array $parameters): mixed
     {
-        if ($method === self::EXPECT_ALWAYS || $method === self::EXPECT_CAN || $method === self::EXPECT_CANNOT) {
-            if ($method === self::EXPECT_CAN || $method === self::EXPECT_CANNOT) {
-                $this->expectation = ($method === self::EXPECT_CAN);
+        if ($expectation = Expectation::tryFrom($method)) {
+            if ($expectation === Expectation::EXPECT_CAN || $expectation === Expectation::EXPECT_CANNOT) {
+                $this->expectation = ($expectation === Expectation::EXPECT_CAN);
             }
 
             if (count($parameters)) {
                 $assertion = $parameters[0];
                 $arguments = $parameters[1] ?? [];
                 $order = $parameters[2] ?? null;
-                $expectation = $method;
 
                 return $this->setAssertion(
                     assertion: $assertion,
@@ -103,7 +94,7 @@ trait HasAssertions
      */
     public static function __callStaticAssertions(string $method, array $parameters): mixed
     {
-        if ($method === self::EXPECT_ALWAYS || $method === self::EXPECT_CAN || $method === self::EXPECT_CANNOT) {
+        if ($method === Expectation::EXPECT_ALWAYS->value || $method === Expectation::EXPECT_CAN->value || $method === Expectation::EXPECT_CANNOT->value) {
             return static::make()->{$method}(...$parameters);
         }
 
@@ -115,7 +106,7 @@ trait HasAssertions
     /**
      * Alias for setAssertion()
      */
-    public function assertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, string $expectation = null): static
+    public function assertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, Expectation $expectation = null): static
     {
         return $this->setAssertion($assertion, $arguments, $order, $expectation);
     }
@@ -124,13 +115,14 @@ trait HasAssertions
      * Register a single assertion for this story.
      * Optionally pass in arguments (matched by name) if the assertion supports them.
      */
-    public function setAssertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, string $expectation = null): static
+    public function setAssertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, Expectation $expectation = null): static
     {
         assert($this instanceof Story);
 
         $assertion = Assertion::prepare($assertion);
+        $key = $expectation ? $expectation->value : $this->getCurrentExpectationKey();
 
-        $this->assertions[$expectation ?? $this->getCurrentExpectationKey()][] = new StoryAssertion(
+        $this->assertions[$key][] = new StoryAssertion(
             story: $this,
             assertion: $assertion,
             arguments: $arguments,
@@ -146,16 +138,16 @@ trait HasAssertions
     public function getCurrentExpectationKey(): string
     {
         return match ($this->expectation) {
-            null => self::EXPECT_ALWAYS,
-            true => self::EXPECT_CAN,
-            false => self::EXPECT_CANNOT,
+            null => Expectation::EXPECT_ALWAYS->value,
+            true => Expectation::EXPECT_CAN->value,
+            false => Expectation::EXPECT_CANNOT->value,
         };
     }
 
     /**
      * Alias for setAssertions()
      */
-    public function assertions(iterable $assertions, string $expectation = null): static
+    public function assertions(iterable $assertions, Expectation $expectation = null): static
     {
         return $this->setAssertions($assertions, expectation: $expectation);
     }
@@ -165,7 +157,7 @@ trait HasAssertions
      *
      * The order of each assertion is inherited from the assertions themselves.
      */
-    public function setAssertions(iterable $assertions, string $expectation = null): static
+    public function setAssertions(iterable $assertions, Expectation $expectation = null): static
     {
         foreach ($assertions as $assertion => $arguments) {
             // Closures and classes will be int key
@@ -219,7 +211,7 @@ trait HasAssertions
      */
     public function whenCan(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: self::EXPECT_CAN);
+        $this->setAssertion($assertion, expectation: Expectation::EXPECT_CAN);
 
         return $this;
     }
@@ -230,7 +222,7 @@ trait HasAssertions
      */
     public function whenCannot(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: self::EXPECT_CANNOT);
+        $this->setAssertion($assertion, expectation: Expectation::EXPECT_CANNOT);
 
         return $this;
     }
@@ -240,7 +232,7 @@ trait HasAssertions
      */
     public function whenAlways(string|Closure|Assertion $assertion): static
     {
-        $this->setAssertion($assertion, expectation: self::EXPECT_ALWAYS);
+        $this->setAssertion($assertion, expectation: Expectation::EXPECT_ALWAYS);
 
         return $this;
     }
@@ -276,14 +268,14 @@ trait HasAssertions
         }
 
         $all = [
-            self::EXPECT_CAN => [],
-            self::EXPECT_CANNOT => [],
-            self::EXPECT_ALWAYS => [],
+            Expectation::EXPECT_CAN->value => [],
+            Expectation::EXPECT_CANNOT->value => [],
+            Expectation::EXPECT_ALWAYS->value => [],
         ];
 
         $keys = [
             $this->getCurrentExpectationKey(),
-            self::EXPECT_ALWAYS,
+            Expectation::EXPECT_ALWAYS->value,
         ];
 
         $keys = array_unique($keys);

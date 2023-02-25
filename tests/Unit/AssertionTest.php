@@ -91,7 +91,7 @@ test('assertions can be defined in various ways', function () {
 
     $assertion3 = fn () => $ran[] = '3';
 
-    $story = Story::make()
+    Story::make()
         ->can()
         ->assert($assertion1)
         ->assert($assertion2)
@@ -111,7 +111,7 @@ test('assertions can be defined in various ways', function () {
 test('assertions can be added to a story in various ways', function () {
     $ran = collect();
 
-    $story = Story::make()
+    Story::make()
         ->can()
         ->action(fn () => null)
         ->assert(fn () => $ran[] = 'assert')

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\StoryBoard\Contracts;
 
+use BradieTilley\StoryBoard\Enums\Expectation;
 use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\StoryAssertion;
 use Closure;
@@ -18,13 +19,13 @@ interface WithAssertions
     /**
      * Alias for setAssertion()
      */
-    public function assertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, string $expectation = null): static;
+    public function assertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, Expectation $expectation = null): static;
 
     /**
      * Register a single assertion for this story.
      * Optionally pass in arguments (matched by name) if the assertion supports them.
      */
-    public function setAssertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, string $expectation = null): static;
+    public function setAssertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, Expectation $expectation = null): static;
 
     /**
      * Get the default expectation key to append assertions to.
@@ -34,14 +35,14 @@ interface WithAssertions
     /**
      * Alias for setAssertions()
      */
-    public function assertions(iterable $assertions, string $expectation = null): static;
+    public function assertions(iterable $assertions, Expectation $expectation = null): static;
 
     /**
      * Register multiple assertions for this story.
      *
      * The order of each assertion is inherited from the assertions themselves.
      */
-    public function setAssertions(iterable $assertions, string $expectation = null): static;
+    public function setAssertions(iterable $assertions, Expectation $expectation = null): static;
 
     /**
      * Get all regsitered assertions for this story (no inheritance lookup)
