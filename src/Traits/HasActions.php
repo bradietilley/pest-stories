@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\WithAssertions;
-use BradieTilley\StoryBoard\Enums\Expectation;
-
 use function BradieTilley\StoryBoard\debug;
+use BradieTilley\StoryBoard\Enums\Expectation;
 use function BradieTilley\StoryBoard\error;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
