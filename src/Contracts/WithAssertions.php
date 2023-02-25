@@ -91,4 +91,9 @@ interface WithAssertions
      * Inherit assertions from ancestors
      */
     public function inheritAssertions(): void;
+
+    /**
+     * Run and verify this story's assertions
+     */
+    public function runAssertions(): void;
 }

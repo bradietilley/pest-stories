@@ -301,6 +301,9 @@ trait HasAssertions
         $this->assertions = $all;
     }
 
+    /**
+     * Run and verify this story's assertions
+     */
     public function runAssertions(): void
     {
         if ($this->expectation === null) {
