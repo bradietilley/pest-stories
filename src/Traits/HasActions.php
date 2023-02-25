@@ -255,43 +255,7 @@ trait HasActions
             throw new \Exception('todo finish');
         }
 
-        if ($this->expectation === null) {
-            throw StoryBoardException::expectationNotSpecified($this);
-        }
-
-        $key = $this->currentExpectation();
-        $storyAssertions = $this->assertions[$key->value];
-
-        if ($key !== Expectation::ALWAYS) {
-            // Merge "always" assertions with the "can" or "cannot" assertions
-            $storyAssertions = array_merge(
-                $this->assertions[Expectation::ALWAYS->value],
-                $storyAssertions,
-            );
-        }
-
-        if (empty($storyAssertions)) {
-            throw StoryBoardException::assertionNotSpecified($this);
-        }
-
-        try {
-            foreach ($storyAssertions as $storyAssertion) {
-                $storyAssertion->register();
-            }
-
-            foreach ($storyAssertions as $storyAssertion) {
-                /** @var StoryAssertion $storyAssertion */
-                $args = array_replace($this->getParameters(), [
-                    'result' => $this->getResult()->getValue(),
-                ]);
-
-                $storyAssertion->boot($args);
-            }
-        } catch (Throwable $e) {
-            $this->getResult()->setError($e);
-
-            throw $e;
-        }
+        $this->runAssertions();
 
         return $this;
     }
