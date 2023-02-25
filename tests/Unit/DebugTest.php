@@ -108,7 +108,7 @@ test('debug information is printed when debug function is called', function (str
         8 => [
             'story' => $story,
             'test' => null,
-            'can' => true,
+            'expectation' => true,
             'user' => null,
             'result' => $story->getResult(),
         ],
@@ -117,7 +117,7 @@ test('debug information is printed when debug function is called', function (str
         11 => [
             'story' => $story,
             'test' => null,
-            'can' => true,
+            'expectation' => true,
             'user' => null,
             'result' => null,
         ],
@@ -126,7 +126,7 @@ test('debug information is printed when debug function is called', function (str
         14 => [
             'story' => $story,
             'test' => null,
-            'can' => true,
+            'expectation' => true,
             'user' => null,
             'result' => null,
         ],
@@ -134,7 +134,7 @@ test('debug information is printed when debug function is called', function (str
         16 => [
             'story' => $story,
             'test' => null,
-            'can' => true,
+            'expectation' => true,
             'user' => null,
             'result' => null,
         ],

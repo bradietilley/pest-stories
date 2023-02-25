@@ -40,12 +40,12 @@ test('you may create a story with an assertion and unset the assertion for a chi
             // cannot: overrwides from 'parent'
             Story::make()->cannot()->name('child cannot explicit'),
             // null: overrwides from 'parent'
-            Story::make()->noAssertion()->name('child unset')->stories([
+            Story::make()->resetExpectation()->name('child unset')->stories([
                 // null: inherits from 'child unset'
                 Story::make('grandchild null implicit'),
-                // can: overrides noAssertion from 'child unset'
+                // can: overrides resetExpectation from 'child unset'
                 Story::make()->can()->name('grandchild can explicit'),
-                // cannot: overrides noAssertion from 'child unset'
+                // cannot: overrides resetExpectation from 'child unset'
                 Story::make()->cannot()->name('grandchild cannot explicit'),
             ]),
         ]);

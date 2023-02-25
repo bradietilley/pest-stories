@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\StoryBoard;
 
 use BradieTilley\StoryBoard\Contracts\WithActions;
+use BradieTilley\StoryBoard\Contracts\WithAssertions;
 use BradieTilley\StoryBoard\Contracts\WithCallbacks;
 use BradieTilley\StoryBoard\Contracts\WithData;
 use BradieTilley\StoryBoard\Contracts\WithDebug;
@@ -24,6 +25,7 @@ use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Config;
 use BradieTilley\StoryBoard\Story\DebugContainer;
 use BradieTilley\StoryBoard\Traits\HasActions;
+use BradieTilley\StoryBoard\Traits\HasAssertions;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
 use BradieTilley\StoryBoard\Traits\HasData;
 use BradieTilley\StoryBoard\Traits\HasDebug;
@@ -43,9 +45,11 @@ use Closure;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 
-class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
+class Story implements WithActions, WithAssertions, WithCallbacks, WithData, WithDebug, WithInheritance, WithIsolation, WithName, WithNameShortcuts, WithPendingContext, WithPerformer, WithSingleRunner, WithStories, WithTimeout, WithTags, WithTest, WithTestCaseShortcuts
 {
     use Conditionable;
+    use HasActions;
+    use HasAssertions;
     use HasCallbacks;
     use HasData;
     use HasDebug;
@@ -55,7 +59,6 @@ class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInhe
     use HasIsolation;
     use HasPendingContext;
     use HasPerformer;
-    use HasActions;
     use HasSingleRunner;
     use HasStories;
     use HasTags;
@@ -109,7 +112,8 @@ class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInhe
             in_array($name, [
                 'can',
                 'cannot',
-            ]) => $this->__callActions($name, $args),
+                'always',
+            ]) => $this->__callAssertions($name, $args),
             default => $this->__callMacroable($name, $args),
         };
     }
@@ -126,7 +130,8 @@ class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInhe
             in_array($name, [
                 'can',
                 'cannot',
-            ]) => static::__callStaticActions($name, $args),
+                'always',
+            ]) => static::__callStaticAssertions($name, $args),
             default => static::__callStaticMacroable($name, $args),
         };
     }
@@ -150,7 +155,7 @@ class Story implements WithActions, WithCallbacks, WithData, WithDebug, WithInhe
         $data = array_replace($this->allData(), [
             'story' => $this,
             'test' => $this->getTest(),
-            'can' => $this->can,
+            'expectation' => $this->expectation,
             'user' => $this->getUser(),
             'result' => $this->getResult(),
         ], $additional);
