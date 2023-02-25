@@ -28,11 +28,6 @@ interface WithAssertions
     public function setAssertion(string|Closure|Assertion $assertion, array $arguments = [], int $order = null, Expectation $expectation = null): static;
 
     /**
-     * Get the default expectation key to append assertions to.
-     */
-    public function currentExpectation(): Expectation;
-
-    /**
      * Alias for setAssertions()
      */
     public function assertions(iterable $assertions, Expectation $expectation = null): static;
@@ -50,6 +45,11 @@ interface WithAssertions
      * @return array<string,array<int,StoryAssertion>>
      */
     public function getAssertions(): array;
+
+    /**
+     * Get the default expectation key to append assertions to.
+     */
+    public function currentExpectation(): Expectation;
 
     /**
      * Define the given assertions for can cannot or any scenario
