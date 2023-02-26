@@ -249,9 +249,7 @@ trait HasActions
             return $this;
         }
 
-        if (! $this instanceof WithAssertions) {
-            throw new \Exception('todo finish');
-        }
+        assert($this instanceof WithAssertions);
 
         $this->runAssertions();
 

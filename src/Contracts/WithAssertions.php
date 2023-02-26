@@ -96,4 +96,9 @@ interface WithAssertions
      * Run and verify this story's assertions
      */
     public function runAssertions(): void;
+
+    /**
+     * Get all names from all registered assertions
+     */
+    public function getNameFromAssertions(): ?string;
 }

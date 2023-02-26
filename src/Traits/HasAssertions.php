@@ -11,6 +11,7 @@ use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\StoryAssertion;
 use Closure;
+use Illuminate\Support\Collection;
 use Throwable;
 
 /**
@@ -302,14 +303,13 @@ trait HasAssertions
     }
 
     /**
-     * Run and verify this story's assertions
+     * Get all can/cannot assertions based on the current expectation,
+     * mixed in with the always assertions if applicable
+     *
+     * @return Collection<int, StoryAssertion>
      */
-    public function runAssertions(): void
+    protected function getRelevantAssertions(): Collection
     {
-        if ($this->expectation === null) {
-            throw StoryBoardException::expectationNotSpecified($this);
-        }
-
         $key = $this->currentExpectation();
         $storyAssertions = $this->assertions[$key->value];
 
@@ -321,7 +321,21 @@ trait HasAssertions
             );
         }
 
-        if (empty($storyAssertions)) {
+        return Collection::make($storyAssertions);
+    }
+
+    /**
+     * Run and verify this story's assertions
+     */
+    public function runAssertions(): void
+    {
+        if ($this->expectation === null) {
+            throw StoryBoardException::expectationNotSpecified($this);
+        }
+
+        $storyAssertions = $this->getRelevantAssertions();
+
+        if ($storyAssertions->isEmpty()) {
             throw StoryBoardException::assertionNotSpecified($this);
         }
 
@@ -346,5 +360,18 @@ trait HasAssertions
 
             throw $e;
         }
+    }
+
+    /**
+     * Get all names from all registered assertions
+     */
+    public function getNameFromAssertions(): ?string
+    {
+        // Just this level
+        $assertions = $this->getRelevantAssertions()
+            ->map(fn (StoryAssertion $storyAssertion) => $storyAssertion->getAppendName())
+            ->filter();
+
+        return $assertions->isNotEmpty() ? $assertions->implode(' ') : null;
     }
 }

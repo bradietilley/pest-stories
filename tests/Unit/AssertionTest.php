@@ -7,6 +7,7 @@ use BradieTilley\StoryBoard\Exceptions\AssertionNotSpecifiedException;
 use BradieTilley\StoryBoard\Exceptions\ExpectationNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Assertion;
+use BradieTilley\StoryBoard\Story\StoryAssertion;
 use Illuminate\Support\Collection;
 
 test('a story must have at least one expectation', function () {
@@ -119,8 +120,8 @@ test('assertions can be added to a story in various ways', function () {
         ->can()
         ->action(fn () => null)
         ->assert(fn () => $ran[] = 'assert')
-        ->setAssertion(fn () => $ran[] = 'setAssertion')
-        ->setAssertions([
+        ->assertion(fn () => $ran[] = 'setAssertion')
+        ->assertions([
             fn () => $ran[] = 'setAssertions',
         ])
         ->whenCan(fn () => $ran[] = 'whenCan')
@@ -248,4 +249,95 @@ test('assertion variables are passed through to subsequent assertions', function
         '2',
         '3',
     ]);
+});
+
+test('assertions are added to their respective expectations', function () {
+    $assertion1 = Assertion::make('assertion_1')->as(fn () => null);
+    $assertion2 = Assertion::make('assertion_2')->as(fn () => null);
+    $assertion3 = Assertion::make('assertion_3')->as(fn () => null);
+    $assertion4 = Assertion::make('assertion_4')->as(fn () => null);
+    $assertion5 = Assertion::make('assertion_5')->as(fn () => null);
+    $assertion6 = Assertion::make('assertion_6')->as(fn () => null);
+
+    $parent = Story::make('test')
+        ->assert(
+            $assertion1,
+            $assertion2,
+            $assertion3,
+        )
+        ->action(fn () => null)
+        ->stories([
+            $story1 = Story::make()->can()->assertion($assertion4),
+            $story2 = Story::make()->cannot()->assertion($assertion5),
+            $story3 = Story::make()->assertion($assertion6),
+        ])
+        ->register();
+
+    $story1Assertions = collect($story1->getAssertions())
+        ->map(
+            fn (array $assertions) => collect($assertions)->map(
+                fn (StoryAssertion $assertion) => $assertion->getAssertion()->getNameString()
+            ),
+        )
+        ->toArray();
+
+    expect($story1Assertions)->toBe([
+        'can' => [
+            'assertion_4',
+            'assertion_1',
+        ],
+        'cannot' => [],
+        'always' => [
+            'assertion_3',
+        ],
+    ]);
+
+    $story2Assertions = collect($story2->getAssertions())
+        ->map(
+            fn (array $assertions) => collect($assertions)->map(
+                fn (StoryAssertion $assertion) => $assertion->getAssertion()->getNameString()
+            ),
+        )
+        ->toArray();
+
+    expect($story2Assertions)->toBe([
+        'can' => [],
+        'cannot' => [
+            'assertion_5',
+            'assertion_2',
+        ],
+        'always' => [
+            'assertion_3',
+        ],
+    ]);
+
+    $story3Assertions = collect($story3->getAssertions())
+        ->map(
+            fn (array $assertions) => collect($assertions)->map(
+                fn (StoryAssertion $assertion) => $assertion->getAssertion()->getNameString()
+            ),
+        )
+        ->toArray();
+
+    expect($story3Assertions)->toBe([
+        'can' => [],
+        'cannot' => [],
+        'always' => [
+            'assertion_6',
+            'assertion_3',
+        ],
+    ]);
+});
+
+test('an assertion can append a name to the story', function () {
+    Assertion::make('201_response')->as(fn () => null)->appendName('with 201 response');
+    Assertion::make('valid_json')->as(fn () => null)->appendName('with valid JSON');
+
+    $story = Story::make('can create post')
+        ->action(fn () => null)
+        ->assertion('201_response')
+        ->assertion('valid_json')
+        ->register();
+
+    expect($story->getLevelName())->toBe('can create post with 201 response with valid JSON');
 });
