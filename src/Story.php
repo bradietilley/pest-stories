@@ -163,16 +163,4 @@ class Story implements WithActions, WithAssertions, WithCallbacks, WithData, Wit
 
         return $data;
     }
-
-    /**
-     * Set a callback in the same way as WithCallbacks::setCallback() except
-     * if the action is an AbstractAction then boot the action for the callback
-     */
-    public function setCallbackAction(string $name, Closure|AbstractAction|null $action): static
-    {
-        return $this->setCallback(
-            $name,
-            ($action instanceof AbstractAction) ? fn () => $action->boot($this) : $action,
-        );
-    }
 }
