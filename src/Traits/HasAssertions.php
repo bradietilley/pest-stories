@@ -311,17 +311,30 @@ trait HasAssertions
     protected function getRelevantAssertions(): Collection
     {
         $key = $this->currentExpectation();
-        $storyAssertions = $this->assertions[$key->value];
 
-        if ($key !== Expectation::ALWAYS) {
-            // Merge "always" assertions with the "can" or "cannot" assertions
-            $storyAssertions = array_merge(
-                $this->assertions[Expectation::ALWAYS->value],
-                $storyAssertions,
-            );
-        }
+        $assertions = collect([
+            Expectation::ALWAYS,
+            Expectation::CAN,
+            Expectation::CANNOT,
+        ]);
 
-        return Collection::make($storyAssertions);
+        $assertions = $assertions
+            ->pluck('value')
+            ->flip()
+            ->only([
+                Expectation::ALWAYS->value,
+                $key->value,
+            ])
+            ->map(
+                /** @phpstan-ignore-next-line */
+                fn (int $value, string $key) => collect($this->assertions[$key])
+                    ->sortBy(fn (StoryAssertion $assertion) => $assertion->getOrder()),
+            )
+            ->collapse()
+            ->values();
+
+        /** @phpstan-ignore-next-line */
+        return $assertions;
     }
 
     /**

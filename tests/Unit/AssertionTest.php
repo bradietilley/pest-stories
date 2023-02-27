@@ -10,6 +10,8 @@ use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\StoryAssertion;
 use Illuminate\Support\Collection;
 
+beforeEach(fn () => Assertion::flush());
+
 test('a story must have at least one expectation', function () {
     $story = Story::make()
         ->action(fn () => null)
@@ -340,4 +342,32 @@ test('an assertion can append a name to the story', function () {
         ->register();
 
     expect($story->getLevelName())->toBe('can create post with 201 response with valid JSON');
+});
+
+test('assertions are booted in order of order property', function () {
+    $ran = collect();
+
+    Assertion::make('assertion_1')->as(fn () => $ran[] = '1');
+    Assertion::make('assertion_2')->as(fn () => $ran[] = '2');
+    Assertion::make('assertion_3')->as(fn () => $ran[] = '3');
+    Assertion::make('assertion_5')->as(fn () => $ran[] = '5')->order(5);
+    Assertion::make('assertion_4')->as(fn () => $ran[] = '4')->order(4);
+
+    Story::make('test')
+        ->action(fn () => null)
+        ->can()
+        ->assert('assertion_3')
+        ->assert('assertion_5')
+        ->assert('assertion_4')
+        ->assert('assertion_2')
+        ->assert('assertion_1')
+        ->runAssertions();
+
+    expect($ran->toArray())->toBe([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+    ]);
 });
