@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\StoryBoard\Traits;
 
 use BradieTilley\StoryBoard\Contracts\WithActions;
+use BradieTilley\StoryBoard\Contracts\WithAssertions;
 use BradieTilley\StoryBoard\Contracts\WithInheritance;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Config;
@@ -90,16 +91,21 @@ trait HasName
      */
     public function getLevelName(): string
     {
-        $name = $this->getNameString();
+        $name = trim($this->getNameString());
 
         /**
          * Append names from actions (where actions opt to `->appendName()`)
          */
         if ($this instanceof WithActions) {
-            $name = "{$name} {$this->getNameFromActions()}";
+            $name = trim("{$name} {$this->getNameFromActions()}");
         }
 
-        $name = trim($name);
+        /**
+         * Append names from actions (where actions opt to `->appendName()`)
+         */
+        if ($this instanceof WithAssertions) {
+            $name = trim("{$name} {$this->getNameFromAssertions()}");
+        }
 
         return $name;
     }

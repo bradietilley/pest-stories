@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace BradieTilley\StoryBoard\Traits;
 
+use BradieTilley\StoryBoard\Contracts\WithAssertions;
 use function BradieTilley\StoryBoard\debug;
 use function BradieTilley\StoryBoard\error;
-use BradieTilley\StoryBoard\Exceptions\InvalidMagicMethodHandlerException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
+use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\Result;
 use BradieTilley\StoryBoard\Story\StoryAction;
 use Closure;
@@ -18,10 +19,10 @@ use Throwable;
 /**
  * This object has actions, expectations and assertions
  *
- * @method static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static static can(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
- * @method static static cannot(string|Closure|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static can(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static cannot(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static can(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
+ * @method static static cannot(string|Closure|Assertion|null $name = null, string|Closure|null $assertion = null) Named arguments not supported (magic)
  *
  * @mixin \BradieTilley\StoryBoard\Story
  */
@@ -35,52 +36,6 @@ trait HasActions
      * @var array<string,StoryAction>
      */
     protected array $actions = [];
-
-    /**
-     * Current expectation
-     */
-    protected ?bool $can = null;
-
-    /**
-     * Flag that indicates that inheritance must halt at
-     * this story in the 'family tree'. If '$can' is 'null'
-     * here on this Story, we should not look any further.
-     *
-     * Set to true when noAssertion() is run. This will override
-     * a parent can/cannot and reset it back to null for this
-     * story and its children.
-     */
-    protected bool $canHalt = false;
-
-    /**
-     * Method alias(es) for Actions trait
-     */
-    public function __callActions(string $method, array $parameters): mixed
-    {
-        if ($method === 'can' || $method === 'cannot') {
-            $method = 'set'.ucfirst($method);
-
-            return $this->{$method}(...$parameters);
-        }
-
-        // @codeCoverageIgnoreStart
-        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_METHOD);
-        // @codeCoverageIgnoreEnd
-    }
-
-    /**
-     * Static method alias(es) for Actions trait
-     */
-    public static function __callStaticActions(string $method, array $parameters): mixed
-    {
-        if ($method === 'can' || $method === 'cannot') {
-            return static::make()->{$method}(...$parameters);
-        }
-
-        // @codeCoverageIgnoreStart
-        throw StoryBoardException::invalidMagicMethodHandlerException($method, InvalidMagicMethodHandlerException::TYPE_STATIC_METHOD);
-        // @codeCoverageIgnoreEnd
-    }
 
     /**
      * Alias for setAction()
@@ -277,78 +232,6 @@ trait HasActions
         return $actions->isNotEmpty() ? $actions->implode(' ') : null;
     }
 
-    public function assert(Closure $can = null, Closure $cannot = null): static
-    {
-        $this->setCallback('can', $can);
-        $this->setCallback('cannot', $cannot);
-
-        return $this;
-    }
-
-    public function noAssertion(): static
-    {
-        $this->can = null;
-        $this->canHalt = true;
-
-        return $this;
-    }
-
-    /**
-     * Specify that you expect that this task 'can run' or 'will pass'
-     *
-     * The name and callback can be passed in in either order.
-     */
-    public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static
-    {
-        if (is_string($name)) {
-            $this->name($name);
-        } elseif (is_string($callback)) {
-            $this->name($callback);
-        }
-
-        if ($name instanceof Closure) {
-            $this->setCallback('can', $name);
-        } elseif ($callback instanceof Closure) {
-            $this->setCallback('can', $callback);
-        }
-
-        $this->can = true;
-
-        return $this;
-    }
-
-    /**
-     * Specify that you expect that this task 'cannot run' or 'will fail'
-     *
-     * The name and callback can be passed in in either order.
-     */
-    public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static
-    {
-        if (is_string($name)) {
-            $this->name($name);
-        } elseif (is_string($callback)) {
-            $this->name($callback);
-        }
-
-        if ($name instanceof Closure) {
-            $this->setCallback('cannot', $name);
-        } elseif ($callback instanceof Closure) {
-            $this->setCallback('cannot', $callback);
-        }
-
-        $this->can = false;
-
-        return $this;
-    }
-
-    /**
-     * Get the 'can' / 'cannot' flag for this story
-     */
-    public function itCan(): ?bool
-    {
-        return $this->can;
-    }
-
     /**
      * Perform the assertions
      */
@@ -366,27 +249,9 @@ trait HasActions
             return $this;
         }
 
-        if ($this->can === null) {
-            throw StoryBoardException::expectationNotSpecified($this);
-        }
+        assert($this instanceof WithAssertions);
 
-        $callback = $this->can ? 'can' : 'cannot';
-
-        if (! $this->hasCallback($callback)) {
-            throw StoryBoardException::assertionCheckerNotSpecified($this);
-        }
-
-        try {
-            $args = array_replace($this->getParameters(), [
-                'result' => $this->getResult()->getValue(),
-            ]);
-
-            $this->runCallback($callback, $args);
-        } catch (Throwable $e) {
-            $this->getResult()->setError($e);
-
-            throw $e;
-        }
+        $this->runAssertions();
 
         return $this;
     }
@@ -405,17 +270,5 @@ trait HasActions
     public function inheritActions(): void
     {
         $this->actions = $this->resolveInheritedActions();
-    }
-
-    /**
-     * Inherit assertions from ancestors
-     */
-    public function inheritAssertions(): void
-    {
-        $can = $this->inheritPropertyBool('can');
-
-        if ($can !== null) {
-            $this->can = $can;
-        }
     }
 }

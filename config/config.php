@@ -87,6 +87,13 @@ return [
         'action' => \BradieTilley\StoryBoard\Story\Action::class,
 
         /**
+         * The class to use when creating Assertions via `Assertion::make()` method or the `assertion()` function.
+         *
+         * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\AbstractAction`
+         */
+        'assertion' => \BradieTilley\StoryBoard\Story\Assertion::class,
+
+        /**
          * The class to use when creating Tags via `Tag::make()` method or the `tag()` function.
          *
          * The class returned must be an instance of `\BradieTilley\StoryBoard\Story\Tag`

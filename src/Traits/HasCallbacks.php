@@ -62,6 +62,10 @@ trait HasCallbacks
      */
     public function setCallback(string $name, ?Closure $callback): static
     {
+        if ($callback === null) {
+            return $this;
+        }
+
         $this->registeredCallbacks[$name] = $callback;
 
         return $this;
@@ -158,13 +162,10 @@ trait HasCallbacks
         $all = [];
 
         foreach (array_reverse($this->getAncestors()) as $level) {
+            /** @var array<Closure> $callbacks */
             $callbacks = (array) $level->getProperty('registeredCallbacks');
 
             foreach ($callbacks as $name => $callback) {
-                if ($callback === null) {
-                    continue;
-                }
-
                 $all[$name] = $callback;
             }
         }

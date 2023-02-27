@@ -225,10 +225,10 @@ trait HasTest
          * Only the most lowest level story should get prefixed with can or cannot
          */
         if (! $this->hasStories()) {
-            if ($this->can !== null) {
-                $can = $this->can ? 'Can' : 'Cannot';
+            if ($this->expectation !== null) {
+                $expectation = $this->expectation ? 'Can' : 'Cannot';
 
-                $name = "[{$can}] {$name}";
+                $name = "[{$expectation}] {$name}";
             }
 
             if ($this->appendTags) {

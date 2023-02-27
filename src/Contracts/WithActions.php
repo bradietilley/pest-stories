@@ -84,36 +84,6 @@ interface WithActions
     public function getNameFromActions(): ?string;
 
     /**
-     * Registered one or two callbacks to run when the expectation (can or cannot)
-     * is applied.
-     */
-    public function assert(Closure $can = null, Closure $cannot = null): static;
-
-    /**
-     * Specify no expectation (reset; block inheritance)
-     */
-    public function noAssertion(): static;
-
-    /**
-     * Specify that you expect that this task 'can run' or 'will pass'
-     *
-     * The name and callback can be passed in in either order.
-     */
-    public function setCan(string|Closure|null $name = null, string|Closure|null $callback = null): static;
-
-    /**
-     * Specify that you expect that this task 'cannot run' or 'will fail'
-     *
-     * The name and callback can be passed in in either order.
-     */
-    public function setCannot(string|Closure|null $name = null, string|Closure|null $callback = null): static;
-
-    /**
-     * Get the 'can' / 'cannot' flag for this story
-     */
-    public function itCan(): ?bool;
-
-    /**
      * Perform the assertions
      */
     public function perform(): static;
@@ -127,9 +97,4 @@ interface WithActions
      * Inherit all actions from this story's parent
      */
     public function inheritActions(): void;
-
-    /**
-     * Inherit assertions from ancestors
-     */
-    public function inheritAssertions(): void;
 }
