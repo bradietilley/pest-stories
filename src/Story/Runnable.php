@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BradieTilley\StoryBoard\Story;
 
+use BradieTilley\StoryBoard\Exceptions\RunnableGeneratorNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\RunnableNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Traits\HasCallbacks;
@@ -14,7 +16,7 @@ use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-abstract class AbstractAction
+class Runnable
 {
     use HasName;
     use HasOrder;
@@ -23,11 +25,20 @@ abstract class AbstractAction
 
     protected static array $stored = [];
 
+    protected string $variable;
+
+    protected ?string $appendName = null;
+
+    protected int $order;
+
     public function __construct(
         protected string $name,
-        ?Closure $generator,
-        protected int $order,
+        ?Closure $generator = null,
+        ?string $variable = null,
+        ?int $order = null,
     ) {
+        $this->variable = $variable ?? $name;
+        $this->order = $order ?? $this->getNextOrder();
         $this->setCallback('generator', $generator);
     }
 
@@ -112,7 +123,7 @@ abstract class AbstractAction
     {
         static::$orderCounter = 0;
 
-        if (static::class === AbstractAction::class) {
+        if (static::class === Runnable::class) {
             static::$stored = [];
 
             return;
@@ -124,12 +135,20 @@ abstract class AbstractAction
     /**
      * Get an exception for action not found
      */
-    abstract protected static function notFound(string $name): StoryBoardException;
+    protected static function notFound(string $name): StoryBoardException
+    {
+        /** @todo */
+        return new RunnableNotFoundException();
+    }
 
     /**
      * Get an exception for generator not found
      */
-    abstract protected static function generatorNotFound(string $name): StoryBoardException;
+    protected static function generatorNotFound(string $name): StoryBoardException
+    {
+        /** @todo */
+        return new RunnableGeneratorNotFoundException();
+    }
 
     /**
      * Fetch a action from the registrar
@@ -184,14 +203,17 @@ abstract class AbstractAction
     /**
      * Get the alias for this type of action (for use in config)
      */
-    abstract public static function getAliasName(): string;
+    public static function getAliasName(): string
+    {
+        return 'runnable';
+    }
 
     /**
      * Make and register this action
      */
     public static function make(string $name, ?Closure $generator = null, ?string $variable = null, ?int $order = null): static
     {
-        $class = Config::getAliasClass(static::getAliasName(), AbstractAction::class);
+        $class = Config::getAliasClass(static::getAliasName(), Runnable::class);
 
         /** @var static $action */
         $action = new $class($name, $generator, $variable, $order);
@@ -233,5 +255,41 @@ abstract class AbstractAction
         $this->resetRepeater();
 
         return $this;
+    }
+
+    /**
+     * Get the name of the variable
+     */
+    public function getVariable(): string
+    {
+        return $this->variable;
+    }
+
+    /**
+     * Set the name of the variable
+     */
+    public function variable(string $variable): static
+    {
+        $this->variable = $variable;
+
+        return $this;
+    }
+
+    /**
+     * Append the name of this assertion to the tests
+     */
+    public function appendName(string $name = null): static
+    {
+        $this->appendName = $name ?? str_replace('_', ' ', $this->getNameString());
+
+        return $this;
+    }
+
+    /**
+     * Get the name to append to the test case, if any was specified
+     */
+    public function getAppendName(): ?string
+    {
+        return $this->appendName;
     }
 }

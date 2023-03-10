@@ -4,9 +4,9 @@ use BradieTilley\StoryBoard\Exceptions\ActionGeneratorNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\ActionNotFoundException;
 use BradieTilley\StoryBoard\Exceptions\ActionNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
-use BradieTilley\StoryBoard\Story\AbstractAction;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Assertion;
+use BradieTilley\StoryBoard\Story\Runnable;
 use Illuminate\Support\Collection;
 
 test('a storyboard with multiple nested stories can collate required actions', function () {
@@ -323,7 +323,7 @@ test('action flush forgets all registered actions', function () {
     expect(Action::fetch('something'))->toBeInstanceOf(Action::class);
 
     // Clear all all
-    AbstractAction::flush();
+    Runnable::flush();
 
     // But now can't fetch action (throws exception)
     try {
