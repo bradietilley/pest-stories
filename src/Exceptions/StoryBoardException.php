@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\StoryBoard\Exceptions;
 
 use BradieTilley\StoryBoard\Story;
+use BradieTilley\StoryBoard\Story\Assertion;
 use Exception;
 
 abstract class StoryBoardException extends Exception
@@ -50,8 +51,9 @@ abstract class StoryBoardException extends Exception
     {
         $term = $story->itCan() ? 'can' : 'cannot';
 
-        return new RunnableNotSpecifiedException(
-            sprintf('No "%s" assertion was found for the story `%s`', $term, $story->getFullName()),
+        return self::runnableNotSpecified(
+            sprintf('"%s" %s', $term, Assertion::getAliasName()),
+            $story,
         );
     }
 
