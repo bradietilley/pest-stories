@@ -133,26 +133,23 @@ class Runnable
     }
 
     /**
-     * Get an exception for action not found
+     * Runnable not found
      */
-    protected static function notFound(string $name): StoryBoardException
+    protected static function notFound(string $name): RunnableNotFoundException
     {
-        /** @todo */
-        return new RunnableNotFoundException();
+        return StoryBoardException::runnableNotFound(static::getAliasName(), $name);
     }
 
     /**
-     * Get an exception for generator not found
+     * Runnable Generator not found
      */
-    protected static function generatorNotFound(string $name): StoryBoardException
+    protected static function generatorNotFound(string $name): RunnableGeneratorNotFoundException
     {
-        /** @todo */
-        return new RunnableGeneratorNotFoundException();
+        return StoryBoardException::runnableGeneratorNotFound(static::getAliasName(), $name);
     }
 
     /**
      * Fetch a action from the registrar
-     *
      *
      * @throws StoryBoardException
      */

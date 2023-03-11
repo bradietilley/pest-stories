@@ -177,7 +177,7 @@ trait HasActions
     public function bootActions(): static
     {
         if (empty($this->actions)) {
-            throw StoryBoardException::actionNotSpecified($this);
+            throw StoryBoardException::runnableNotSpecified(Action::getAliasName(), $this);
         }
 
         $result = $this->getResult();

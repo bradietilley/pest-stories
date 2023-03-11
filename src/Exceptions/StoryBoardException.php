@@ -10,36 +10,12 @@ use Exception;
 abstract class StoryBoardException extends Exception
 {
     /**
-     * Exception for when an `AbstractAction` generator callback is
-     * not specified.
-     */
-    public static function actionGeneratorNotFound(string $action): ActionGeneratorNotFoundException
-    {
-        return new ActionGeneratorNotFoundException(
-            sprintf('The `%s` action generator callback could not be found.', $action),
-        );
-    }
-
-    /**
-     * Exception for when an action added to a story cannot not found.
-     *
-     * Likely causes of this is a referenced action contains a spelling mistake
-     * or the Action you're referencing was never created.
-     */
-    public static function actionNotFound(string $action): ActionNotFoundException
-    {
-        return new ActionNotFoundException(
-            sprintf('The `%s` action could not be found.', $action),
-        );
-    }
-
-    /**
      * Exception for when a Story contains no actions (but requires at least one)
      */
-    public static function actionNotSpecified(Story $story): ActionNotSpecifiedException
+    public static function runnableNotSpecified(string $runnable, Story $story): RunnableNotSpecifiedException
     {
-        return new ActionNotSpecifiedException(
-            sprintf('No action was found for the story `%s`', $story->getFullName()),
+        return new RunnableNotSpecifiedException(
+            sprintf('No %s was found for the story `%s`', $runnable, $story->getFullName()),
         );
     }
 
@@ -47,10 +23,10 @@ abstract class StoryBoardException extends Exception
      * Exception for when an `AbstractAssertion` generator callback is
      * not specified.
      */
-    public static function assertionGeneratorNotFound(string $assertion): AssertionGeneratorNotFoundException
+    public static function runnableGeneratorNotFound(string $runnable, string $assertion): RunnableGeneratorNotFoundException
     {
-        return new AssertionGeneratorNotFoundException(
-            sprintf('The `%s` assertion generator callback could not be found.', $assertion),
+        return new RunnableGeneratorNotFoundException(
+            sprintf('The `%s` %s generator callback could not be found.', $assertion, $runnable),
         );
     }
 
@@ -60,21 +36,21 @@ abstract class StoryBoardException extends Exception
      * Likely causes of this is a referenced assertion contains a spelling mistake
      * or the Assertion you're referencing was never created.
      */
-    public static function assertionNotFound(string $assertion): AssertionNotFoundException
+    public static function runnableNotFound(string $runnable, string $assertion): RunnableNotFoundException
     {
-        return new AssertionNotFoundException(
-            sprintf('The `%s` assertion could not be found.', $assertion),
+        return new RunnableNotFoundException(
+            sprintf('The `%s` %s could not be found.', $assertion, $runnable),
         );
     }
 
     /**
      * Exception for when a Story contains no assertions (but requires at least one)
      */
-    public static function assertionNotSpecified(Story $story): AssertionNotSpecifiedException
+    public static function assertionNotSpecified(Story $story): RunnableNotSpecifiedException
     {
         $term = $story->itCan() ? 'can' : 'cannot';
 
-        return new AssertionNotSpecifiedException(
+        return new RunnableNotSpecifiedException(
             sprintf('No "%s" assertion was found for the story `%s`', $term, $story->getFullName()),
         );
     }

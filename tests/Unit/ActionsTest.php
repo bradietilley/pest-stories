@@ -1,8 +1,8 @@
 <?php
 
-use BradieTilley\StoryBoard\Exceptions\ActionGeneratorNotFoundException;
-use BradieTilley\StoryBoard\Exceptions\ActionNotFoundException;
-use BradieTilley\StoryBoard\Exceptions\ActionNotSpecifiedException;
+use BradieTilley\StoryBoard\Exceptions\RunnableGeneratorNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\RunnableNotFoundException;
+use BradieTilley\StoryBoard\Exceptions\RunnableNotSpecifiedException;
 use BradieTilley\StoryBoard\Story;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Assertion;
@@ -189,7 +189,7 @@ test('an exception is thrown when a action is referenced but not found', functio
     Action::make('found', fn () => null, 'var');
 
     Story::make()->action('found')->action('not_found')->boot();
-})->throws(ActionNotFoundException::class, 'The `not_found` action could not be found.');
+})->throws(RunnableNotFoundException::class, 'The `not_found` action could not be found.');
 
 test('actions can offer to append their name to the story name', function () {
     Action::make('test_a', fn () => null);
@@ -237,7 +237,7 @@ test('actions that are missing a generator throw an exception when booted', func
     // The action 'something_cooler' boots correctly
     // The action 'something_cool' does not (no generator)
     $story->boot();
-})->throws(ActionGeneratorNotFoundException::class, 'The `something_cool` action generator callback could not be found.');
+})->throws(RunnableGeneratorNotFoundException::class, 'The `something_cool` action generator callback could not be found.');
 
 test('a story with the multiple actions of the same variable will use the last/most-child one', function () {
     Action::make('location_1')->as(fn () => '1')->variable('location')->order(1);
@@ -313,7 +313,7 @@ test('action flush forgets all registered actions', function () {
     try {
         Action::fetch('something');
         $this->fail();
-    } catch (ActionNotFoundException $actionNotFound) {
+    } catch (RunnableNotFoundException $exception) {
     }
 
     // Remake action
@@ -329,7 +329,7 @@ test('action flush forgets all registered actions', function () {
     try {
         Action::fetch('something');
         $this->fail();
-    } catch (ActionNotFoundException $actionNotFound) {
+    } catch (RunnableNotFoundException $exception) {
     }
 });
 
@@ -379,7 +379,7 @@ test('a story must have at least one task', function () {
     $story = $all->first();
 
     $story->boot()->perform();
-})->throws(ActionNotSpecifiedException::class, 'No action was found for the story `parent child`');
+})->throws(RunnableNotSpecifiedException::class, 'No action was found for the story `parent child`');
 
 test('can fetch all registered actions', function () {
     Action::flush();
