@@ -7,7 +7,6 @@ namespace BradieTilley\StoryBoard\Traits;
 /**
  * This object has hierarchy (parent -> children -> etc) and
  * can inherit properties from its parent(s)
-
  *
  * @property ?static $parent
  */

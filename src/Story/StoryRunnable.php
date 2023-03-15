@@ -6,17 +6,17 @@ namespace BradieTilley\StoryBoard\Story;
 
 use BradieTilley\StoryBoard\Story;
 
-class StoryAction
+class StoryRunnable
 {
     protected int $order;
 
     public function __construct(
         protected Story $story,
-        protected Action $action,
+        protected Runnable $runnable,
         protected array $arguments = [],
         int $order = null,
     ) {
-        $this->order = $order ?? $action->getOrder();
+        $this->order = $order ?? $runnable->getOrder();
     }
 
     public function withStory(Story $story): static
@@ -31,9 +31,9 @@ class StoryAction
         return $this->story;
     }
 
-    public function getAction(): Action
+    public function getRunnable(): Runnable
     {
-        return $this->action;
+        return $this->runnable;
     }
 
     public function getArguments(): array
@@ -48,21 +48,21 @@ class StoryAction
 
     public function register(): void
     {
-        $this->action->register($this->getStory(), $this->getArguments());
+        $this->runnable->register($this->getStory(), $this->getArguments());
     }
 
     public function boot(array $arguments = []): mixed
     {
-        return $this->action->boot($this->getStory(), array_replace($this->getArguments(), $arguments));
+        return $this->runnable->boot($this->getStory(), array_replace($this->getArguments(), $arguments));
     }
 
     public function getVariable(): string
     {
-        return $this->action->getVariable();
+        return $this->runnable->getVariable();
     }
 
     public function getAppendName(): ?string
     {
-        return $this->action->getAppendName();
+        return $this->runnable->getAppendName();
     }
 }

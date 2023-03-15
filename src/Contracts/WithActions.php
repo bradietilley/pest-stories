@@ -6,7 +6,7 @@ namespace BradieTilley\StoryBoard\Contracts;
 
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Result;
-use BradieTilley\StoryBoard\Story\StoryAction;
+use BradieTilley\StoryBoard\Story\StoryRunnable;
 use Closure;
 
 /**
@@ -57,14 +57,14 @@ interface WithActions
     /**
      * Get all regsitered actions for this story (no inheritance lookup)
      *
-     * @return array<string,StoryAction>
+     * @return array<string,StoryRunnable>
      */
     public function getActions(): array;
 
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @return array<string,StoryAction>
+     * @return array<string,StoryRunnable>
      */
     public function resolveInheritedActions(): array;
 

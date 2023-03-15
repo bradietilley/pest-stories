@@ -11,7 +11,7 @@ use BradieTilley\StoryBoard\Exceptions\StoryBoardException;
 use BradieTilley\StoryBoard\Story\Action;
 use BradieTilley\StoryBoard\Story\Assertion;
 use BradieTilley\StoryBoard\Story\Result;
-use BradieTilley\StoryBoard\Story\StoryAction;
+use BradieTilley\StoryBoard\Story\StoryRunnable;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
@@ -33,7 +33,7 @@ trait HasActions
     /**
      * All actions and their arguments (excluding inheritance until story is registered)
      *
-     * @var array<string,StoryAction>
+     * @var array<string,StoryRunnable>
      */
     protected array $actions = [];
 
@@ -69,9 +69,9 @@ trait HasActions
     {
         $action = Action::prepare($action);
 
-        $storyAction = new StoryAction(
+        $storyAction = new StoryRunnable(
             story: $this,
-            action: $action,
+            runnable: $action,
             arguments: $arguments,
             order: $order,
         );
@@ -130,7 +130,7 @@ trait HasActions
     /**
      * Get all regsitered actions for this story (no inheritance lookup)
      *
-     * @return array<string,StoryAction>
+     * @return array<string,StoryRunnable>
      */
     public function getActions(): array
     {
@@ -140,7 +140,7 @@ trait HasActions
     /**
      * Get all actions for this story, including those inherited from parents
      *
-     * @return array<string,StoryAction>
+     * @return array<string,StoryRunnable>
      */
     public function resolveInheritedActions(): array
     {
@@ -161,7 +161,7 @@ trait HasActions
     public function registerActions(): static
     {
         $this->actions = Collection::make($this->actions)
-            ->sortBy(fn (StoryAction $storyAction) => $storyAction->getOrder())
+            ->sortBy(fn (StoryRunnable $storyAction) => $storyAction->getOrder())
             ->all();
 
         foreach ($this->actions as $storyAction) {
@@ -226,7 +226,7 @@ trait HasActions
     {
         // Just this level
         $actions = Collection::make($this->actions)
-            ->map(fn (StoryAction $storyAction) => $storyAction->getAppendName())
+            ->map(fn (StoryRunnable $storyAction) => $storyAction->getAppendName())
             ->filter();
 
         return $actions->isNotEmpty() ? $actions->implode(' ') : null;

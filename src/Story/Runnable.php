@@ -90,7 +90,7 @@ class Runnable
     public static function all(): Collection
     {
         /** @var array<string, static> $all */
-        $all = static::$stored[static::class] ?? [];
+        $all = static::$stored[static::getAliasName()] ?? [];
 
         return Collection::make($all);
     }
@@ -100,8 +100,8 @@ class Runnable
      */
     public function store(): static
     {
-        static::$stored[static::class] ??= [];
-        static::$stored[static::class][$this->name] = $this;
+        static::$stored[static::getAliasName()] ??= [];
+        static::$stored[static::getAliasName()][$this->name] = $this;
 
         return $this;
     }
@@ -111,9 +111,9 @@ class Runnable
      */
     public function stored(): bool
     {
-        static::$stored[static::class] ??= [];
+        static::$stored[static::getAliasName()] ??= [];
 
-        return isset(static::$stored[static::class][$this->name]);
+        return isset(static::$stored[static::getAliasName()][$this->name]);
     }
 
     /**
@@ -129,15 +129,15 @@ class Runnable
             return;
         }
 
-        static::$stored[static::class] = [];
+        static::$stored[static::getAliasName()] = [];
     }
 
     /**
      * Runnable not found
      */
-    protected static function notFound(string $name): RunnableNotFoundException
+    protected static function notFound(string $type, string $name): RunnableNotFoundException
     {
-        return StoryBoardException::runnableNotFound(static::getAliasName(), $name);
+        return StoryBoardException::runnableNotFound($type, $name);
     }
 
     /**
@@ -148,6 +148,17 @@ class Runnable
         return StoryBoardException::runnableGeneratorNotFound(static::getAliasName(), $name);
     }
 
+    public static function fetchByType(string $type, string $name): static
+    {
+        static::$stored[$type] ??= [];
+
+        if (! isset(static::$stored[$type][$name])) {
+            throw static::notFound($type, $name);
+        }
+
+        return static::$stored[$type][$name];
+    }
+
     /**
      * Fetch a action from the registrar
      *
@@ -155,13 +166,7 @@ class Runnable
      */
     public static function fetch(string $name): static
     {
-        static::$stored[static::class] ??= [];
-
-        if (! isset(static::$stored[static::class][$name])) {
-            throw static::notFound($name);
-        }
-
-        return static::$stored[static::class][$name];
+        return static::fetchByType(static::getAliasName(), $name);
     }
 
     /**
