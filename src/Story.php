@@ -161,4 +161,12 @@ class Story implements WithActions, WithAssertions, WithCallbacks, WithData, Wit
 
         return $data;
     }
+
+    /**
+     * Get the parent of this object
+     */
+    public function getParent(): ?static
+    {
+        return $this->parent; /** @phpstan-ignore-line */
+    }
 }
