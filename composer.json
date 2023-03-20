@@ -1,14 +1,14 @@
 {
-    "name": "bradietilley/pest-storyboard",
+    "name": "bradietilley/pest-stories",
     "description": "A tool to assist in creating complex permutations of test case scenarios in Pest PHP (for Laravel)",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "BradieTilley\\StoryBoard\\": "src/"
+            "BradieTilley\\Stories\\": "src/"
         },
         "files": [
-            "src/helpers.php"
+            "src/Helpers/functions.php"
         ]
     },
     "autoload-dev": {
@@ -43,7 +43,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BradieTilley\\StoryBoard\\StoryBoardServiceProvider"
+                "BradieTilley\\Stories\\Laravel\\StoriesServiceProvider"
             ]
         }
     }

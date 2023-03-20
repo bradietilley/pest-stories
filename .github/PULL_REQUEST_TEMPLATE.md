@@ -2,4 +2,4 @@
 
 ...
 
-- [ ] I have read the **[CONTRIBUTING](https://github.com/bradietilley/pest-storyboard/blob/main/.github/CONTRIBUTING.md)** document.
+- [ ] I have read the **[CONTRIBUTING](https://github.com/bradietilley/pest-stories/blob/main/.github/CONTRIBUTING.md)** document.
