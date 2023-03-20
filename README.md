@@ -205,7 +205,7 @@ story('Create Product endpoint')
 #### Workflow
 
 - `Story` callback: `setUp`
-- `Story` Actions:
+- `Story` Actions (for each):
     - `Action` callback: `before`
     - `Action` primary callback
     - `Action` callback: `after`
@@ -213,7 +213,7 @@ story('Create Product endpoint')
     - `Story` callback: `before`
     - `Story` primary callback
     - `Story` callback: `after`
-- `Story` Assertions:
+- `Story` Assertions (for each):
     - `Assertion` callback: `before`
     - `Assertion` primary callback
     - `Assertion` callback: `after`

@@ -322,12 +322,42 @@ class Story extends Callback
      */
     public function internalInherit(Story $parent): static
     {
+        /**
+         * Collate actions and assertions from the parent as well as from this story,
+         * with the parent's actions and assertions being listed first before this
+         * story's actions and assertions.
+         *
+         * i.e. trunk first -> branch second -> twig last
+         */
         $this->actions = collect($parent->getActions())->concat($this->getActions())->all();
         $this->assertions = collect($parent->getAssertions())->concat($this->getAssertions())->all();
+
+        /**
+         * Concatenate the parent story's name fragment (if any) with this story's
+         * name fragment (if any) to produce a more fully qualified name.
+         */
         $this->name = trim(sprintf('%s %s', $parent->getName(), $this->getName()));
+
+        /**
+         * Use this story's primary callback if defined, otherwise inherit it from
+         * the parent if defined.
+         */
         $this->callback ??= $parent->getCallback();
+
+        /**
+         * Inherit the Skipped and Incomplete messages, if defined, so that the child
+         * story can also get marked as skipped or incompelte when booted.
+         */
         $this->skipped = $this->isSkipped() ? $this->skipped : $parent->getSkipped();
         $this->incomplete = $this->isIncomplete() ? $this->incomplete : $parent->getIncomplete();
+
+        /**
+         * Collate the before and after callbacks from the parent as well as from
+         * this story, with the parent's callbacks being listed first before this
+         * story's callbacks.
+         *
+         * i.e. trunk first -> branch second -> twig last
+         */
         $this->before = collect($parent->getBeforeCallbacks())->concat($this->getBeforeCallbacks())->all();
         $this->after = collect($parent->getAfterCallbacks())->concat($this->getAfterCallbacks())->all();
 
@@ -404,6 +434,10 @@ class Story extends Callback
         return $this->todo !== false;
     }
 
+    /**
+     * Add a callback to run immediately when the TestCase is
+     * assigned to the Story isntance
+     */
     public function setUp(Closure $callback): static
     {
         $this->setUp[] = $callback;
@@ -411,6 +445,10 @@ class Story extends Callback
         return $this;
     }
 
+    /**
+     * Add a callback to run immediately before the TestCase is
+     * about to be teared down
+     */
     public function tearDown(Closure $callback): static
     {
         $this->tearDown[] = $callback;
