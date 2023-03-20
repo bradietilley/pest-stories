@@ -22,6 +22,12 @@
             "homepage": "https://github.com/bradietilley"
         }
     ],
+    "scripts": {
+        "test": "vendor/bin/pest --exclude-group=UseCases",
+        "test-extended": "vendor/bin/pest --group=UseCases",
+        "pint": "vendor/bin/pint",
+        "lint": "vendor/bin/phpstan analyse --no-progress --ansi"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
