@@ -75,9 +75,8 @@ test('a story can mark the test as skipped or incomplete at a parent level', fun
 
     // All 4 should be incomplete
 
-    $callback = $call->callback;
-
-    foreach ($call->dataset as $story) {
+    foreach ($call->dataset as $args) {
+        $story = $args[0];
         /** @var Story $story */
         try {
             $story->process();

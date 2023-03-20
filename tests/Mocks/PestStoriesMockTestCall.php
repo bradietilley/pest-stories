@@ -2,10 +2,14 @@
 
 namespace Tests\Mocks;
 
+use BradieTilley\Stories\Story;
 use Closure;
 
 class PestStoriesMockTestCall
 {
+    /**
+     * @var null|array<int|string, iterable<Story>>
+     */
     public ?array $dataset = null;
 
     public bool $todo = false;
@@ -14,6 +18,9 @@ class PestStoriesMockTestCall
     {
     }
 
+    /**
+     * @param  array<\Closure|iterable<int|string, mixed>|string>  $data
+     */
     public function with(array $dataset): static
     {
         $this->dataset = $dataset;
@@ -27,7 +34,7 @@ class PestStoriesMockTestCall
 
         if ($this->dataset !== null) {
             foreach ($this->dataset as $dataset) {
-                $callback($dataset);
+                $callback(...$dataset);
             }
 
             return;

@@ -196,7 +196,7 @@ class Story extends Callback
                 $storyName = $story->getName();
                 $datasetName = trim(substr($storyName, strlen($parentName)));
 
-                $dataset[$datasetName] = $story;
+                $dataset[$datasetName] = [$story];
             }
         }
 
