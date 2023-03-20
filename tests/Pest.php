@@ -3,8 +3,8 @@
 use Tests\Mocks\PestStoriesMockTestCall;
 use Tests\TestCase;
 
-uses(TestCase::class)->group('Unit')->in('Unit');
-uses(TestCase::class)->group('UseCases')->in('UseCases');
+uses(TestCase::class)->group('unit')->in('Unit');
+uses(TestCase::class)->group('extended')->in('Extended');
 
 if (! function_exists('pest_stories_mock_test_function')) {
     /**

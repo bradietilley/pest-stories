@@ -61,3 +61,23 @@ test('real life example story ran correctly', function () use ($ran) {
         'tearDown',
     ]);
 });
+
+$ran2 = Collection::make();
+
+story('real life example nested story')
+    ->action(fn () => $ran2[] = 'parent story')
+    ->stories([
+        story('a child story 1')->action(fn () => $ran2[] = 'child story 1'),
+        story('a child story 2')->action(fn () => $ran2[] = 'child story 2'),
+    ])
+    ->assertion(fn () => expect(true)->toBeTrue())
+    ->register();
+
+test('real life example nested story ran correctly', function () use ($ran2) {
+    expect($ran2->toArray())->toBe([
+        'parent story',
+        'child story 1',
+        'parent story',
+        'child story 2',
+    ]);
+});

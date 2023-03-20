@@ -23,8 +23,8 @@
         }
     ],
     "scripts": {
-        "test": "vendor/bin/pest --exclude-group=UseCases",
-        "test-extended": "vendor/bin/pest --group=UseCases",
+        "test": "vendor/bin/pest --exclude-group=extended",
+        "test-extended": "vendor/bin/pest --group=extended",
         "pint": "vendor/bin/pint",
         "lint": "vendor/bin/phpstan analyse --no-progress --ansi"
     },
