@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use BradieTilley\Stories\Action;
+use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Laravel\StoriesServiceProvider;
+use BradieTilley\Stories\Story;
 use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
@@ -25,5 +28,10 @@ class TestCase extends OrchestraTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
+        Action::flushMacros();
+        Assertion::flushMacros();
+        Story::flushMacros();
     }
 }

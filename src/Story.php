@@ -7,6 +7,7 @@ namespace BradieTilley\Stories;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use Closure;
+use Illuminate\Support\Traits\Macroable;
 use Pest\PendingCalls\TestCall;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,8 @@ use Tests\Mocks\PestStoriesMockTestCall;
 
 class Story extends Callback
 {
+    use Macroable;
+
     /** @var array<Story> */
     protected array $stories = [];
 
@@ -35,7 +38,7 @@ class Story extends Callback
 
     protected bool $todo = false;
 
-    public function __construct(protected string $name, protected ?Closure $callback, array $arguments = [])
+    public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         parent::__construct($name, $callback, $arguments);
 

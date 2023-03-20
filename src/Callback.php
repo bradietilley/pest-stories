@@ -27,7 +27,7 @@ abstract class Callback
     /** The name of the variable where the callback result goes to for the invoking story */
     protected string $variable;
 
-    public function __construct(protected string $name, protected ?Closure $callback, array $arguments = [])
+    public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         $this->variable = $name;
         $this->with($arguments)->store();
