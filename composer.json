@@ -26,7 +26,7 @@
         "test": "vendor/bin/pest --exclude-group=extended",
         "test-extended": "vendor/bin/pest --group=extended",
         "pint": "vendor/bin/pint",
-        "lint": "vendor/bin/phpstan analyse --no-progress --ansi"
+        "stan": "vendor/bin/phpstan analyse --no-progress --ansi"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
