@@ -165,6 +165,16 @@ abstract class Callback
     }
 
     /**
+     * Get all before callbacks
+     *
+     * @return array<Closure>
+     */
+    public function getBeforeCallbacks(): array
+    {
+        return $this->before;
+    }
+
+    /**
      * Run any listeners for the 'before' callback
      */
     protected function runBefore(array $arguments = []): void
@@ -182,6 +192,16 @@ abstract class Callback
         $this->after[] = $callback;
 
         return $this;
+    }
+
+    /**
+     * Get all after callbacks
+     *
+     * @return array<Closure>
+     */
+    public function getAfterCallbacks(): array
+    {
+        return $this->after;
     }
 
     /**

@@ -50,3 +50,36 @@ test('a story can have one or more children stories added to it', function () {
         'story:a parent story child 2 grandchild',
     ]);
 });
+
+test('story callbacks are inherited from parents', function () {
+    $ran = collect();
+
+    $stories = story('parent story')
+        ->before(fn () => $ran[] = 'parent 1')
+        ->stories([
+            story('child story 1')->before(fn () => $ran[] = 'child 1'),
+            story('child story 2')->before(fn () => $ran[] = 'child 2')->stories([
+                story('grandchild story 1')->before(fn () => $ran[] = 'grandchild 1'),
+                story('grandchild story 2')->before(fn () => $ran[] = 'grandchild 2'),
+            ]),
+        ])
+        ->flattenStories();
+
+    foreach ($stories as $story) {
+        $story->process();
+    }
+
+    expect($ran->toArray())->toBe([
+        // Child 1
+        'parent 1',
+        'child 1',
+        // Child 2
+        'parent 1',
+        'child 2',
+        'grandchild 1',
+        // Child 3
+        'parent 1',
+        'child 2',
+        'grandchild 2',
+    ]);
+});

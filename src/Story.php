@@ -328,6 +328,8 @@ class Story extends Callback
         $this->callback ??= $parent->getCallback();
         $this->skipped = $this->isSkipped() ? $this->skipped : $parent->getSkipped();
         $this->incomplete = $this->isIncomplete() ? $this->incomplete : $parent->getIncomplete();
+        $this->before = collect($parent->getBeforeCallbacks())->concat($this->getBeforeCallbacks())->all();
+        $this->after = collect($parent->getAfterCallbacks())->concat($this->getAfterCallbacks())->all();
 
         return $this;
     }
