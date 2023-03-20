@@ -17,7 +17,7 @@ test('a callback can be given a macro', function (string $for) {
      * Test that the macro can be added and run
      */
     $for::macro('log', function () use ($log) {
-        /** @var callable $this */
+        /** @var Action|Assertion|Story $this */
         $log[] = 'logged '.$this->getName();
     });
 
