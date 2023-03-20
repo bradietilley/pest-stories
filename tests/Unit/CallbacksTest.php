@@ -5,8 +5,20 @@ use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\CallbackFetchNotFoundException;
 use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\assertion;
+use BradieTilley\Stories\Helpers\CallbackRepository;
 use function BradieTilley\Stories\Helpers\story;
+use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Story;
+
+beforeEach(function () {
+    // Always reset the story aliases back to their defaults between tests
+    StoryAliases::setClassAlias(Story::class, Story::class);
+    StoryAliases::setClassAlias(Action::class, Action::class);
+    StoryAliases::setClassAlias(Assertion::class, Assertion::class);
+
+    // Always flush and reset the repository between tests
+    CallbackRepository::flush();
+});
 
 test('callback classes can be created with an eager name', function () {
     $story = story('a name');

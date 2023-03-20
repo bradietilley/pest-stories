@@ -8,7 +8,7 @@ use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use Closure;
 use Pest\PendingCalls\TestCall;
-use Pest\Support\HigherOrderTapProxy;
+use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 use Tests\Mocks\PestStoriesMockTestCall;
 
@@ -209,7 +209,7 @@ class Story extends Callback
         }
 
         /** @var TestCall|PestStoriesMockTestCall $testCall */
-        $testCall = call_user_func($function, $this->getName(), $this->getTestCallback());
+        $testCall = $function($this->getName(), $this->getTestCallback());
 
         if ($dataset !== null) {
             $testCall->with($dataset);
@@ -244,12 +244,15 @@ class Story extends Callback
     /**
      * Get the current test case instance
      */
-    public static function getTestCase(): TestCase
+    protected function getTestCase(): TestCase
     {
-        $test = test();
-        assert($test instanceof HigherOrderTapProxy);
+        $test = TestSuite::getInstance()->test;
 
-        return $test->target;
+        if ($test === null) {
+            throw TestCaseUnavailableException::make($this);
+        }
+
+        return $test;
     }
 
     /**
@@ -257,7 +260,7 @@ class Story extends Callback
      */
     public function process(): static
     {
-        $test = static::getTestCase();
+        $test = $this->getTestCase();
 
         $arguments = [
             'test' => $test,
