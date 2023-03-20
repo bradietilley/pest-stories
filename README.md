@@ -191,7 +191,7 @@ story('Create Product endpoint')
      * Now that the stories have been defined, we register the story with Pest. This is similar
      * to running test('...', fn () => ...) against each child story.
      */
-    ->register();
+    ->test();
 
 /**
  * Test cases:

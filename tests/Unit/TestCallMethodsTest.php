@@ -11,12 +11,12 @@ test('a story can mark the test as todo', function () {
 
     $story = story('todo story');
 
-    $call = $story->register();
+    $call = $story->test();
     expect($call->todo)->toBeFalse();
 
     $story->todo();
 
-    $call = $story->register();
+    $call = $story->test();
     expect($call->todo)->toBeTrue();
 });
 
@@ -63,7 +63,7 @@ test('a story can mark the test as skipped or incomplete at a parent level', fun
             ]),
         ]);
 
-    $call = $story->register();
+    $call = $story->test();
 
     // Sanity check
     expect($call->dataset)->toBeArray()->toHaveCount(4)->toHaveKeys([

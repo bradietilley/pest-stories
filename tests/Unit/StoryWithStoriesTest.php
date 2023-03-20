@@ -12,7 +12,7 @@ test('a story can have one or more children stories added to it', function () {
         ->as(fn (Story $story) => $ran[] = 'story:'.$story->getName());
 
     // With no children = only parent run
-    $story->register()->run();
+    $story->test()->run();
 
     expect($ran)->toHaveCount(1)->toArray()->toBe([
         'story:a parent story',
@@ -26,7 +26,7 @@ test('a story can have one or more children stories added to it', function () {
             story('1'),
             story('2'),
         ]);
-    $story->register()->run();
+    $story->test()->run();
 
     expect($ran)->toHaveCount(2)->toArray()->toBe([
         'story:a parent story 1',
@@ -43,7 +43,7 @@ test('a story can have one or more children stories added to it', function () {
                 story('grandchild'),
             ]),
         ]);
-    $story->register()->run();
+    $story->test()->run();
 
     expect($ran)->toHaveCount(2)->toArray()->toBe([
         'story:a parent story child 1',

@@ -8,6 +8,6 @@ test('a story can be registered and will register the story test via the Pest te
     StoryAliases::setFunction('test', 'pest_stories_mock_test_function');
     expect(StoryAliases::getFunction('test'))->toBe('pest_stories_mock_test_function');
 
-    $testCall = story('can do something')->register();
+    $testCall = story('can do something')->test();
     expect($testCall)->toBeInstanceOf(PestStoriesMockTestCall::class);
 });

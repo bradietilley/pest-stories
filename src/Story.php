@@ -182,9 +182,9 @@ class Story extends Callback
     }
 
     /**
-     * Register this story's Pest test function
+     * Register this story via Pest's `test()` function
      */
-    public function register(): TestCall|PestStoriesMockTestCall
+    public function test(): TestCall|PestStoriesMockTestCall
     {
         $dataset = null;
         $parentName = $this->getName();
