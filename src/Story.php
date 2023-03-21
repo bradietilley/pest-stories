@@ -255,7 +255,9 @@ class Story extends Callback
         $test = TestSuite::getInstance()->test;
 
         if ($test === null) {
+            // @codeCoverageIgnoreStart
             throw TestCaseUnavailableException::make($this);
+            // @codeCoverageIgnoreEnd
         }
 
         return $test;
