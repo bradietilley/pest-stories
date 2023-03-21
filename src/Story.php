@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
+use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Traits\Conditionable;
 use Closure;

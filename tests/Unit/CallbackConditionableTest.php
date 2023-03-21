@@ -11,13 +11,15 @@ test('a story can have conditionable logic', function (string $text) {
         ->setUp(fn () => $ran[] = 'setUp')
         ->before(fn () => $ran[] = 'before')
         ->after(fn () => $ran[] = 'after')
-        ->when(fn () => ($text === 'true'), fn () => $ran[] = 'when:true', fn () => $ran[] = 'when:false');
+        ->when(fn () => ($text === 'true'), fn () => $ran[] = 'when:true', fn () => $ran[] = 'when:false')
+        ->unless(fn () => ($text !== 'true'), fn () => $ran[] = 'unless:true', fn () => $ran[] = 'unless:false');
 
     $story->process();
 
     expect($ran->toArray())->toBe([
         'setUp',
         'when:'.$text,
+        'unless:'.$text,
         'before',
         'after',
     ]);
@@ -31,7 +33,8 @@ test('a story conditionable callback will inherit the correct story', function (
     $ran = collect();
 
     $story = story('parent')
-        ->when(fn (Story $story) => $ran[] = $story->getName())
+        ->when(true, fn (Story $story) => $ran[] = $story->getName().':when', fn () => $ran[] = 'fail')
+        ->unless(false, fn (Story $story) => $ran[] = $story->getName().':unless', fn () => $ran[] = 'fail')
         ->stories([
             story('child 1'),
             story('child 2'),
@@ -41,8 +44,11 @@ test('a story conditionable callback will inherit the correct story', function (
         ->run();
 
     expect($ran->toArray())->toBe([
-        'parent child 1',
-        'parent child 2',
-        'parent child 3',
+        'parent child 1:when',
+        'parent child 1:unless',
+        'parent child 2:when',
+        'parent child 2:unless',
+        'parent child 3:when',
+        'parent child 3:unless',
     ]);
 });

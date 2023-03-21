@@ -1,8 +1,8 @@
 <?php
 
-namespace BradieTilley\Stories;
+namespace BradieTilley\Stories\Exceptions;
 
-use BradieTilley\Stories\Exceptions\StoryException;
+use BradieTilley\Stories\Story;
 
 class TestCaseUnavailableException extends StoryException
 {
