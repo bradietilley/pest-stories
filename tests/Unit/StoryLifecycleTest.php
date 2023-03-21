@@ -39,7 +39,7 @@ test('the lifecycle of a story is as expected', function () {
         ->process();
 
     expect($ran->toArray())->toBe([
-        'setUp-1',
+        'setUp',
         'action 1 before',
         'action 1 primary',
         'action 1 after',
