@@ -1,0 +1,48 @@
+<?php
+
+use function BradieTilley\Stories\Helpers\story;
+use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Story;
+
+test('a story can have conditionable logic', function (string $text) {
+    $ran = collect();
+
+    $story = story()
+        ->setUp(fn () => $ran[] = 'setUp')
+        ->before(fn () => $ran[] = 'before')
+        ->after(fn () => $ran[] = 'after')
+        ->when(fn () => ($text === 'true'), fn () => $ran[] = 'when:true', fn () => $ran[] = 'when:false');
+
+    $story->process();
+
+    expect($ran->toArray())->toBe([
+        'setUp',
+        'when:'.$text,
+        'before',
+        'after',
+    ]);
+})->with([
+    'true',
+    'false',
+]);
+
+test('a story conditionable callback will inherit the correct story', function () {
+    StoryAliases::setFunction('test', 'pest_stories_mock_test_function');
+    $ran = collect();
+
+    $story = story('parent')
+        ->when(fn (Story $story) => $ran[] = $story->getName())
+        ->stories([
+            story('child 1'),
+            story('child 2'),
+            story('child 3'),
+        ])
+        ->test()
+        ->run();
+
+    expect($ran->toArray())->toBe([
+        'parent child 1',
+        'parent child 2',
+        'parent child 3',
+    ]);
+});

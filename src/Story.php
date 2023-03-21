@@ -6,6 +6,7 @@ namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Traits\Conditionable;
 use Closure;
 use Illuminate\Support\Traits\Macroable;
 use Pest\PendingCalls\TestCall;
@@ -15,6 +16,7 @@ use Tests\Mocks\PestStoriesMockTestCall;
 
 class Story extends Callback
 {
+    use Conditionable;
     use Macroable;
 
     /** @var array<Story> */
@@ -270,10 +272,21 @@ class Story extends Callback
         ];
         $this->with($arguments);
 
+        /**
+         * Set Up
+         */
         foreach ($this->setUp as $callback) {
             $this->internalCall($callback);
         }
 
+        /**
+         * Boot Conditionables
+         */
+        $this->internalBootConditionables();
+
+        /**
+         * Mark tests as skipped or incomplete
+         */
         if (is_string($this->skipped)) {
             $test->markTestSkipped($this->skipped);
         }
@@ -282,7 +295,9 @@ class Story extends Callback
             $test->markTestIncomplete($this->incomplete);
         }
 
-        // 1: Setup scenario by running actions
+        /**
+         * Actions (Setup the scenario)
+         */
         foreach ($this->getActions() as $data) {
             /** @var string $name */
             $name = $data['name'];
@@ -296,10 +311,14 @@ class Story extends Callback
             $this->set($variable, $value);
         }
 
-        // 2: Custom story logic
+        /**
+         * Custom story logic
+         */
         $arguments[$this->getVariable()] = $this->boot();
 
-        // 3: Expectations
+        /**
+         * Expectations and assertions
+         */
         foreach ($this->getAssertions() as $data) {
             /** @var string $name */
             $name = $data['name'];
@@ -313,6 +332,9 @@ class Story extends Callback
             $this->set($variable, $value);
         }
 
+        /**
+         * Tear Down
+         */
         foreach ($this->tearDown as $callback) {
             $this->internalCall($callback);
         }
@@ -332,8 +354,12 @@ class Story extends Callback
          *
          * i.e. trunk first -> branch second -> twig last
          */
-        $this->actions = collect($parent->getActions())->concat($this->getActions())->all();
-        $this->assertions = collect($parent->getAssertions())->concat($this->getAssertions())->all();
+        $this->actions = collect($parent->getPropertyArray('actions'))
+            ->concat($this->getPropertyArray('actions'))
+            ->all();
+        $this->assertions = collect($parent->getPropertyArray('assertions'))
+            ->concat($this->getPropertyArray('assertions'))
+            ->all();
 
         /**
          * Concatenate the parent story's name fragment (if any) with this story's
@@ -361,8 +387,33 @@ class Story extends Callback
          *
          * i.e. trunk first -> branch second -> twig last
          */
-        $this->before = collect($parent->getBeforeCallbacks())->concat($this->getBeforeCallbacks())->all();
-        $this->after = collect($parent->getAfterCallbacks())->concat($this->getAfterCallbacks())->all();
+        $this->before = collect($parent->getPropertyArray('before'))
+            ->concat($this->getPropertyArray('before'))
+            ->all();
+        $this->after = collect($parent->getPropertyArray('after'))
+            ->concat($this->getPropertyArray('after'))
+            ->all();
+
+        /**
+         * Collate the setUp and tearDown callbacks from the parent as well as from
+         * this story, with the parent's callbacks being listed first before this
+         * story's callbacks.
+         *
+         * i.e. trunk first -> branch second -> twig last
+         */
+        $this->setUp = collect($parent->getPropertyArray('setUp'))
+            ->concat($this->getPropertyArray('setUp'))
+            ->all();
+        $this->tearDown = collect($parent->getPropertyArray('tearDown'))
+            ->concat($this->getPropertyArray('tearDown'))
+            ->all();
+
+        /**
+         * i.e. trunk first -> branch second -> twig last
+         */
+        $this->conditionables = collect($parent->getPropertyArray('conditionables'))
+            ->concat($this->getPropertyArray('conditionables'))
+            ->all();
 
         return $this;
     }

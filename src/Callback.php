@@ -165,16 +165,6 @@ abstract class Callback
     }
 
     /**
-     * Get all before callbacks
-     *
-     * @return array<Closure>
-     */
-    public function getBeforeCallbacks(): array
-    {
-        return $this->before;
-    }
-
-    /**
      * Run any listeners for the 'before' callback
      */
     protected function runBefore(array $arguments = []): void
@@ -192,16 +182,6 @@ abstract class Callback
         $this->after[] = $callback;
 
         return $this;
-    }
-
-    /**
-     * Get all after callbacks
-     *
-     * @return array<Closure>
-     */
-    public function getAfterCallbacks(): array
-    {
-        return $this->after;
     }
 
     /**
@@ -281,5 +261,15 @@ abstract class Callback
     public function getVariable(): string
     {
         return $this->variable;
+    }
+
+    /**
+     * Get an array property by name
+     *
+     * @return array
+     */
+    public function getPropertyArray(string $event): array
+    {
+        return $this->{$event};
     }
 }
