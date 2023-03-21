@@ -6,6 +6,7 @@ namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Assertion;
+use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 use Closure;
 
@@ -31,4 +32,12 @@ function assertion(string $name = '', Closure|callable|null $callback = null): A
 function action(string $name = '', Closure|callable|null $callback = null): Action
 {
     return Action::make($name, $callback);
+}
+
+/**
+ * Create a new repeater
+ */
+function repeater(): Repeater
+{
+    return Repeater::make();
 }

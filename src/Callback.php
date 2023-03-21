@@ -27,6 +27,9 @@ abstract class Callback
     /** The name of the variable where the callback result goes to for the invoking story */
     protected string $variable;
 
+    /** Repeater controller */
+    protected ?Repeater $repeater = null;
+
     public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         $this->variable = $name;
@@ -205,17 +208,22 @@ abstract class Callback
     {
         $this->runBefore();
 
-        $result = null;
-
-        if ($this->callback !== null) {
-            $result = $this->internalCall($this->callback, $arguments);
-        }
-
-        $this->runAfter([
-            'result' => $result,
+        $arguments = array_replace($arguments, [
+            'result' => null,
+            'repeater' => $repeater = (clone $this->repeater())->reset(),
         ]);
 
-        return $result;
+        if ($this->callback !== null) {
+            while ($repeater->more()) {
+                $repeater->increment();
+
+                $arguments['result'] = $this->internalCall($this->callback, $arguments);
+            }
+        }
+
+        $this->runAfter($arguments);
+
+        return $arguments['result'];
     }
 
     /**
@@ -271,5 +279,24 @@ abstract class Callback
     public function getPropertyArray(string $event): array
     {
         return $this->{$event};
+    }
+
+    /**
+     * Get and/or create a new Repeater instance for this callback
+     */
+    public function repeater(): Repeater
+    {
+        return $this->repeater ??= Repeater::make();
+    }
+
+    /**
+     * Specify how many times this callback's primary
+     * callback should run
+     */
+    public function repeat(int $times): static
+    {
+        $this->repeater()->setMax($times);
+
+        return $this;
     }
 }

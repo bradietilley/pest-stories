@@ -9,6 +9,7 @@ use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
+use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 
 class StoryAliases
@@ -17,6 +18,7 @@ class StoryAliases
         Story::class => Story::class,
         Action::class => Action::class,
         Assertion::class => Assertion::class,
+        Repeater::class => Repeater::class,
     ];
 
     protected static array $functions = [

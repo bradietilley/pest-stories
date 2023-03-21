@@ -7,14 +7,17 @@ use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\assertion;
+use function BradieTilley\Stories\Helpers\repeater;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 use Tests\Mocks\MockAction;
 use Tests\Mocks\MockAssertion;
+use Tests\Mocks\MockRepeater;
 use Tests\Mocks\MockStory;
 
-test('you can create a story using the story function while utilising a custom alias', function () {
+test('you can create a story while utilising a custom alias', function () {
     // Shouldn't be a mock instance
     expect(get_class(story('something')))->toBe(Story::class);
     expect(get_class(Story::make('something')))->toBe(Story::class);
@@ -32,7 +35,7 @@ test('you can create a story using the story function while utilising a custom a
     expect(get_class(Story::make('something')))->toBe(Story::class);
 });
 
-test('you can create an action using the action function while utilising a custom alias', function () {
+test('you can create an action while utilising a custom alias', function () {
     // Shouldn't be a mock instance
     expect(get_class(action('do_something')))->toBe(Action::class);
     expect(get_class(Action::make('do_something')))->toBe(Action::class);
@@ -50,14 +53,14 @@ test('you can create an action using the action function while utilising a custo
     expect(get_class(Action::make('do_something')))->toBe(Action::class);
 });
 
-test('you can create an assertion using the assertion function while utilising a custom alias', function () {
+test('you can create an assertion while utilising a custom alias', function () {
     // Shouldn't be a mock instance
     expect(get_class(assertion('expect_something')))->toBe(Assertion::class);
     expect(get_class(Assertion::make('expect_something')))->toBe(Assertion::class);
 
     // Set it to be a mock instance
     StoryAliases::setClassAlias(Assertion::class, MockAssertion::class);
-    
+
     expect(get_class(assertion('expect_something')))->toBe(MockAssertion::class);
     expect(get_class(Assertion::make('expect_something')))->toBe(MockAssertion::class);
 
@@ -66,6 +69,24 @@ test('you can create an assertion using the assertion function while utilising a
 
     expect(get_class(assertion('expect_something')))->toBe(Assertion::class);
     expect(get_class(Assertion::make('expect_something')))->toBe(Assertion::class);
+});
+
+test('you can create a repeater while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(repeater()))->toBe(Repeater::class);
+    expect(get_class(Repeater::make()))->toBe(Repeater::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(Repeater::class, MockRepeater::class);
+
+    expect(get_class(repeater()))->toBe(MockRepeater::class);
+    expect(get_class(Repeater::make()))->toBe(MockRepeater::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(Repeater::class, Repeater::class);
+
+    expect(get_class(repeater()))->toBe(Repeater::class);
+    expect(get_class(Repeater::make()))->toBe(Repeater::class);
 });
 
 test('you cannot set an alias to a class that does not exist', function () {
