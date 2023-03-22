@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
+use BradieTilley\Stories\Alarm;
 use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
@@ -19,6 +20,7 @@ class StoryAliases
         Action::class => Action::class,
         Assertion::class => Assertion::class,
         Repeater::class => Repeater::class,
+        Alarm::class => Alarm::class,
     ];
 
     protected static array $functions = [

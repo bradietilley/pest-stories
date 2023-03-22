@@ -265,11 +265,24 @@ class Story extends Callback
 
     /**
      * Run the story under the given test suite.
+     *
+     * @param  array  $arguments Not used for stories
      */
-    public function process(): static
+    public function process(array $arguments = []): mixed
     {
-        $test = $this->getTestCase();
+        $alarm = $this->alarm();
 
+        /**
+         * If a time limit was provided, start the alarm
+         */
+        if ($alarm) {
+            $alarm->start();
+        }
+
+        /**
+         * Retrieve the TestCase so the story can easily reference it.
+         */
+        $test = $this->getTestCase();
         $arguments = [
             'test' => $test,
         ];
@@ -310,14 +323,17 @@ class Story extends Callback
             $action = clone Action::fetch($name);
             $variable = $action->getVariable();
 
-            $value = $action->boot($arguments);
+            $value = $action->process($arguments);
             $this->set($variable, $value);
         }
 
         /**
          * Custom story logic
          */
-        $arguments[$this->getVariable()] = $this->boot();
+        $key = $this->getVariable();
+        $value = parent::boot();
+        $arguments[$key] = $value;
+        $this->set($key, $value);
 
         /**
          * Expectations and assertions
@@ -331,7 +347,7 @@ class Story extends Callback
             $assertion = clone Assertion::fetch($name);
             $variable = $assertion->getVariable();
 
-            $value = $assertion->boot($arguments);
+            $value = $assertion->process($arguments);
             $this->set($variable, $value);
         }
 
@@ -340,6 +356,13 @@ class Story extends Callback
          */
         foreach ($this->tearDown as $callback) {
             $this->internalCall($callback);
+        }
+
+        /**
+         * If an alarm is tracking the time, stop it and throw if we exceeded the limit
+         */
+        if ($alarm) {
+            $alarm->stop();
         }
 
         return $this;

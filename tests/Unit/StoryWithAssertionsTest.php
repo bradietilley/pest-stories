@@ -13,14 +13,14 @@ test('a story can have one or more assertions added to it', function () {
     $story = story()->as(fn () => $ran[] = 'story');
 
     // With no assertion = no assertions run
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(1)->toArray()->toBe([
         'story',
     ]);
 
     // With one assertion = one assertion run
     $story->assertion('do_something_1');
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(3)->toArray()->toBe([
         // First
         'story',
@@ -31,7 +31,7 @@ test('a story can have one or more assertions added to it', function () {
 
     // With 3 assertions = 3 assertions run
     $story->assertion('do_something_3')->assertion('do_something_2');
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(7)->toArray()->toBe([
         // First
         'story',

@@ -13,14 +13,14 @@ test('a story can have one or more actions added to it', function () {
     $story = story()->as(fn () => $ran[] = 'story');
 
     // With no action = no actions run
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(1)->toArray()->toBe([
         'story',
     ]);
 
     // With one action = one action run
     $story->action('do_something_1');
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(3)->toArray()->toBe([
         // First
         'story',
@@ -31,7 +31,7 @@ test('a story can have one or more actions added to it', function () {
 
     // With 3 actions = 3 actions run
     $story->action('do_something_3')->action('do_something_2');
-    $story->process($this);
+    $story->process();
     expect($ran)->toHaveCount(7)->toArray()->toBe([
         // First
         'story',

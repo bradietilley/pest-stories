@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
+use BradieTilley\Stories\Alarm;
 use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
@@ -37,7 +38,15 @@ function action(string $name = '', Closure|callable|null $callback = null): Acti
 /**
  * Create a new repeater
  */
-function repeater(): Repeater
+function repeater(int $max = 1): Repeater
 {
-    return Repeater::make();
+    return Repeater::make($max);
+}
+
+/**
+ * Create a new alarm
+ */
+function alarm(int|float $amount, string $unit = Alarm::UNIT_MICROSECONDS): Alarm
+{
+    return Alarm::make($amount, $unit);
 }

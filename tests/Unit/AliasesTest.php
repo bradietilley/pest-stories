@@ -1,11 +1,13 @@
 <?php
 
 use BradieTilley\Stories\Action;
+use BradieTilley\Stories\Alarm;
 use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use function BradieTilley\Stories\Helpers\action;
+use function BradieTilley\Stories\Helpers\alarm;
 use function BradieTilley\Stories\Helpers\assertion;
 use function BradieTilley\Stories\Helpers\repeater;
 use function BradieTilley\Stories\Helpers\story;
@@ -13,6 +15,7 @@ use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 use Tests\Mocks\MockAction;
+use Tests\Mocks\MockAlarm;
 use Tests\Mocks\MockAssertion;
 use Tests\Mocks\MockRepeater;
 use Tests\Mocks\MockStory;
@@ -87,6 +90,24 @@ test('you can create a repeater while utilising a custom alias', function () {
 
     expect(get_class(repeater()))->toBe(Repeater::class);
     expect(get_class(Repeater::make()))->toBe(Repeater::class);
+});
+
+test('you can create a alarm while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(alarm(100)))->toBe(Alarm::class);
+    expect(get_class(Alarm::make(100)))->toBe(Alarm::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(Alarm::class, MockAlarm::class);
+
+    expect(get_class(alarm(100)))->toBe(MockAlarm::class);
+    expect(get_class(Alarm::make(100)))->toBe(MockAlarm::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(Alarm::class, Alarm::class);
+
+    expect(get_class(alarm(100)))->toBe(Alarm::class);
+    expect(get_class(Alarm::make(100)))->toBe(Alarm::class);
 });
 
 test('you cannot set an alias to a class that does not exist', function () {

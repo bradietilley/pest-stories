@@ -30,6 +30,9 @@ abstract class Callback
     /** Repeater controller */
     protected ?Repeater $repeater = null;
 
+    /** Time limit controller */
+    protected ?Alarm $alarm = null;
+
     public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         $this->variable = $name;
@@ -198,6 +201,26 @@ abstract class Callback
     }
 
     /**
+     * Run the callback including the timeout alarm
+     */
+    public function process(array $arguments = []): mixed
+    {
+        $alarm = $this->alarm();
+
+        if ($alarm) {
+            $alarm->start();
+        }
+
+        $response = $this->boot($arguments);
+
+        if ($alarm) {
+            $alarm->stop();
+        }
+
+        return $response;
+    }
+
+    /**
      * Boot this callback.
      *
      * - Run 'before' callbacks
@@ -298,5 +321,23 @@ abstract class Callback
         $this->repeater()->setMax($times);
 
         return $this;
+    }
+
+    /**
+     * Specify a timeout for the story
+     */
+    public function timeout(int|float $amount, string $unit = Alarm::UNIT_MICROSECONDS): static
+    {
+        $this->alarm = Alarm::make($amount, $unit);
+
+        return $this;
+    }
+
+    /**
+     * Get the alarm
+     */
+    public function alarm(): ?Alarm
+    {
+        return $this->alarm;
     }
 }
