@@ -51,9 +51,87 @@ Each `Callback` represents a `Closure` callback with a few extra helpful feature
 
 A `Story` callback allows for nested sub-stories, which is what allows you to build complex test suites with ease. If you need to test all permutations of a feature, nested stories will make this cleaner and easier to achieve.
 
-An example of where this would come in handy is Policy tests, for example if you have various roles to test for the authorised user, various roles of the end user, whether the authorised and end users belong to the same location. To effectively test this feature, you'd want to test each role (say 8) against each role (8) under each true/false state of "same location", which is 8*8*2 = 128 permutations.
+An example of where nested stories would come in handy is testing various permutations for Policy tests. For example, let's say you need to test each role for the authorised user, cross with each role of the end user, and to make it more complex: whether the authorised + end user belong to the same parent (Location, Organisation, Tenant, etc).
 
-This could be achieved (in a fairly clean way) by Pest Stories. 
+To effectively test this feature, you'd want to test each role (let's say 8) against each role (another 8) under each true/false state of "same location", which is 8*8*2 = 128 permutations. 
+
+This could be achieved in a (fairly) clean way by Pest Stories (example doesn't include location permutation though):
+
+```php
+/**
+ * You might find yourself constantly referencing a given user or an "other"
+ * user so you might configure a macro to help streamline the definition of
+ * "in this test set the authorised user to someone with X role" like below:
+ */
+Story::macro('setUser', function (Role|User $user) {
+    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
+
+    $this->set('user', $user);
+    
+    return $this;
+});
+
+Story::macro('setOther', function (Role|User $user) {
+    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
+
+    $this->set('other', $user);
+    
+    return $this;
+});
+
+/**
+ * Assertions could be done as inline callbacks, but if it gets too repetitive
+ * you can always define common expectations as assertion callbacks and then
+ * reference them by their name in stories, i.e. 'true' and 'false' as per
+ * below: 
+ */
+assertion('false')->as(fn (bool $result) => expect($result)->toBeFalse());
+assertion('true')->as(fn (bool $result) => expect($result)->toBeTrue());
+
+/**
+ * Test all roles ability to update another user of all roles, to ensure every scenario is covered.
+ */
+story('User Update policy')
+    ->as(fn (User $user, User $other) => UserPolicy::make()->update($user, $other))
+    /**
+     * The response from `as()` is made available in subsequent callbacks, including
+     * assertions, as the `$result` argument, as seen in the defined `true` and
+     * `false` assertions above.
+     */
+    ->stories([
+        story()->setUser(Role::ROLE_DEV)->stories([
+            story()->setOther(Role::ROLE_DEV)->assert('false'),
+            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
+            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
+            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
+            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
+            story()->setOther(Role::ROLE_GUEST)->assert('true'),
+        ]),
+        story()->setUser(Role::ROLE_SUPER_ADMIN)->stories([
+            story()->setOther(Role::ROLE_DEV)->assert('false'),
+            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('false'),
+            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
+            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
+            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
+            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
+            story()->setOther(Role::ROLE_GUEST)->assert('true'),
+        ]),
+        // ...
+        story()->setUser(Role::ROLE_GUEST)->assert('false')->stories([
+            story()->setOther(Role::ROLE_DEV),
+            story()->setOther(Role::ROLE_SUPER_ADMIN),
+            story()->setOther(Role::ROLE_MANAGEMENT),
+            story()->setOther(Role::ROLE_ADMIN),
+            story()->setOther(Role::ROLE_VIP_USER),
+            story()->setOther(Role::ROLE_CUSTOMER),
+            story()->setOther(Role::ROLE_TRIAL),
+            story()->setOther(Role::ROLE_GUEST),
+        ]),
+    ]);
+```
 
 ### Documentation
 
@@ -90,7 +168,7 @@ action('api_create_product')
  * By creating standardised assertions for each status code, you'll be able to roll out
  * changes with changes only made to a single assertion.
  */
-assertion('200')->as(fn (TestResponse $response) => $response->assertStatus(200)->assertJson([ ... ]));
+assertion('true')->as(fn (TestResponse $response) => $response->assertStatus(200)->assertJson([ ... ]));
 assertion('201')->as(fn (TestResponse $response) => $response->assertStatus(201));
 assertion('422')->as(
     fn (TestResponse $response, array $errors = []) => $response->assertStatus(422)->assertInvalid($errors)
