@@ -8,6 +8,7 @@ use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Traits\Conditionable;
+use BradieTilley\Stories\Traits\TestCallProxies;
 use Closure;
 use Illuminate\Support\Traits\Macroable;
 use Pest\PendingCalls\TestCall;
@@ -19,6 +20,7 @@ class Story extends Callback
 {
     use Conditionable;
     use Macroable;
+    use TestCallProxies;
 
     /** @var array<Story> */
     protected array $stories = [];
@@ -37,7 +39,7 @@ class Story extends Callback
 
     protected false|string $incomplete = false;
 
-    protected false|string $skipped = false;
+    protected array $proxies = [];
 
     protected bool $todo = false;
 
@@ -221,9 +223,7 @@ class Story extends Callback
             $testCall->with($dataset);
         }
 
-        if ($this->isTodo()) {
-            $testCall->todo();
-        }
+        $this->applyTestCallProxies($testCall);
 
         return $testCall;
     }
@@ -301,17 +301,6 @@ class Story extends Callback
         $this->internalBootConditionables();
 
         /**
-         * Mark tests as skipped or incomplete
-         */
-        if (is_string($this->skipped)) {
-            $test->markTestSkipped($this->skipped);
-        }
-
-        if (is_string($this->incomplete)) {
-            $test->markTestIncomplete($this->incomplete);
-        }
-
-        /**
          * Actions (Setup the scenario)
          */
         foreach ($this->getActions() as $data) {
@@ -374,11 +363,7 @@ class Story extends Callback
     public function internalInherit(Story $parent): static
     {
         /**
-         * Collate actions and assertions from the parent as well as from this story,
-         * with the parent's actions and assertions being listed first before this
-         * story's actions and assertions.
-         *
-         * i.e. trunk first -> branch second -> twig last
+         * Collate actions and assertions from the parent as well as from this story
          */
         $this->actions = collect($parent->getPropertyArray('actions'))
             ->concat($this->getPropertyArray('actions'))
@@ -400,18 +385,22 @@ class Story extends Callback
         $this->callback ??= $parent->getCallback();
 
         /**
-         * Inherit the Skipped and Incomplete messages, if defined, so that the child
-         * story can also get marked as skipped or incompelte when booted.
+         * Inherit all TestCall proxied methods from the parent and this story.
+         *
          */
-        $this->skipped = $this->isSkipped() ? $this->skipped : $parent->getSkipped();
-        $this->incomplete = $this->isIncomplete() ? $this->incomplete : $parent->getIncomplete();
+        $testCallProxies = $parent->getPropertyArray('testCallProxies');
+        foreach ($this->testCallProxies as $method => $invokations) {
+            foreach ($invokations as $arguments) {
+                $testCallProxies[$method] ??= [];
+                $testCallProxies[$method][] = $arguments;
+            }
+        }
+        $this->testCallProxies = $testCallProxies;
 
         /**
          * Collate the before and after callbacks from the parent as well as from
          * this story, with the parent's callbacks being listed first before this
          * story's callbacks.
-         *
-         * i.e. trunk first -> branch second -> twig last
          */
         $this->before = collect($parent->getPropertyArray('before'))
             ->concat($this->getPropertyArray('before'))
@@ -422,10 +411,7 @@ class Story extends Callback
 
         /**
          * Collate the setUp and tearDown callbacks from the parent as well as from
-         * this story, with the parent's callbacks being listed first before this
-         * story's callbacks.
-         *
-         * i.e. trunk first -> branch second -> twig last
+         * this story
          */
         $this->setUp = collect($parent->getPropertyArray('setUp'))
             ->concat($this->getPropertyArray('setUp'))
@@ -435,83 +421,14 @@ class Story extends Callback
             ->all();
 
         /**
-         * i.e. trunk first -> branch second -> twig last
+         * Merge conditionable when/unless callbacks from the parent as well as from
+         * this story.
          */
         $this->conditionables = collect($parent->getPropertyArray('conditionables'))
             ->concat($this->getPropertyArray('conditionables'))
             ->all();
 
         return $this;
-    }
-
-    /**
-     * Mark the test as incomplete
-     */
-    public function incomplete(string $message = ''): static
-    {
-        $this->incomplete = $message;
-
-        return $this;
-    }
-
-    /**
-     * Is this story marked as incomplete?
-     */
-    public function isIncomplete(): bool
-    {
-        return $this->incomplete !== false;
-    }
-
-    /**
-     * Get the incomplete message
-     */
-    public function getIncomplete(): false|string
-    {
-        return $this->incomplete;
-    }
-
-    /**
-     * Mark the test as skipped
-     */
-    public function skipped(string $message = ''): static
-    {
-        $this->skipped = $message;
-
-        return $this;
-    }
-
-    /**
-     * Is this story marked as skipped?
-     */
-    public function isSkipped(): bool
-    {
-        return $this->skipped !== false;
-    }
-
-    /**
-     * Get the skipped message
-     */
-    public function getSkipped(): false|string
-    {
-        return $this->skipped;
-    }
-
-    /**
-     * Mark the test as todo
-     */
-    public function todo(): static
-    {
-        $this->todo = true;
-
-        return $this;
-    }
-
-    /**
-     * Is this story marked as todo?
-     */
-    public function isTodo(): bool
-    {
-        return $this->todo !== false;
     }
 
     /**
