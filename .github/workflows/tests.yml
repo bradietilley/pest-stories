@@ -34,4 +34,7 @@ jobs:
       run: composer update --${{ matrix.dependency-version }} --no-interaction --no-progress --ansi
 
     - name: Unit Tests
-      run: vendor/bin/pest --colors=always
+      run: composer test --colors=always
+
+    - name: Extended Tests
+      run: composer test-extended --colors=always
