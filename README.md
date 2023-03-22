@@ -186,6 +186,9 @@ story('Create Product endpoint')
                     'title' => 'The title field is required.',
                 ],
             ]),
+        // fails if missing X
+        // fails if missing Y
+        // fails if missing Z
     ])
     /**
      * Now that the stories have been defined, we register the story with Pest. This is similar
@@ -204,21 +207,56 @@ story('Create Product endpoint')
 
 #### Workflow
 
-- `Story` callback: `setUp`
+All `Callback` objects (`Action`, `Assertion`, `Story`) may have any number of `before` and `after` callbacks. \
+All `Story` objects may have any number of `setUp` and `tearDown` callbacks. \
+All `Story` objects may have any number of `Action` and `Assertion` objects.
+
+For `Story` objects, inheritance plays a part in the sequence of events:
+
+All callbacks including callback closures (`before`, `after`, `setUp`, `tearDown`) and Callback objects (`Action`, `Assertion`) are
+inherited from a parent and queued before the child's callbacks. This allows your parent to define the first key steps in setting up
+the scenario, with the children stories adjusting the scenario further to meet the need of the story.
+
+After inheriting all callbacks from parents, grandparents, etc, the lifecycle of a Story is as such:
+
+- `Story` callbacks: `setUp`
 - `Story` Actions (for each):
-    - `Action` callback: `before`
+    - `Action` callbacks: `before`
     - `Action` primary callback
-    - `Action` callback: `after`
+    - `Action` callbacks: `after`
 - `Story` itself:
-    - `Story` callback: `before`
+    - `Story` callbacks: `before`
     - `Story` primary callback
-    - `Story` callback: `after`
+    - `Story` callbacks: `after`
 - `Story` Assertions (for each):
-    - `Assertion` callback: `before`
+    - `Assertion` callbacks: `before`
     - `Assertion` primary callback
-    - `Assertion` callback: `after`
-- `Story` callback: `tearDown`
+    - `Assertion` callbacks: `after`
+- `Story` callbacks: `tearDown`
 
 
 
- 
+A higher level view of the lifecycle is:
+
+**Story registration**
+
+This is done via the `test()` method. For example: `story()->customise(...)->test()`.
+
+If stories are nested, it will iterate all stories until it finds the child-most story for each "branch" of the story, and then for each story it will inherit all callbacks and options from the parents.
+
+Once all stories have been "registered" (or if there aren't any nested stories), the package then calls Pest's `test()` function with the Closure callback argumnet being the Story's internal process function which ultimately boots everything for the story.
+
+At this stage though, no callbacks are run. All other stories are compiled and registered to form a full list of test cases to run (groups/filters are then applied by pest/phpunit) and then Pest begins the processing stage.
+
+
+**Story processing**
+
+Because the test function is native Pest functionality, you can continue to leverage the helper callbacks
+like `beforeEach()` and `beforeAll`.
+
+Pest runs the `test()` Closure callback argment, which runs the Story process: `$story->process()`.
+
+This `process()` method will run each child story from start to finish, including all callbacks, Actions and Assertions.
+
+Because all of this is run within a Pest `test()` function, standard features _like_ "No assertions were made" errors are still
+thrown.
