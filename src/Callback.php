@@ -296,8 +296,6 @@ abstract class Callback
 
     /**
      * Get an array property by name
-     *
-     * @return array
      */
     public function getPropertyArray(string $event): array
     {
