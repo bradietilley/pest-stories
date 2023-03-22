@@ -116,3 +116,84 @@ test('a story can mark the test as skipped at a parent level', function () {
 
     expect($all)->toBe($expected);
 });
+
+test('all TestCall proxies pass the exact same arguments to the TestCall object', function (string $method, array $arguments) {
+    StoryAliases::setFunction('test', 'pest_stories_mock_test_function');
+
+    $story = story('test story');
+    $story->{$method}(...$arguments);
+    $testCall = $story->test();
+
+    expect($testCall->testCallProxies())->toBe([
+        $method => [
+            $arguments,
+        ],
+    ]);
+})->with([
+    'throws' => [
+        'method' => 'throws',
+        'arguments' => [
+            'TestExceptionClass', 'TestExceptionMessage', 404,
+        ],
+    ],
+    'throwsIf' => [
+        'method' => 'throwsIf',
+        'arguments' => [
+            false, 'TestExceptionClass', 'TestExceptionMessage', 404,
+        ],
+    ],
+    'depends' => [
+        'method' => 'depends',
+        'arguments' => [
+            'depend 1', 'depend 2',
+        ],
+    ],
+    'group' => [
+        'method' => 'group',
+        'arguments' => [
+            'group 1', 'group 2',
+        ],
+    ],
+    'skip' => [
+        'method' => 'skip',
+        'arguments' => [
+            false, 'message',
+        ],
+    ],
+    'todo' => [
+        'method' => 'todo',
+        'arguments' => [
+
+        ],
+    ],
+    'covers' => [
+        'method' => 'covers',
+        'arguments' => [
+            'Class1', 'function_1',
+        ],
+    ],
+    'coversClass' => [
+        'method' => 'coversClass',
+        'arguments' => [
+            'Class1', 'Class2',
+        ],
+    ],
+    'coversFunction' => [
+        'method' => 'coversFunction',
+        'arguments' => [
+            'function 1', 'function 2',
+        ],
+    ],
+    'coversNothing' => [
+        'method' => 'coversNothing',
+        'arguments' => [
+
+        ],
+    ],
+    'throwsNoExceptions' => [
+        'method' => 'throwsNoExceptions',
+        'arguments' => [
+
+        ],
+    ],
+]);

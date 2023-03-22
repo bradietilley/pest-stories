@@ -386,7 +386,6 @@ class Story extends Callback
 
         /**
          * Inherit all TestCall proxied methods from the parent and this story.
-         *
          */
         $testCallProxies = $parent->getPropertyArray('testCallProxies');
         foreach ($this->testCallProxies as $method => $invokations) {
