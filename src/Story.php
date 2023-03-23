@@ -7,6 +7,7 @@ namespace BradieTilley\Stories;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Helpers\VariableNaming;
 use BradieTilley\Stories\Traits\Conditionable;
 use BradieTilley\Stories\Traits\TestCallProxies;
 use Closure;
@@ -41,7 +42,7 @@ class Story extends Callback
 
     protected array $proxies = [];
 
-    protected bool $todo = false;
+    protected array $appends = [];
 
     public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
@@ -201,7 +202,7 @@ class Story extends Callback
             $dataset = [];
 
             foreach ($this->flattenStories() as $story) {
-                $storyName = $story->getName();
+                $storyName = $story->getTestName();
                 $datasetName = trim(substr($storyName, strlen($parentName)));
 
                 $dataset[$datasetName] = [$story];
@@ -217,7 +218,7 @@ class Story extends Callback
         }
 
         /** @var TestCall|PestStoriesMockTestCall $testCall */
-        $testCall = $function($this->getName(), $this->getTestCallback());
+        $testCall = $function($this->getTestName(), $this->getTestCallback());
 
         if ($dataset !== null) {
             $testCall->with($dataset);
@@ -309,6 +310,15 @@ class Story extends Callback
             /** @var array $arguments */
             $arguments = $data['arguments'];
 
+            // Use story variables and action arguments
+            $arguments = array_replace(
+                $this->with,
+                [
+                    'story' => $this,
+                ],
+                $arguments,
+            );
+
             $action = clone Action::fetch($name);
             $variable = $action->getVariable();
 
@@ -332,6 +342,15 @@ class Story extends Callback
             $name = $data['name'];
             /** @var array $arguments */
             $arguments = $data['arguments'];
+
+            // Use story variables and action arguments
+            $arguments = array_replace(
+                $this->with,
+                [
+                    'story' => $this,
+                ],
+                $arguments,
+            );
 
             $assertion = clone Assertion::fetch($name);
             $variable = $assertion->getVariable();
@@ -427,6 +446,13 @@ class Story extends Callback
             ->concat($this->getPropertyArray('conditionables'))
             ->all();
 
+        /**
+         * Merge appendable variables
+         */
+        $this->appends = collect($parent->getPropertyArray('appends'))
+            ->concat($this->getPropertyArray('appends'))
+            ->all();
+
         return $this;
     }
 
@@ -450,5 +476,46 @@ class Story extends Callback
         $this->tearDown[] = $callback;
 
         return $this;
+    }
+
+    /**
+     * Append the given variable to the story name.
+     *
+     * Note: the variables must be available before the story is
+     * booted in order for the variables to be appended. Those
+     * variables that are set during the boot process of a story
+     * will be unavailable before boot and won't be added.
+     */
+    public function appends(string $variable): static
+    {
+        $this->appends[] = $variable;
+
+        return $this;
+    }
+
+    /**
+     * Get the name of this callback, action, assertion or story
+     */
+    public function getTestName(): string
+    {
+        if ($this->hasStories()) {
+            return $this->getName();
+        }
+
+        $name = [];
+
+        foreach ($this->appends as $variable) {
+            $value = $this->get($variable);
+
+            $name[] = "{$variable}: ".VariableNaming::stringify($value);
+        }
+
+        $name = sprintf(
+            '%s %s',
+            $this->getName(),
+            implode(', ', $name),
+        );
+
+        return trim($name);
     }
 }
