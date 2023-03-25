@@ -17,7 +17,7 @@ test('a complex multi-level story is named appropriately', function () {
             ]),
         ]);
 
-    $names = collect($story->flattenStories())
+    $names = $story->flattenStories()
         ->map->getTestName()
         ->toArray();
 
@@ -38,7 +38,7 @@ test('stories can have pre-defined variables appended to the name for ease of va
             story()->set('name', 'pest stories'),
         ]);
 
-    $names = collect($story->flattenStories())
+    $names = $story->flattenStories()
         ->map->getTestName()
         ->toArray();
 

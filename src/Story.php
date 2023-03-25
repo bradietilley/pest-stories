@@ -11,6 +11,7 @@ use BradieTilley\Stories\Helpers\VariableNaming;
 use BradieTilley\Stories\Traits\Conditionable;
 use BradieTilley\Stories\Traits\TestCallProxies;
 use Closure;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
 use Pest\Expectation;
@@ -183,11 +184,12 @@ class Story extends Callback
     /**
      * Get all child/grandchild/etc stories
      *
-     * @return array<Story>
+     * @return Collection<int, Story>
      */
-    public function flattenStories(): array
+    public function flattenStories(): Collection
     {
-        $stories = [];
+        /** @var Collection<int, Story> $stories */
+        $stories = Collection::make([]);
 
         foreach ($this->getStories() as $story) {
             $story->internalInherit($this);
@@ -480,6 +482,8 @@ class Story extends Callback
         $this->appends = collect($parent->getPropertyArray('appends'))
             ->concat($this->getPropertyArray('appends'))
             ->all();
+
+        $this->chain->inherit($parent->chain());
 
         return $this;
     }

@@ -94,13 +94,34 @@ class ExpectationChain
         return $this->story;
     }
 
+    /**
+     * Create a new chainable expectation
+     */
     public function and(string|Closure $newValue): static
     {
         return $this->registerExpectationValue($newValue);
     }
 
     /**
-     * Make a new Expectation Queue
+     * Create a new chainable expectation
+     */
+    public function expect(string|Closure $newValue): static
+    {
+        return $this->and($newValue);
+    }
+
+    /**
+     * Add a child story to run when this story runs
+     *
+     * @param  array<string|Story>|string|Story  $story
+     */
+    public function stories(array|string|Story|ExpectationChain $story, array $arguments = []): Story
+    {
+        return $this->story()->stories($story, $arguments);
+    }
+
+    /**
+     * Make a new Expectation Chain
      */
     public static function make(): static
     {
@@ -110,5 +131,15 @@ class ExpectationChain
         $class = new $class(...func_get_args());
 
         return $class;
+    }
+
+    /**
+     *Inherit the chain from the given parent
+     */
+    public function inherit(ExpectationChain $parent): void
+    {
+        $this->chain = collect($parent->chain)
+            ->concat($this->chain)
+            ->all();
     }
 }

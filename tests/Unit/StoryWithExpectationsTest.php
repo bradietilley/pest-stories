@@ -8,11 +8,13 @@ use Pest\Matchers\Any;
 use PHPUnit\Framework\Constraint\IsAnything;
 use Tests\Mocks\PestStoriesMockExpectation;
 
-test('a story can have an expectation which will queue the expectation', function () {
+beforeEach(function () {
     StoryAliases::setFunction('expect', 'pest_stories_mock_expect_function');
     PestStoriesMockExpectation::$calls = [];
     PestStoriesMockExpectation::$gets = [];
+});
 
+test('a story can have an expectation which will queue the expectation', function () {
     $story = story('test')
         ->action(fn (Story $story) => $story->set('something', [
             'a' => 1,
@@ -62,10 +64,6 @@ test('a story can have an expectation which will queue the expectation', functio
 });
 
 test('all expectation methods', function () {
-    StoryAliases::setFunction('expect', 'pest_stories_mock_expect_function');
-    PestStoriesMockExpectation::$calls = [];
-    PestStoriesMockExpectation::$gets = [];
-
     $methodsToRun = [
         'toBe' => ['abc', 'custom-message'],
         'toBeEmpty' => ['custom-message'],
@@ -208,10 +206,6 @@ test('a story can have multiple expectations', function () {
 });
 
 test('a story expectation chain may fetch properties', function () {
-    StoryAliases::setFunction('expect', 'pest_stories_mock_expect_function');
-    PestStoriesMockExpectation::$calls = [];
-    PestStoriesMockExpectation::$gets = [];
-
     $actual = (object) [
         'abc' => '123',
     ];
@@ -257,3 +251,31 @@ test('a chain can be added to a parent story\'s stories method', function () {
             ),
         ]);
 })->throwsNoExceptions();
+
+test('a storys expectations can be inherited from the parent story', function () {
+    $story = story('test parent story')
+        ->action(fn () => '123', for: 'a')
+        ->action(fn () => '456', for: 'b')
+        ->set('a', '123')
+        ->set('b', '456')
+        ->expect('a')
+        ->toHaveLength(3)
+        ->expect('b')
+        ->toHaveLength(3)
+        ->stories([
+            story('child 1')->expect('a')->toBe('***'),
+            story('child 2')->expect('a')->toBe('123')->stories([
+                story('child 3')->expect('b')->toBe('***'),
+                story('child 4')->expect('b')->toBe('456'),
+            ]),
+        ]);
+
+    $actual = $story->flattenStories()->map(fn (Story $story) => json_encode($story->chain()->chain))->toArray();
+    $expect = [
+        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["***"]}]',
+        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["123"]},{"type":"expect","value":"b"},{"type":"method","name":"toBe","args":["***"]}]',
+        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["123"]},{"type":"expect","value":"b"},{"type":"method","name":"toBe","args":["456"]}]',
+    ];
+
+    expect($actual)->toBe($expect);
+});
