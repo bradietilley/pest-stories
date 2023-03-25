@@ -338,3 +338,45 @@ This `process()` method will run each child story from start to finish, includin
 
 Because all of this is run within a Pest `test()` function, standard features _like_ "No assertions were made" errors are still
 thrown.
+
+
+**Story Expectations**
+
+Sometimes a story assertion may be overkill and you just want to run expectations against a story variable.
+
+Instead of doing this:
+
+```php
+action('create_product')->as(fn (array $data) => Product::factory()->create($data))->for('product');
+
+story()
+    ->action('create_product', [
+        'data' => [
+            'sku' => 'ABC',
+        ],
+    ])
+    ->assertion(function ($product) {
+        expect($product)->toBeInstanceOf(Product::class)
+            ->wasRecentlyCreated->toBeTrue()
+            ->sku->toBe('ABC');
+    });
+```
+
+You could instead do:
+
+```php
+action('create_product')->as(fn (array $data) => Product::factory()->create($data))->for('product');
+
+story()
+    ->action('create_product', [
+        'data' => [
+            'sku' => 'ABC',
+        ],
+    ])
+    ->expect('product') // or ->expect(fn (Story $story) => $story->get('product'))
+    ->toBeInstanceOf(Product::class)
+    ->wasRecentlyCreated->toBeTrue()
+    ->sku->toBe('ABC');
+```
+
+TODO: Inherit chained expectations to children
