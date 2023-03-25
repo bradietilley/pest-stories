@@ -77,7 +77,7 @@ class Story extends Callback
             function (string|Story|ExpectationChain $story) {
                 $story = ($story instanceof ExpectationChain) ? $story->story() : $story;
                 $story = (is_string($story)) ? Story::fetch($story) : $story;
-                
+
                 return $story;
             },
             $story,
@@ -111,8 +111,10 @@ class Story extends Callback
      *
      * @param  array<string|Action|Closure>|string|Action|Closure  $action
      */
-    public function action(array|string|Action|Closure $action, array $arguments = []): static
+    public function action(array|string|Action|Closure $action, array $arguments = [], string $for = null): static
     {
+        $closureBased = $action instanceof Closure;
+
         $action = (is_array($action)) ? $action : [$action];
 
         $action = array_map(
@@ -121,6 +123,10 @@ class Story extends Callback
         );
 
         foreach ($action as $actionItem) {
+            if ($closureBased && ($for !== null)) {
+                $actionItem->for($for);
+            }
+
             $this->actions[] = [
                 'name' => $actionItem->getName(),
                 'arguments' => $arguments,

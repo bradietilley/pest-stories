@@ -373,10 +373,13 @@ story()
             'sku' => 'ABC',
         ],
     ])
+    ->action(fn () => 'DEF', for: 'something')
     ->expect('product') // or ->expect(fn (Story $story) => $story->get('product'))
     ->toBeInstanceOf(Product::class)
     ->wasRecentlyCreated->toBeTrue()
     ->sku->toBe('ABC');
+    ->and('something')
+    ->toBe('DEF')
 ```
 
 TODO: Inherit chained expectations to children

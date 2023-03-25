@@ -99,3 +99,10 @@ test('the results from actions can be stored in customised Story variables', fun
     expect($story->get('do_something'))->toBe(null);
     expect($story->get('custom_name'))->toBe('test value here');
 });
+
+test('the results from actions can be stored in customised Story variables when added inline', function () {
+    $story = story('something')->action(fn () => 'test value here as well', for: 'custom_name_2')->process();
+
+    expect($story->get('do_something'))->toBe(null);
+    expect($story->get('custom_name_2'))->toBe('test value here as well');
+});
