@@ -8,7 +8,7 @@ Provides an object-oriented approach for writing large test suites, with the abi
 ### Installation
 
 ```
-composer require bradietilley/pest-stories
+composer require bradietilley/pest-stories --dev
 ```
 
 ### Overivew
