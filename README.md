@@ -381,5 +381,3 @@ story()
     ->and('something')
     ->toBe('DEF')
 ```
-
-TODO: Inherit chained expectations to children
