@@ -255,7 +255,7 @@ abstract class Callback
      * Run the given closure with the pre-registered arguments as well as the
      * given arguments.
      */
-    protected function internalCall(Closure $callback, array $arguments = []): mixed
+    public function internalCall(Closure $callback, array $arguments = []): mixed
     {
         $arguments = array_replace(
             $this->with,

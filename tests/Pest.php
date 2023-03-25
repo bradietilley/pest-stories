@@ -1,5 +1,6 @@
 <?php
 
+use Tests\Mocks\PestStoriesMockExpectation;
 use Tests\Mocks\PestStoriesMockTestCall;
 use Tests\TestCase;
 
@@ -14,5 +15,12 @@ if (! function_exists('pest_stories_mock_test_function')) {
     function pest_stories_mock_test_function(string $description, Closure $callback): PestStoriesMockTestCall
     {
         return new PestStoriesMockTestCall($description, $callback);
+    }
+}
+
+if (! function_exists('pest_stories_mock_expect_function')) {
+    function pest_stories_mock_expect_function(mixed $value): PestStoriesMockExpectation
+    {
+        return new PestStoriesMockExpectation($value);
     }
 }

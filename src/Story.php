@@ -12,6 +12,8 @@ use BradieTilley\Stories\Traits\Conditionable;
 use BradieTilley\Stories\Traits\TestCallProxies;
 use Closure;
 use Illuminate\Support\Traits\Macroable;
+use InvalidArgumentException;
+use Pest\Expectation;
 use Pest\PendingCalls\TestCall;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
@@ -44,10 +46,13 @@ class Story extends Callback
 
     protected array $appends = [];
 
+    protected ExpectationChain $chain;
+
     public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         parent::__construct($name, $callback, $arguments);
 
+        $this->chain = ExpectationChain::make();
         $this->variable = 'result';
     }
 
@@ -64,12 +69,22 @@ class Story extends Callback
      *
      * @param  array<string|Story>|string|Story  $story
      */
-    public function stories(array|string|Story $story, array $arguments = []): static
+    public function stories(array|string|Story|ExpectationChain $story, array $arguments = []): static
     {
         $story = (is_array($story)) ? $story : [$story];
 
         $story = array_map(
-            fn (string|Story $story): Story => (is_string($story)) ? Story::fetch($story) : $story,
+            function (string|Story|ExpectationChain $story) {
+                if ($story instanceof ExpectationChain) {
+                    $story = $story->story();
+                }
+
+                if (is_string($story)) {
+                    $story = Story::fetch($story);
+                }
+
+                return $story;
+            },
             $story,
         );
 
@@ -335,7 +350,12 @@ class Story extends Callback
         $this->set($key, $value);
 
         /**
-         * Expectations and assertions
+         * Pest Expectations
+         */
+        $this->bootChain();
+
+        /**
+         * Custom assertions
          */
         foreach ($this->getAssertions() as $data) {
             /** @var string $name */
@@ -447,6 +467,13 @@ class Story extends Callback
             ->all();
 
         /**
+         * Merge variables
+         */
+        $this->with = collect($parent->getPropertyArray('with'))
+            ->replace($this->getPropertyArray('with'))
+            ->all();
+
+        /**
          * Merge appendable variables
          */
         $this->appends = collect($parent->getPropertyArray('appends'))
@@ -517,5 +544,90 @@ class Story extends Callback
         );
 
         return trim($name);
+    }
+
+    /**
+     * Specify the variable name (string) or value (Closure return)
+     * to use in subsequent expectations.
+     */
+    public function expect(string|Closure $value): ExpectationChain
+    {
+        $this->chain->setStory($this);
+        $this->chain->and($value);
+
+        return $this->chain;
+    }
+
+    /**
+     * Get expectations
+     */
+    public function chain(): ExpectationChain
+    {
+        return $this->chain;
+    }
+
+    /**
+     * Execute any chained expectation pest expectation
+     * calls, originally called from $story->expect('var')->toBe(X)...
+     */
+    public function bootChain(): void
+    {
+        if (empty($this->chain->chain)) {
+            return;
+        }
+
+        /** @var ?Expectation $expectation */
+        $expectation = null;
+
+        $function = StoryAliases::getFunction('expect');
+
+        if (! function_exists($function)) {
+            // @codeCoverageIgnoreStart
+            throw FunctionAliasNotFoundException::make('expect', $function);
+            // @codeCoverageIgnoreEnd
+        }
+
+        foreach ($this->chain->chain as $segment) {
+            if ($segment['type'] === 'expect') {
+                /** @var string|Closure $value */
+                $value = $segment['value'];
+
+                $value = (is_string($value)) ? $this->get($value) : $this->internalCall($value);
+
+                /** @var Expectation $expectation */
+                $expectation = $function($value);
+
+                continue;
+            }
+
+            if ($segment['type'] === 'method') {
+                /** @var array $method */
+                $method = $segment['name'];
+
+                /** @var array $arguments */
+                $arguments = $segment['args'];
+
+                /** @var Expectation $expectation */
+                $expectation = $expectation->{$method}(...$arguments);
+
+                continue;
+            }
+
+            if ($segment['type'] === 'property') {
+                /** @var array $property */
+                $property = $segment['name'];
+
+                /** @var Expectation $expectation */
+                $expectation = $expectation->{$property};
+
+                continue;
+            }
+
+            // @codeCoverageIgnoreStart
+            throw new InvalidArgumentException(
+                sprintf('Invalid expectation chain type provided')
+            );
+            // @codeCoverageIgnoreEnd
+        }
     }
 }

@@ -10,6 +10,7 @@ use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
+use BradieTilley\Stories\ExpectationChain;
 use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 
@@ -21,10 +22,12 @@ class StoryAliases
         Assertion::class => Assertion::class,
         Repeater::class => Repeater::class,
         Alarm::class => Alarm::class,
+        ExpectationChain::class => ExpectationChain::class,
     ];
 
     protected static array $functions = [
         'test' => 'test',
+        'expect' => 'expect',
     ];
 
     /**

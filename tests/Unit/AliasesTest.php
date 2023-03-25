@@ -118,9 +118,16 @@ test('you cannot set an alias to a class that is not a correct subclass', functi
     StoryAliases::setClassAlias(Story::class, 'BradieTilley\\Stories\\Assertion');
 })->throws(ClassAliasNotSubClassException::class, 'Cannot use class `BradieTilley\Stories\Assertion` as an alias for `BradieTilley\Stories\Story`: Class is not a valid subclass');
 
-test('you cannot set an alias to a function that does not exist ', function () {
+test('you cannot set the test function alias to a function that does not exist ', function () {
     StoryAliases::setFunction('test', 'pest_stories_mock_test_function');
     expect(StoryAliases::getFunction('test'))->toBe('pest_stories_mock_test_function');
 
     StoryAliases::setFunction('test', 'pest_stories_mock_test_function_not_exists');
 })->throws(FunctionAliasNotFoundException::class, 'Cannot use function `pest_stories_mock_test_function_not_exists` as an alias for `test`: Function not found');
+
+test('you cannot set the expect function alias to a function that does not exist ', function () {
+    StoryAliases::setFunction('expect', 'pest_stories_mock_expect_function');
+    expect(StoryAliases::getFunction('expect'))->toBe('pest_stories_mock_expect_function');
+
+    StoryAliases::setFunction('expect', 'pest_stories_mock_expect_function_not_exists');
+})->throws(FunctionAliasNotFoundException::class, 'Cannot use function `pest_stories_mock_expect_function_not_exists` as an alias for `expect`: Function not found');
