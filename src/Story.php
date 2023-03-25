@@ -75,14 +75,9 @@ class Story extends Callback
 
         $story = array_map(
             function (string|Story|ExpectationChain $story) {
-                if ($story instanceof ExpectationChain) {
-                    $story = $story->story();
-                }
-
-                if (is_string($story)) {
-                    $story = Story::fetch($story);
-                }
-
+                $story = ($story instanceof ExpectationChain) ? $story->story() : $story;
+                $story = (is_string($story)) ? Story::fetch($story) : $story;
+                
                 return $story;
             },
             $story,
