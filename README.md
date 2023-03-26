@@ -1,6 +1,6 @@
 # Pest Stories
 
-Provides an object-oriented approach for writing large test suites, with the ability to leverage shared actions and assertions.
+An object-oriented approach for writing large test suites.
 
 ![Static Analysis](https://github.com/bradietilley/pest-stories/actions/workflows/static.yml/badge.svg)
 ![Tests](https://github.com/bradietilley/pest-stories/actions/workflows/tests.yml/badge.svg)
@@ -11,11 +11,17 @@ Provides an object-oriented approach for writing large test suites, with the abi
 composer require bradietilley/pest-stories --dev
 ```
 
+### Introduction
+
+User stories are short, simple descriptions of a feature or functionality of a software application, typically written from the perspective of an end user.
+
+Pest Stories is a PHP package that extends the PestPHP testing framework, allowing developers to write user stories in a clear and reusable way, making it easier to maintain and test their software applications.
+
 ### Overivew
 
-Pest Stories is comprised largely of various `Callback` classes: `Action`, `Assertion` and `Story`.
+Under the hood, Pest Stories is largely comprised of a few `Callback` classes: `Action`, `Assertion` and `Story`.
 
-Each `Callback` class represents a fragment of your application, that is often replicable and common (but not always).
+Each `Callback` class represents a fragment of your application, that is often replicable and common (not always).
 
 For `Action` callbacks, these could be small scenarios like:
 
@@ -47,7 +53,6 @@ Each `Callback` represents a `Closure` callback with a few extra helpful feature
     of the Callback, including before, primary and after callbacks.
 - Dependency Injection:
     - Utilising Laravel's container, you can expect arguments in your Closure which are fed from both Laravel's container and the Data repository.
-
 
 A `Story` callback allows for nested sub-stories, which is what allows you to build complex test suites with ease. If you need to test all permutations of a feature, nested stories will make this cleaner and easier to achieve.
 
