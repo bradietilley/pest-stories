@@ -18,3 +18,4 @@ Welcome to the documentation for Pest Stories.
 - [Callback: Assertion](/docs/assertions/README.md)
 - [Feature: Repeating](/docs/feature-repeating.md)
 - [Feature: Timeouts](/docs/feature-timeouts)
+- [Example Usage](/docs/example-usage.md)
