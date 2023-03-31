@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Exceptions\InvocationFunctionNotFoundException;
+use BradieTilley\Stories\Exceptions\InvocationOrphanedMethodException;
+use BradieTilley\Stories\Exceptions\InvocationOrphanedPropertyException;
 use BradieTilley\Stories\Helpers\StoryAliases;
-use Exception;
 
 /**
  * A pending invocation of a method, function or property (get)
@@ -126,8 +128,8 @@ class Invocation
         if ($this->isFunction()) {
             $function = $this->name;
 
-            if (! is_callable($function)) {
-                throw new Exception('Cannot call non-callable function `%s`');
+            if (! function_exists($function)) {
+                throw InvocationFunctionNotFoundException::make($function);
             }
 
             return $function(...$this->arguments);
@@ -137,20 +139,20 @@ class Invocation
             $method = $this->name;
 
             if ($this->object === null) {
-                throw new \Exception('Cannot invoke method %s on null object');
+                throw InvocationOrphanedMethodException::make($method);
             }
 
             return $this->object->{$method}(...$this->arguments);
         }
 
         if ($this->isProperty()) {
-            $method = $this->name;
+            $property = $this->name;
 
             if ($this->object === null) {
-                throw new \Exception('Cannot get property %s on null object');
+                throw InvocationOrphanedPropertyException::make($property);
             }
 
-            return $this->object->{$method};
+            return $this->object->{$property};
         }
 
         throw new \Exception('Unsupported invocation type %s');
