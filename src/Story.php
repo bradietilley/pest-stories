@@ -53,6 +53,7 @@ class Story extends Callback
         parent::__construct($name, $callback, $arguments);
 
         $this->testCalls = InvocationQueue::make();
+        $this->conditionables = InvocationQueue::make();
         $this->expectations = ExpectationChain::make();
         $this->variable = 'result';
     }
@@ -458,9 +459,7 @@ class Story extends Callback
          * Merge conditionable when/unless callbacks from the parent as well as from
          * this story.
          */
-        $this->conditionables = collect($parent->getPropertyArray('conditionables'))
-            ->concat($this->getPropertyArray('conditionables'))
-            ->all();
+        $this->conditionables->inherit($parent->conditionables);
 
         /**
          * Merge variables
