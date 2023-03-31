@@ -11,6 +11,8 @@ use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\ExpectationChain;
+use BradieTilley\Stories\Invocation;
+use BradieTilley\Stories\InvocationQueue;
 use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 
@@ -23,6 +25,8 @@ class StoryAliases
         Repeater::class => Repeater::class,
         Alarm::class => Alarm::class,
         ExpectationChain::class => ExpectationChain::class,
+        InvocationQueue::class => InvocationQueue::class,
+        Invocation::class => Invocation::class,
     ];
 
     protected static array $functions = [

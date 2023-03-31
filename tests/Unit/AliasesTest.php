@@ -6,17 +6,23 @@ use BradieTilley\Stories\Assertion;
 use BradieTilley\Stories\Exceptions\ClassAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\ClassAliasNotSubClassException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
+use BradieTilley\Stories\ExpectationChain;
 use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\alarm;
 use function BradieTilley\Stories\Helpers\assertion;
 use function BradieTilley\Stories\Helpers\repeater;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Invocation;
+use BradieTilley\Stories\InvocationQueue;
 use BradieTilley\Stories\Repeater;
 use BradieTilley\Stories\Story;
 use Tests\Mocks\MockAction;
 use Tests\Mocks\MockAlarm;
 use Tests\Mocks\MockAssertion;
+use Tests\Mocks\MockExpectationChain;
+use Tests\Mocks\MockInvocation;
+use Tests\Mocks\MockInvocationQueue;
 use Tests\Mocks\MockRepeater;
 use Tests\Mocks\MockStory;
 
@@ -92,7 +98,7 @@ test('you can create a repeater while utilising a custom alias', function () {
     expect(get_class(Repeater::make()))->toBe(Repeater::class);
 });
 
-test('you can create a alarm while utilising a custom alias', function () {
+test('you can create an alarm while utilising a custom alias', function () {
     // Shouldn't be a mock instance
     expect(get_class(alarm(100)))->toBe(Alarm::class);
     expect(get_class(Alarm::make(100)))->toBe(Alarm::class);
@@ -108,6 +114,51 @@ test('you can create a alarm while utilising a custom alias', function () {
 
     expect(get_class(alarm(100)))->toBe(Alarm::class);
     expect(get_class(Alarm::make(100)))->toBe(Alarm::class);
+});
+
+test('you can create an expectation chain while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(ExpectationChain::make()))->toBe(ExpectationChain::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(ExpectationChain::class, MockExpectationChain::class);
+
+    expect(get_class(ExpectationChain::make()))->toBe(MockExpectationChain::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(ExpectationChain::class, ExpectationChain::class);
+
+    expect(get_class(ExpectationChain::make()))->toBe(ExpectationChain::class);
+});
+
+test('you can create an invocation queue while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(InvocationQueue::make()))->toBe(InvocationQueue::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(InvocationQueue::class, MockInvocationQueue::class);
+
+    expect(get_class(InvocationQueue::make()))->toBe(MockInvocationQueue::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(InvocationQueue::class, InvocationQueue::class);
+
+    expect(get_class(InvocationQueue::make()))->toBe(InvocationQueue::class);
+});
+
+test('you can create an invocation while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(Invocation::makeFunction('test')))->toBe(Invocation::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(Invocation::class, MockInvocation::class);
+
+    expect(get_class(Invocation::makeFunction('test')))->toBe(MockInvocation::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(Invocation::class, Invocation::class);
+
+    expect(get_class(Invocation::makeFunction('test')))->toBe(Invocation::class);
 });
 
 test('you cannot set an alias to a class that does not exist', function () {

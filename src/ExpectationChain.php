@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Exceptions\ExpectationChainStoryRequiredException;
+use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Traits\ExpectationCallProxies;
 use Closure;
@@ -13,15 +14,13 @@ class ExpectationChain
 {
     use ExpectationCallProxies;
 
-    /**
-     * Queued expectation methods
-     */
-    public array $chain = [];
-
     protected ?Story $story = null;
+
+    public InvocationQueue $queue;
 
     public function __construct()
     {
+        $this->queue = InvocationQueue::make();
     }
 
     /**
@@ -43,31 +42,35 @@ class ExpectationChain
 
     public function registerExpectationMethod(string $name, array $arguments): static
     {
-        $this->chain[] = [
-            'type' => 'method',
-            'name' => $name,
-            'args' => $arguments,
-        ];
+        $this->queue->push(
+            Invocation::makeMethod(name: $name, arguments: $arguments),
+        );
 
         return $this;
     }
 
     public function registerExpectationProperty(string $name): static
     {
-        $this->chain[] = [
-            'type' => 'property',
-            'name' => $name,
-        ];
+        $this->queue->push(
+            Invocation::makeProperty(name: $name),
+        );
 
         return $this;
     }
 
     public function registerExpectationValue(string|Closure $value): static
     {
-        $this->chain[] = [
-            'type' => 'expect',
-            'value' => $value,
-        ];
+        $function = StoryAliases::getFunction('expect');
+
+        if (! function_exists($function)) {
+            // @codeCoverageIgnoreStart
+            throw FunctionAliasNotFoundException::make('expect', $function);
+            // @codeCoverageIgnoreEnd
+        }
+
+        $this->queue->push(
+            Invocation::makeFunction(name: $function, arguments: [$value])
+        );
 
         return $this;
     }
@@ -138,8 +141,12 @@ class ExpectationChain
      */
     public function inherit(ExpectationChain $parent): void
     {
-        $this->chain = collect($parent->chain)
-            ->concat($this->chain)
-            ->all();
+        $queue = $parent->queue->items;
+
+        foreach ($this->queue->items as $invocation) {
+            $queue[] = $invocation;
+        }
+
+        $this->queue->items = $queue;
     }
 }

@@ -13,7 +13,6 @@ use BradieTilley\Stories\Traits\TestCallProxies;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
-use InvalidArgumentException;
 use Pest\Expectation;
 use Pest\PendingCalls\TestCall;
 use Pest\TestSuite;
@@ -47,13 +46,13 @@ class Story extends Callback
 
     protected array $appends = [];
 
-    protected ExpectationChain $chain;
+    protected ExpectationChain $expectations;
 
     public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
     {
         parent::__construct($name, $callback, $arguments);
 
-        $this->chain = ExpectationChain::make();
+        $this->expectations = ExpectationChain::make();
         $this->variable = 'result';
     }
 
@@ -483,7 +482,7 @@ class Story extends Callback
             ->concat($this->getPropertyArray('appends'))
             ->all();
 
-        $this->chain->inherit($parent->chain());
+        $this->expectations->inherit($parent->chain());
 
         return $this;
     }
@@ -557,10 +556,10 @@ class Story extends Callback
      */
     public function expect(string|Closure $value): ExpectationChain
     {
-        $this->chain->setStory($this);
-        $this->chain->and($value);
+        $this->expectations->setStory($this);
+        $this->expectations->and($value);
 
-        return $this->chain;
+        return $this->expectations;
     }
 
     /**
@@ -568,7 +567,7 @@ class Story extends Callback
      */
     public function chain(): ExpectationChain
     {
-        return $this->chain;
+        return $this->expectations;
     }
 
     /**
@@ -577,62 +576,49 @@ class Story extends Callback
      */
     public function bootChain(): void
     {
-        if (empty($this->chain->chain)) {
+        if ($this->expectations->queue->isEmpty()) {
             return;
         }
 
         /** @var ?Expectation $expectation */
         $expectation = null;
 
-        $function = StoryAliases::getFunction('expect');
+        foreach ($this->expectations->queue->items as $invocation) {
+            if ($invocation->isFunction()) {
+                /**
+                 * The only function supported here is 'expect' so no need to check the name.
+                 *
+                 * First we resolve and swap out the argument to the expect() function as this
+                 * is currently a variable name (string) in which case we need to fetch the
+                 * variable by name, or it's currently a callback (Closure) in which case we
+                 * need to invoke it to use the return value as the expectation value.
+                 */
 
-        if (! function_exists($function)) {
-            // @codeCoverageIgnoreStart
-            throw FunctionAliasNotFoundException::make('expect', $function);
-            // @codeCoverageIgnoreEnd
-        }
-
-        foreach ($this->chain->chain as $segment) {
-            if ($segment['type'] === 'expect') {
                 /** @var string|Closure $value */
-                $value = $segment['value'];
-
+                $value = $invocation->arguments[0];
                 $value = (is_string($value)) ? $this->get($value) : $this->internalCall($value);
 
                 /** @var Expectation $expectation */
-                $expectation = $function($value);
-
-                continue;
+                $invocation->setArguments([$value]);
             }
 
-            if ($segment['type'] === 'method') {
-                /** @var array $method */
-                $method = $segment['name'];
+            /**
+             * The first invocation is always the expect() function so at this stage it would
+             * be null, but every invocation afterwards SHOULD be an instance of Expectation.
+             *
+             * @var ?Expectation $expectation
+             */
 
-                /** @var array $arguments */
-                $arguments = $segment['args'];
+            /**
+             * Get the property or invoke the method on the expectation object
+             */
+            $expectation = $invocation->setObject($expectation)->invoke();
 
-                /** @var Expectation $expectation */
-                $expectation = $expectation->{$method}(...$arguments);
-
-                continue;
-            }
-
-            if ($segment['type'] === 'property') {
-                /** @var array $property */
-                $property = $segment['name'];
-
-                /** @var Expectation $expectation */
-                $expectation = $expectation->{$property};
-
-                continue;
-            }
-
-            // @codeCoverageIgnoreStart
-            throw new InvalidArgumentException(
-                sprintf('Invalid expectation chain type provided')
-            );
-            // @codeCoverageIgnoreEnd
+            /**
+             * It should always be an Expecation now.
+             *
+             * @var Expectation $expectation
+             */
         }
     }
 }
