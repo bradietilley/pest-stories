@@ -587,7 +587,7 @@ class Story extends Callback
             if ($invocation->isFunction()) {
                 /**
                  * Any function here is either 'expect' or a custom replacement of 'expect'.
-                 * 
+                 *
                  * First we resolve and swap out the argument to the expect() function as this
                  * is currently a variable name (string) in which case we need to fetch the
                  * variable by name, or it's currently a callback (Closure) in which case we
