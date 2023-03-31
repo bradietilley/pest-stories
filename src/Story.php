@@ -586,8 +586,8 @@ class Story extends Callback
         foreach ($this->expectations->queue->items as $invocation) {
             if ($invocation->isFunction()) {
                 /**
-                 * The only function supported here is 'expect' so no need to check the name.
-                 *
+                 * Any function here is either 'expect' or a custom replacement of 'expect'.
+                 * 
                  * First we resolve and swap out the argument to the expect() function as this
                  * is currently a variable name (string) in which case we need to fetch the
                  * variable by name, or it's currently a callback (Closure) in which case we
@@ -603,14 +603,16 @@ class Story extends Callback
             }
 
             /**
-             * The first invocation is always the expect() function so at this stage it would
-             * be null, but every invocation afterwards SHOULD be an instance of Expectation.
+             * The first invocation is always the 'expect' function (or alias) so at this
+             * stage it would be null, but every invocation afterwards SHOULD be an instance
+             * of an Expectation.
              *
              * @var ?Expectation $expectation
              */
 
             /**
-             * Get the property or invoke the method on the expectation object
+             * Either invoke the function, invoke the method on the Expectation object, or
+             * get the property from the Expectation object.
              */
             $expectation = $invocation->setObject($expectation)->invoke();
 
