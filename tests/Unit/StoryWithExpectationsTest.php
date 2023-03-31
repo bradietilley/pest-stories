@@ -31,7 +31,7 @@ test('a story can have an expectation which will queue the expectation', functio
         ])
         ->story();
 
-    $expectations = collect($story->chain()->chain);
+    $expectations = collect($story->chain()->queue->items);
     // expect + toBeArray + toHaveCount + toHaveKeys
     expect($expectations)->toHaveCount(4);
 
@@ -135,13 +135,13 @@ test('all expectation methods', function () {
         expect($result->story())->toBe($story);
 
         // Chain is of the expected length
-        $chain = $story->chain()->chain;
+        $chain = $story->chain()->queue->items;
         expect($chain)->toHaveCount($total);
 
         $last = end($chain);
 
-        expect($last['name'])->toBe($method);
-        expect($last['args'])->toBe($args);
+        expect($last->name)->toBe($method);
+        expect($last->arguments)->toBe($args);
     }
 });
 
@@ -186,7 +186,7 @@ test('a story can have multiple expectations', function () {
             'name',
             'role',
         ])
-        ->registerExpectationValue('invoice')
+        ->expect('invoice')
         ->toBeObject()
         ->total->toBe(200)
         ->items->toHaveCount(3)
@@ -199,8 +199,11 @@ test('a story can have multiple expectations', function () {
         ->story();
 
     expect($story)->toBe($original);
-    $expect = '[{"type":"expect","value":"user"},{"type":"method","name":"toBeObject","args":[]},{"type":"method","name":"toHaveKeys","args":[["id","name","role"]]},{"type":"expect","value":"invoice"},{"type":"method","name":"toBeObject","args":[]},{"type":"property","name":"total"},{"type":"method","name":"toBe","args":[200]},{"type":"property","name":"items"},{"type":"method","name":"toHaveCount","args":[3]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[0]},{"type":"property","name":"qty"},{"type":"method","name":"toBe","args":[1]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[0]},{"type":"property","name":"price"},{"type":"method","name":"toBe","args":[100]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[1]},{"type":"property","name":"qty"},{"type":"method","name":"toBe","args":[5]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[1]},{"type":"property","name":"price"},{"type":"method","name":"toBe","args":[10]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[2]},{"type":"property","name":"qty"},{"type":"method","name":"toBe","args":[2]},{"type":"property","name":"items"},{"type":"method","name":"get","args":[2]},{"type":"property","name":"price"},{"type":"method","name":"toBe","args":[25]}]';
-    $actual = json_encode($original->chain()->chain);
+
+    $actual = $original->chain()->queue->toArray();
+    $actual = json_encode($actual);
+
+    $expect = '[{"type":"function","name":"pest_stories_mock_expect_function","arguments":["user"],"object":null},{"type":"method","name":"toBeObject","arguments":[],"object":null},{"type":"method","name":"toHaveKeys","arguments":[["id","name","role"]],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["invoice"],"object":null},{"type":"method","name":"toBeObject","arguments":[],"object":null},{"type":"property","name":"total","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[200],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"toHaveCount","arguments":[3],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[0],"object":null},{"type":"property","name":"qty","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[1],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[0],"object":null},{"type":"property","name":"price","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[100],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[1],"object":null},{"type":"property","name":"qty","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[5],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[1],"object":null},{"type":"property","name":"price","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[10],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[2],"object":null},{"type":"property","name":"qty","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[2],"object":null},{"type":"property","name":"items","arguments":[],"object":null},{"type":"method","name":"get","arguments":[2],"object":null},{"type":"property","name":"price","arguments":[],"object":null},{"type":"method","name":"toBe","arguments":[25],"object":null}]';
 
     expect($actual)->toBe($expect);
 });
@@ -252,7 +255,7 @@ test('a chain can be added to a parent story\'s stories method', function () {
         ]);
 })->throwsNoExceptions();
 
-test('a storys expectations can be inherited from the parent story', function () {
+test('a story expectations can be inherited from the parent story', function () {
     $story = story('test parent story')
         ->action(fn () => '123', for: 'a')
         ->action(fn () => '456', for: 'b')
@@ -270,11 +273,11 @@ test('a storys expectations can be inherited from the parent story', function ()
             ]),
         ]);
 
-    $actual = $story->flattenStories()->map(fn (Story $story) => json_encode($story->chain()->chain))->toArray();
+    $actual = $story->flattenStories()->map(fn (Story $story) => json_encode($story->chain()->queue->items))->toArray();
     $expect = [
-        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["***"]}]',
-        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["123"]},{"type":"expect","value":"b"},{"type":"method","name":"toBe","args":["***"]}]',
-        '[{"type":"expect","value":"a"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"b"},{"type":"method","name":"toHaveLength","args":[3]},{"type":"expect","value":"a"},{"type":"method","name":"toBe","args":["123"]},{"type":"expect","value":"b"},{"type":"method","name":"toBe","args":["456"]}]',
+        '[{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["b"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toBe","arguments":["***"],"object":null}]',
+        '[{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["b"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toBe","arguments":["123"],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["b"],"object":null},{"type":"method","name":"toBe","arguments":["***"],"object":null}]',
+        '[{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["b"],"object":null},{"type":"method","name":"toHaveLength","arguments":[3],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["a"],"object":null},{"type":"method","name":"toBe","arguments":["123"],"object":null},{"type":"function","name":"pest_stories_mock_expect_function","arguments":["b"],"object":null},{"type":"method","name":"toBe","arguments":["456"],"object":null}]',
     ];
 
     expect($actual)->toBe($expect);

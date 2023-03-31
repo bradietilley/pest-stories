@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories\Traits;
 
+use BradieTilley\Stories\Invocation;
+use BradieTilley\Stories\InvocationQueue;
 use Closure;
 use Pest\PendingCalls\TestCall;
 use Tests\Mocks\PestStoriesMockTestCall;
@@ -21,9 +23,9 @@ use Tests\Mocks\PestStoriesMockTestCall;
  * @method self coversNothing()
  * @method self throwsNoExceptions()
  */
-trait TestCallProxies
+trait TestCallMethods
 {
-    protected array $testCallProxies = [];
+    protected InvocationQueue $testCalls;
 
     /**
      * Asserts that the test throws the given `$exceptionClass` when called.
@@ -122,8 +124,10 @@ trait TestCallProxies
      */
     public function recordTestCallProxy(string $method, array $arguments): static
     {
-        $this->testCallProxies[$method] ??= [];
-        $this->testCallProxies[$method][] = $arguments;
+        $this->testCalls ??= InvocationQueue::make();
+        $this->testCalls->push(
+            Invocation::makeMethod(name: $method, arguments: $arguments),
+        );
 
         return $this;
     }
@@ -131,12 +135,10 @@ trait TestCallProxies
     /**
      * Apply all proxies to the TestCall object
      */
-    public function applyTestCallProxies(TestCall|PestStoriesMockTestCall $testCall): void
+    public function applyTestCalls(TestCall|PestStoriesMockTestCall $testCall): void
     {
-        foreach ($this->testCallProxies as $method => $invokation) {
-            foreach ($invokation as $arguments) {
-                $testCall->{$method}(...$arguments);
-            }
+        foreach ($this->testCalls->items ?? [] as $item) {
+            $item->setObject($testCall)->invoke();
         }
     }
 }
