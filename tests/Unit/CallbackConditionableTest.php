@@ -11,15 +11,27 @@ test('a story can have conditionable logic', function (string $text) {
         ->setUp(fn () => $ran[] = 'setUp')
         ->before(fn () => $ran[] = 'before')
         ->after(fn () => $ran[] = 'after')
-        ->when(fn () => ($text === 'true'), fn () => $ran[] = 'when:true', fn () => $ran[] = 'when:false')
-        ->unless(fn () => ($text !== 'true'), fn () => $ran[] = 'unless:true', fn () => $ran[] = 'unless:false');
+        ->when(fn () => ($text === 'true'), function () use ($ran) {
+            $ran[] = 'when:true';
+        }, function () use ($ran) {
+            $ran[] = 'when:false';
+        })
+        ->unless(fn () => ($text !== 'true'), function () use ($ran) {
+            $ran[] = 'unless:true';
+        }, function () use ($ran) {
+            $ran[] = 'unless:false';
+        })
+        ->lazyWhen(fn () => ($text === 'true'), fn () => $ran[] = 'lazyWhen:true', fn () => $ran[] = 'lazyWhen:false')
+        ->lazyUnless(fn () => ($text !== 'true'), fn () => $ran[] = 'lazyUnless:true', fn () => $ran[] = 'lazyUnless:false');
 
     $story->process();
 
     expect($ran->toArray())->toBe([
-        'setUp',
         'when:'.$text,
         'unless:'.$text,
+        'setUp',
+        'lazyWhen:'.$text,
+        'lazyUnless:'.$text,
         'before',
         'after',
     ]);
@@ -33,8 +45,8 @@ test('a story conditionable callback will inherit the correct story', function (
     $ran = collect();
 
     $story = story('parent')
-        ->when(true, fn (Story $story) => $ran[] = $story->getName().':when', fn () => $ran[] = 'fail')
-        ->unless(false, fn (Story $story) => $ran[] = $story->getName().':unless', fn () => $ran[] = 'fail')
+        ->lazyWhen(true, fn (Story $story) => $ran[] = $story->getName().':when', fn () => $ran[] = 'fail')
+        ->lazyUnless(false, fn (Story $story) => $ran[] = $story->getName().':unless', fn () => $ran[] = 'fail')
         ->stories([
             story('child 1'),
             story('child 2'),
