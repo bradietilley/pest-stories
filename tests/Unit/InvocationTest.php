@@ -124,3 +124,20 @@ test('an invocation cannot run a property get call if the object is not specifie
 
     $invocation->invoke();
 })->throws(InvocationOrphanedPropertyException::class, 'Invocation failed: property `someProperty` is orphaned and does not have a parent object.');
+
+test('an invocation can have its name set after creation', function () {
+    $invocation = Invocation::makeFunction('test_function', []);
+    expect($invocation->name)->toBe('test_function');
+    $invocation->setName('test_function_2');
+    expect($invocation->name)->toBe('test_function_2');
+
+    $invocation = Invocation::makeProperty('test_property');
+    expect($invocation->name)->toBe('test_property');
+    $invocation->setName('test_property_2');
+    expect($invocation->name)->toBe('test_property_2');
+
+    $invocation = Invocation::makeMethod('test_method', []);
+    expect($invocation->name)->toBe('test_method');
+    $invocation->setName('test_method_2');
+    expect($invocation->name)->toBe('test_method_2');
+});
