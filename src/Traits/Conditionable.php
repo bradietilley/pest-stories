@@ -10,10 +10,7 @@ use Illuminate\Support\Traits\Conditionable as IlluminateConditionable;
 
 trait Conditionable
 {
-    use IlluminateConditionable {
-        when as illuminateWhen;
-        unless as illuminateUnless;
-    }
+    use IlluminateConditionable;
 
     public InvocationQueue $conditionables;
 
@@ -38,10 +35,10 @@ trait Conditionable
      * @param  (callable($this, TWhenParameter): TWhenReturnType)|null  $default
      * @return $this|TWhenReturnType
      */
-    public function when($value = null, callable $callback = null, callable $default = null)
+    public function lazyWhen($value = null, callable $callback = null, callable $default = null)
     {
         $this->conditionables->push(
-            Invocation::makeMethod(name: 'illuminateWhen', arguments: func_get_args()),
+            Invocation::makeMethod(name: 'when', arguments: func_get_args()),
         );
 
         return $this;
@@ -58,10 +55,10 @@ trait Conditionable
      * @param  (callable($this, TUnlessParameter): TUnlessReturnType)|null  $default
      * @return $this|TUnlessReturnType
      */
-    public function unless($value = null, callable $callback = null, callable $default = null)
+    public function lazyUnless($value = null, callable $callback = null, callable $default = null)
     {
         $this->conditionables->push(
-            Invocation::makeMethod(name: 'illuminateUnless', arguments: func_get_args()),
+            Invocation::makeMethod(name: 'unless', arguments: func_get_args()),
         );
 
         return $this;
