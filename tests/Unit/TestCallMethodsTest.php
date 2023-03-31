@@ -16,7 +16,7 @@ test('a story can mark the test as todo', function () {
      * Expect that the TestCall todo() is not run
      */
     $call = $story->test();
-    expect($call->testCallProxies())->toBe([]);
+    expect($call->calls)->toBe([]);
 
     /**
      * Now mark it as todo
@@ -24,11 +24,12 @@ test('a story can mark the test as todo', function () {
     $story->todo();
 
     /**
-     * Expect that the TestCall todo() is run
+     * Expect that the TestCall todo() is run once test() is run
      */
     $call = $story->test();
-    expect($call->testCallProxies())->toBe([
-        'todo' => [
+    expect($call->calls)->toBe([
+        [
+            'todo',
             [],
         ],
     ]);
@@ -39,13 +40,14 @@ test('a story can mark the test as skipped', function () {
 
     $story = story('skipped story');
     $call = $story->test();
-    expect($call->testCallProxies())->toBe([]);
+    expect($call->calls)->toBe([]);
 
     $story = story('skipped story');
     $story->skip('skipped because');
     $call = $story->test();
-    expect($call->testCallProxies())->toBe([
-        'skip' => [
+    expect($call->calls)->toBe([
+        [
+            'skip',
             [
                 'skipped because',
             ],
@@ -86,29 +88,33 @@ test('a story can mark the test as skipped at a parent level', function () {
         /** @var Story $story */
         $call = $story->test();
 
-        $all[] = $call->testCallProxies();
+        $all[] = $call->calls;
     }
 
     $expected = [
         [
-            'skip' => [
+            [
+                'skip',
                 [
                     'not complete 1',
                 ],
             ],
         ],
         [
-            'skip' => [
+            [
+                'skip',
                 [],
             ],
         ],
         [
-            'skip' => [
+            [
+                'skip',
                 [],
             ],
         ],
         [
-            'skip' => [
+            [
+                'skip',
                 [],
             ],
         ],
@@ -124,11 +130,16 @@ test('all TestCall proxies pass the exact same arguments to the TestCall object'
     $story->{$method}(...$arguments);
     $testCall = $story->test();
 
-    expect($testCall->testCallProxies())->toBe([
-        $method => [
+    $expect = [
+        [
+            $method,
             $arguments,
         ],
-    ]);
+    ];
+
+    $actual = $testCall->calls;
+
+    expect($actual)->toBe($expect);
 })->with([
     'throws' => [
         'method' => 'throws',

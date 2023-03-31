@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories\Traits;
 
+use BradieTilley\Stories\Invocation;
+use BradieTilley\Stories\InvocationQueue;
 use Illuminate\Support\Traits\Conditionable as IlluminateConditionable;
 
 trait Conditionable
@@ -13,23 +15,15 @@ trait Conditionable
         unless as illuminateUnless;
     }
 
-    /** @var array<int, array<string, string|array<mixed>>> */
-    protected array $conditionables = [];
+    public InvocationQueue $conditionables;
 
     /**
      * Run all previously recorded when and unless conditions
      */
     public function internalBootConditionables(): void
     {
-        foreach ($this->conditionables as $conditionable) {
-            /** @var string $type */
-            $type = $conditionable['type'];
-            /** @var array<mixed> $args */
-            $args = $conditionable['args'];
-
-            $method = 'illuminate'.ucfirst($type);
-
-            $this->{$method}(...$args);
+        foreach ($this->conditionables->items as $invocation) {
+            $invocation->setObject($this)->invoke();
         }
     }
 
@@ -46,10 +40,9 @@ trait Conditionable
      */
     public function when($value = null, callable $callback = null, callable $default = null)
     {
-        $this->conditionables[] = [
-            'type' => 'when',
-            'args' => func_get_args(),
-        ];
+        $this->conditionables->push(
+            Invocation::makeMethod(name: 'illuminateWhen', arguments: func_get_args()),
+        );
 
         return $this;
     }
@@ -67,10 +60,9 @@ trait Conditionable
      */
     public function unless($value = null, callable $callback = null, callable $default = null)
     {
-        $this->conditionables[] = [
-            'type' => 'unless',
-            'args' => func_get_args(),
-        ];
+        $this->conditionables->push(
+            Invocation::makeMethod(name: 'illuminateUnless', arguments: func_get_args()),
+        );
 
         return $this;
     }
