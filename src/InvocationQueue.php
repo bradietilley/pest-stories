@@ -56,4 +56,14 @@ class InvocationQueue
             ->map(fn (Invocation $invocation) => $invocation->toArray())
             ->all();
     }
+
+    /**
+     * Inherit an invocation queue from a parent queue
+     */
+    public function inherit(InvocationQueue $parent): void
+    {
+        foreach ($parent->items as $invocation) {
+            $this->push($invocation);
+        }
+    }
 }

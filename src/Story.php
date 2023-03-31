@@ -9,7 +9,7 @@ use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Helpers\VariableNaming;
 use BradieTilley\Stories\Traits\Conditionable;
-use BradieTilley\Stories\Traits\TestCallProxies;
+use BradieTilley\Stories\Traits\TestCallMethods;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\Macroable;
@@ -23,7 +23,7 @@ class Story extends Callback
 {
     use Conditionable;
     use Macroable;
-    use TestCallProxies;
+    use TestCallMethods;
 
     /** @var array<Story> */
     protected array $stories = [];
@@ -52,6 +52,7 @@ class Story extends Callback
     {
         parent::__construct($name, $callback, $arguments);
 
+        $this->testCalls = InvocationQueue::make();
         $this->expectations = ExpectationChain::make();
         $this->variable = 'result';
     }
@@ -241,7 +242,7 @@ class Story extends Callback
             $testCall->with($dataset);
         }
 
-        $this->applyTestCallProxies($testCall);
+        $this->applyTestCalls($testCall);
 
         return $testCall;
     }
@@ -428,14 +429,7 @@ class Story extends Callback
         /**
          * Inherit all TestCall proxied methods from the parent and this story.
          */
-        $testCallProxies = $parent->getPropertyArray('testCallProxies');
-        foreach ($this->testCallProxies as $method => $invokations) {
-            foreach ($invokations as $arguments) {
-                $testCallProxies[$method] ??= [];
-                $testCallProxies[$method][] = $arguments;
-            }
-        }
-        $this->testCallProxies = $testCallProxies;
+        $this->testCalls->inherit($parent->testCalls);
 
         /**
          * Collate the before and after callbacks from the parent as well as from
