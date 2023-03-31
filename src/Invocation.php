@@ -8,6 +8,7 @@ use BradieTilley\Stories\Exceptions\InvocationFunctionNotFoundException;
 use BradieTilley\Stories\Exceptions\InvocationOrphanedMethodException;
 use BradieTilley\Stories\Exceptions\InvocationOrphanedPropertyException;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use InvalidArgumentException;
 
 /**
  * A pending invocation of a method, function or property (get)
@@ -155,7 +156,14 @@ class Invocation
             return $this->object->{$property};
         }
 
-        throw new \Exception('Unsupported invocation type %s');
+        // @codeCoverageIgnoreStart
+        throw new InvalidArgumentException(
+            sprintf(
+                'Unsupported invocation type %s',
+                $this->type,
+            ),
+        );
+        // @codeCoverageIgnoreEnd
     }
 
     /**
