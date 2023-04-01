@@ -56,7 +56,7 @@ action('api_create_product')
  * By creating standardised assertions for each status code, you'll be able to roll out
  * changes with changes only made to a single assertion.
  */
-assertion('true')->as(fn (TestResponse $response) => $response->assertStatus(200)->assertJson([ ... ]));
+assertion('200')->as(fn (TestResponse $response) => $response->assertStatus(200)->assertJson([ ... ]));
 assertion('201')->as(fn (TestResponse $response) => $response->assertStatus(201));
 assertion('422')->as(
     fn (TestResponse $response, array $errors = []) => $response->assertStatus(422)->assertInvalid($errors)
