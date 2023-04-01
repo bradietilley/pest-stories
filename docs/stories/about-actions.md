@@ -1,4 +1,4 @@
-# [Stories](/docs//stories/README.md) > Adding Actions
+# [Stories](/docs/stories/README.md) > Adding Actions
 
 A `Story` may have `Action` instances added which can form a baseline scenario in which your test is going to utilise.
 
@@ -62,11 +62,11 @@ simply provide the `$arguments` argument in the `action()` method. Arguments are
 ```php
 use App\Models\Product;
 
-action(Product::class)->as(function (array $data) {
+action('create product via factory')->as(function (array $data) {
     return Product::factory()->create($data);
 })->for('product');
 
-action(Product::class . ':api:update')->as(function (Product $product, TestCase $test, array $payload = []) {
+action('update product via api')->as(function (Product $product, TestCase $test, array $payload = []) {
     $payload = array_replace($product->toArray(), $payload);
 
     return $test->post(route('products.update', $product), $payload);
@@ -74,13 +74,13 @@ action(Product::class . ':api:update')->as(function (Product $product, TestCase 
 
 story('can still update a product that is marked as end of line')
     // Add actions
-    ->action(Product::class, [
+    ->action('create product via factory', [
         'data' => [
             'title' => 'ABC product',
             'end_of_line' => true,
         ],
     ])
-    ->action(Product::class . ':api:update', [
+    ->action('update product via api', [
         'payload' => [
             'title' => 'ABC product (no longer sold)',
         ],

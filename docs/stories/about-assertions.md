@@ -1,4 +1,4 @@
-# [Stories](/docs//stories/README.md) > Adding Assertions
+# [Stories](/docs/stories/README.md) > Adding Assertions
 
 A `Story` may have `Assertion` instances added which can form a baseline scenario in which your test is going to utilise.
 

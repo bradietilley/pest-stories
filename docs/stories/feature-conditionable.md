@@ -2,28 +2,51 @@
 
 Using Laravel's `Conditionable` trait, you can conditionally run methods.
 
-The primary difference between standard Laravel `Conditionable` usage is when the conditionable `when` and `unless` callbacks are run. Normally these would immediately run, however in Pest Stories their execution is deffered until the Story is booted.
-
-## Subject to change
-
-It's making less sense to have them deffered so they might be refatored to simply use Laravel's `Conditionable` trait directly with no deferred logic.
+With Pest Stories, you can choose to run your conditionable logic immediately (as it does in Laravel's Conditionable) or you may choose to invoke them lazily when the Story is booted.
 
 ## Usage
 
 ```php
 story('can do something')
-    ->action(fn () => doSomething())
+    ->action('do_something')
+    ->set('abc', '123')
     ->when(
-        fn (Story $story) => $story->get('x') === 'y',
+        fn (Story $story) => $story->get('abc') === '123',
         function () {
-            $this->action(doSomethingElse());
+            $this->action('do_something_else');
         },
     )
-    ->unless(
-        fn (Story $story) => $story->get('a') === 'a',
+    ->lazyWhen(
+        fn (Story $story) => $story->get('abc') === '456',
         function () {
-            $this->action(doSomethingElseAgain());
+            $this->action('do_something_else_again');
         },
     )
-    ->assertion(fn () => assertSomething());
+    ->setUp(fn (Story $story) => $story->set('abc', '456'))
+    ->assertion('assert_something')
+    ->test();
 ```
+
+In this example, the following occurs:
+
+- Add action: `do_something`
+- Set `abc` to `123`
+- When `abc` is `123` (i.e. `true`)
+  - Add action: `do_something_else`
+- Add assertion: `assert_something` 
+- Story is registered with Pest `test()`
+- Behind the scenes:
+  - Story is invoked by Pest
+- Story process:
+  - Run `setUp` callback
+    - Set `abc` to `456`
+  - Lazy When: `abc` is `456` (i.e. `true`)
+    - Add action: `do_something_else_again`
+  - Run `Actions`:
+    - `do_something`
+    - `do_something_else`
+    - `do_something_else_again`
+  - Run Assertions:
+    - `assert_something`
+
+TL;DR: The `when` is immediately invoked while the `lazyWhen` is invoked after `setUp` and immediately before any `Action`.
