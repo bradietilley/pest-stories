@@ -17,127 +17,6 @@ User stories are short, simple descriptions of a feature or functionality of a s
 
 Pest Stories is a PHP package that extends the PestPHP testing framework, allowing developers to write user stories in a clear and reusable way, making it easier to maintain and test their software applications.
 
-### Overivew
-
-Under the hood, Pest Stories is largely comprised of a few `Callback` classes: `Action`, `Assertion` and `Story`.
-
-Each `Callback` class represents a fragment of your application, that is often replicable and common (not always).
-
-For `Action` callbacks, these could be small scenarios like:
-
-- creating an administrator
-- creating an unpaid invoice for a customer
-- testing an API endpoint
-
-For `Assertion` callbacks, these could be small expectations like:
-
-- expecting a policy passes
-- expecting a record exists in the database
-- expecting the previous API response to have a status code of `201`
-
-For `Story` callbacks, these form larger "stories" including many actions and assertions:
-
-- as an administrator (action), create a resource via the api (action), expect 201 (assertion)
-- etc
-
-Each `Callback` represents a `Closure` callback with a few extra helpful features:
-
-- Primary callback:
-    - This is the `Closure` that the `Callback` represents.
-- `before` callback:
-    - This allows you to fire a custom callback (or multiple) before the primary `Closure` is run.
-- `after` callback:
-    - This allows you to fire a custom callback (or multiple) after the primary `Closure` is run.
-- Data repository:
-    - This allows you to define variables that are available to read and write throughout the lifecycle
-    of the Callback, including before, primary and after callbacks.
-- Dependency Injection:
-    - Utilising Laravel's container, you can expect arguments in your Closure which are fed from both Laravel's container and the Data repository.
-
-A `Story` callback allows for nested sub-stories, which is what allows you to build complex test suites with ease. If you need to test all permutations of a feature, nested stories will make this cleaner and easier to achieve.
-
-An example of where nested stories would come in handy is testing various permutations for Policy tests. For example, let's say you need to test each role for the authorised user, cross with each role of the end user, and to make it more complex: whether the authorised + end user belong to the same parent (Location, Organisation, Tenant, etc).
-
-To effectively test this feature, you'd want to test each role (let's say 8) against each role (another 8) under each true/false state of "same location", which is 8*8*2 = 128 permutations. 
-
-This could be achieved in a (fairly) clean way by Pest Stories (example doesn't include location permutation though):
-
-```php
-/**
- * You might find yourself constantly referencing a given user or an "other"
- * user so you might configure a macro to help streamline the definition of
- * "in this test set the authorised user to someone with X role" like below:
- */
-Story::macro('setUser', function (Role|User $user) {
-    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
-
-    $this->set('user', $user);
-    
-    return $this;
-});
-
-Story::macro('setOther', function (Role|User $user) {
-    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
-
-    $this->set('other', $user);
-    
-    return $this;
-});
-
-/**
- * Assertions could be done as inline callbacks, but if it gets too repetitive
- * you can always define common expectations as assertion callbacks and then
- * reference them by their name in stories, i.e. 'true' and 'false' as per
- * below: 
- */
-assertion('false')->as(fn (bool $result) => expect($result)->toBeFalse());
-assertion('true')->as(fn (bool $result) => expect($result)->toBeTrue());
-
-/**
- * Test all roles ability to update another user of all roles, to ensure every scenario is covered.
- */
-story('User Update policy')
-    ->as(fn (User $user, User $other) => UserPolicy::make()->update($user, $other))
-    /**
-     * The response from `as()` is made available in subsequent callbacks, including
-     * assertions, as the `$result` argument, as seen in the defined `true` and
-     * `false` assertions above.
-     */
-    ->stories([
-        story()->setUser(Role::ROLE_DEV)->stories([
-            story()->setOther(Role::ROLE_DEV)->assert('false'),
-            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('true'),
-            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
-            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
-            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
-            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
-            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
-            story()->setOther(Role::ROLE_GUEST)->assert('true'),
-        ]),
-        story()->setUser(Role::ROLE_SUPER_ADMIN)->stories([
-            story()->setOther(Role::ROLE_DEV)->assert('false'),
-            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('false'),
-            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
-            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
-            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
-            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
-            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
-            story()->setOther(Role::ROLE_GUEST)->assert('true'),
-        ]),
-        // ...
-        story()->setUser(Role::ROLE_GUEST)->assert('false')->stories([
-            story()->setOther(Role::ROLE_DEV),
-            story()->setOther(Role::ROLE_SUPER_ADMIN),
-            story()->setOther(Role::ROLE_MANAGEMENT),
-            story()->setOther(Role::ROLE_ADMIN),
-            story()->setOther(Role::ROLE_VIP_USER),
-            story()->setOther(Role::ROLE_CUSTOMER),
-            story()->setOther(Role::ROLE_TRIAL),
-            story()->setOther(Role::ROLE_GUEST),
-        ]),
-    ]);
-```
-
 ### Documentation
 
 Read the [documentation](/docs/README.md).
@@ -292,6 +171,127 @@ story('Create Product endpoint')
  */
 ```
 
+### Overivew
+
+Under the hood, Pest Stories is largely comprised of a few `Callback` classes: `Action`, `Assertion` and `Story`.
+
+Each `Callback` class represents a fragment of your application, that is often replicable and common (not always).
+
+For `Action` callbacks, these could be small scenarios like:
+
+- creating an administrator
+- creating an unpaid invoice for a customer
+- testing an API endpoint
+
+For `Assertion` callbacks, these could be small expectations like:
+
+- expecting a policy passes
+- expecting a record exists in the database
+- expecting the previous API response to have a status code of `201`
+
+For `Story` callbacks, these form larger "stories" including many actions and assertions:
+
+- as an administrator (action), create a resource via the api (action), expect 201 (assertion)
+- etc
+
+Each `Callback` represents a `Closure` callback with a few extra helpful features:
+
+- Primary callback:
+    - This is the `Closure` that the `Callback` represents.
+- `before` callback:
+    - This allows you to fire a custom callback (or multiple) before the primary `Closure` is run.
+- `after` callback:
+    - This allows you to fire a custom callback (or multiple) after the primary `Closure` is run.
+- Data repository:
+    - This allows you to define variables that are available to read and write throughout the lifecycle
+    of the Callback, including before, primary and after callbacks.
+- Dependency Injection:
+    - Utilising Laravel's container, you can expect arguments in your Closure which are fed from both Laravel's container and the Data repository.
+
+A `Story` callback allows for nested sub-stories, which is what allows you to build complex test suites with ease. If you need to test all permutations of a feature, nested stories will make this cleaner and easier to achieve.
+
+An example of where nested stories would come in handy is testing various permutations for Policy tests. For example, let's say you need to test each role for the authorised user, cross with each role of the end user, and to make it more complex: whether the authorised + end user belong to the same parent (Location, Organisation, Tenant, etc).
+
+To effectively test this feature, you'd want to test each role (let's say 8) against each role (another 8) under each true/false state of "same location", which is 8*8*2 = 128 permutations. 
+
+This could be achieved in a (fairly) clean way by Pest Stories (example doesn't include location permutation though):
+
+```php
+/**
+ * You might find yourself constantly referencing a given user or an "other"
+ * user so you might configure a macro to help streamline the definition of
+ * "in this test set the authorised user to someone with X role" like below:
+ */
+Story::macro('setUser', function (Role|User $user) {
+    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
+
+    $this->set('user', $user);
+    
+    return $this;
+});
+
+Story::macro('setOther', function (Role|User $user) {
+    $user = ($user instanceof Role) ? User::factory()->create()->assignRole($user) : $user;
+
+    $this->set('other', $user);
+    
+    return $this;
+});
+
+/**
+ * Assertions could be done as inline callbacks, but if it gets too repetitive
+ * you can always define common expectations as assertion callbacks and then
+ * reference them by their name in stories, i.e. 'true' and 'false' as per
+ * below: 
+ */
+assertion('false')->as(fn (bool $result) => expect($result)->toBeFalse());
+assertion('true')->as(fn (bool $result) => expect($result)->toBeTrue());
+
+/**
+ * Test all roles ability to update another user of all roles, to ensure every scenario is covered.
+ */
+story('User Update policy')
+    ->as(fn (User $user, User $other) => UserPolicy::make()->update($user, $other))
+    /**
+     * The response from `as()` is made available in subsequent callbacks, including
+     * assertions, as the `$result` argument, as seen in the defined `true` and
+     * `false` assertions above.
+     */
+    ->stories([
+        story()->setUser(Role::ROLE_DEV)->stories([
+            story()->setOther(Role::ROLE_DEV)->assert('false'),
+            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
+            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
+            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
+            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
+            story()->setOther(Role::ROLE_GUEST)->assert('true'),
+        ]),
+        story()->setUser(Role::ROLE_SUPER_ADMIN)->stories([
+            story()->setOther(Role::ROLE_DEV)->assert('false'),
+            story()->setOther(Role::ROLE_SUPER_ADMIN)->assert('false'),
+            story()->setOther(Role::ROLE_MANAGEMENT)->assert('true'),
+            story()->setOther(Role::ROLE_ADMIN)->assert('true'),
+            story()->setOther(Role::ROLE_VIP_USER)->assert('true'),
+            story()->setOther(Role::ROLE_CUSTOMER)->assert('true'),
+            story()->setOther(Role::ROLE_TRIAL)->assert('true'),
+            story()->setOther(Role::ROLE_GUEST)->assert('true'),
+        ]),
+        // ...
+        story()->setUser(Role::ROLE_GUEST)->assert('false')->stories([
+            story()->setOther(Role::ROLE_DEV),
+            story()->setOther(Role::ROLE_SUPER_ADMIN),
+            story()->setOther(Role::ROLE_MANAGEMENT),
+            story()->setOther(Role::ROLE_ADMIN),
+            story()->setOther(Role::ROLE_VIP_USER),
+            story()->setOther(Role::ROLE_CUSTOMER),
+            story()->setOther(Role::ROLE_TRIAL),
+            story()->setOther(Role::ROLE_GUEST),
+        ]),
+    ]);
+```
+
 #### Workflow
 
 All `Callback` objects (`Action`, `Assertion`, `Story`) may have any number of `before` and `after` callbacks. \
@@ -364,10 +364,12 @@ story()
             'sku' => 'ABC',
         ],
     ])
-    ->assertion(function ($product) {
+    ->action(fn () => 'DEF', for: 'something')
+    ->assertion(function ($product, $something) {
         expect($product)->toBeInstanceOf(Product::class)
             ->wasRecentlyCreated->toBeTrue()
-            ->sku->toBe('ABC');
+            ->sku->toBe('ABC')
+            ->and($something)->toBe('DEF');
     });
 ```
 
