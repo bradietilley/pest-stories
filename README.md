@@ -108,7 +108,7 @@ story('Create Product endpoint')
             ])),
         /**
          * The next story to run is that passing a 'null' for the slug is accepted, and in fact
-         * means the server defaults it to the kebab-case of the provided title, i.e. 'something' 
+         * means the server defaults it to the slug-case of the provided title, i.e. 'something' 
          * 
          * We'll set the payload to be an array with a null slug value. The payload variable
          * is now [ 'slug' => null ]
@@ -120,7 +120,7 @@ story('Create Product endpoint')
          * We still expect the product to be created (201) and we expect the product to exist in
          * the database, with the slug default to 'something'
          */
-        story('with missing slug defaulted to kebab case of title')
+        story('with missing slug defaulted to slug case of title')
             ->with([
                 'payload' => [
                     'slug' => null,
@@ -152,9 +152,9 @@ story('Create Product endpoint')
                     'title' => 'The title field is required.',
                 ],
             ]),
-        // fails if missing X
-        // fails if missing Y
-        // fails if missing Z
+        // could add another story that asserts it fails if missing X
+        // could add another story that asserts it fails if missing Y
+        // could add another story that asserts it fails if missing Z
     ])
     /**
      * Now that the stories have been defined, we register the story with Pest. This is similar
@@ -166,7 +166,7 @@ story('Create Product endpoint')
  * Test cases:
  * 
  * Create Product endpoint with dataset "with good payload"
- * Create Product endpoint with dataset "with missing slug defaulted to kebab case of title"
+ * Create Product endpoint with dataset "with missing slug defaulted to slug case of title"
  * Create Product endpoint with dataset "fails if missing title"
  */
 ```
