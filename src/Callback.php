@@ -265,6 +265,8 @@ abstract class Callback
             ],
         );
 
+        $callback = Closure::bind($callback, $this);
+
         return Container::getInstance()->call($callback, $arguments);
     }
 
