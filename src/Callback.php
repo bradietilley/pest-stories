@@ -249,7 +249,10 @@ abstract class Callback
 
         if (in_array(HasSequences::class, class_uses_recursive($this))) {
             /** @var static&HasSequences $this @phpstan-ignore-line */
-            $this->runSequence($this->getInternalCallArguments($arguments));
+            $this->runSequence(
+                $arguments['story'] ?? $this,
+                $this->getInternalCallArguments($arguments)
+            );
         }
 
         return $arguments['result'];

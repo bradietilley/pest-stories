@@ -63,10 +63,16 @@ class Sequence
         return $this;
     }
 
-    public function boot(array $arguments = []): void
+    public function boot(Callback $parent, array $arguments = []): void
     {
         foreach ($this->items->all() as $callback) {
-            $callback->boot($arguments);
+            $callback = clone $callback;
+
+            $variable = $callback->getVariable();
+            $value = $callback->process($arguments);
+
+            $parent->set($variable, $value);
+            $arguments[$variable] = $value;
         }
     }
 

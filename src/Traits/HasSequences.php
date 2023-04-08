@@ -34,12 +34,12 @@ trait HasSequences
     /**
      * Run all callbacks in this sequence
      */
-    public function runSequence(array $arguments = []): void
+    public function runSequence(Callback $parent, array $arguments = []): void
     {
         if ($this->sequence === null) {
             return;
         }
 
-        $this->sequence->boot($arguments);
+        $this->sequence->boot($parent, $arguments);
     }
 }
