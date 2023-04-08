@@ -248,15 +248,26 @@ abstract class Callback
         $this->runAfter($arguments);
 
         if (in_array(HasSequences::class, class_uses_recursive($this))) {
-            /**
-             * @phpstan-ignore-next-line
-             *
-             * @var statis&HasSequences $this
-             */
-            $this->runSequence($arguments);
+            /** @var static&HasSequences $this @phpstan-ignore-line */
+            $this->runSequence($this->getInternalCallArguments($arguments));
         }
 
         return $arguments['result'];
+    }
+
+    /**
+     * Get all arguments to pass to the Laravel Container when
+     * calling any callback
+     */
+    protected function getInternalCallArguments(array $arguments): array
+    {
+        return array_replace(
+            $this->with,
+            $arguments,
+            [
+                static::getAliasKey() => $this,
+            ],
+        );
     }
 
     /**
@@ -267,13 +278,7 @@ abstract class Callback
      */
     public function internalCall(Closure $callback, array $arguments = []): mixed
     {
-        $arguments = array_replace(
-            $this->with,
-            $arguments,
-            [
-                static::getAliasKey() => $this,
-            ],
-        );
+        $arguments = $this->getInternalCallArguments($arguments);
 
         /** @var Closure $callback */
         $callback = Closure::bind($callback, $this);
