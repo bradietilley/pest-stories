@@ -11,11 +11,13 @@ use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\alarm;
 use function BradieTilley\Stories\Helpers\assertion;
 use function BradieTilley\Stories\Helpers\repeater;
+use function BradieTilley\Stories\Helpers\sequence;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Invocation;
 use BradieTilley\Stories\InvocationQueue;
 use BradieTilley\Stories\Repeater;
+use BradieTilley\Stories\Sequence;
 use BradieTilley\Stories\Story;
 use Tests\Mocks\MockAction;
 use Tests\Mocks\MockAlarm;
@@ -24,6 +26,7 @@ use Tests\Mocks\MockExpectationChain;
 use Tests\Mocks\MockInvocation;
 use Tests\Mocks\MockInvocationQueue;
 use Tests\Mocks\MockRepeater;
+use Tests\Mocks\MockSequence;
 use Tests\Mocks\MockStory;
 
 test('you can create a story while utilising a custom alias', function () {
@@ -114,6 +117,24 @@ test('you can create an alarm while utilising a custom alias', function () {
 
     expect(get_class(alarm(100)))->toBe(Alarm::class);
     expect(get_class(Alarm::make(100)))->toBe(Alarm::class);
+});
+
+test('you can create an sequence while utilising a custom alias', function () {
+    // Shouldn't be a mock instance
+    expect(get_class(sequence()))->toBe(Sequence::class);
+    expect(get_class(Sequence::make()))->toBe(Sequence::class);
+
+    // Set it to be a mock instance
+    StoryAliases::setClassAlias(Sequence::class, MockSequence::class);
+
+    expect(get_class(sequence()))->toBe(MockSequence::class);
+    expect(get_class(Sequence::make()))->toBe(MockSequence::class);
+
+    // Set it back to the original
+    StoryAliases::setClassAlias(Sequence::class, Sequence::class);
+
+    expect(get_class(sequence()))->toBe(Sequence::class);
+    expect(get_class(Sequence::make()))->toBe(Sequence::class);
 });
 
 test('you can create an expectation chain while utilising a custom alias', function () {

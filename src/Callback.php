@@ -6,6 +6,7 @@ namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Helpers\CallbackRepository;
 use BradieTilley\Stories\Helpers\StoryAliases;
+use BradieTilley\Stories\Traits\HasSequences;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Support\Str;
@@ -246,6 +247,15 @@ abstract class Callback
 
         $this->runAfter($arguments);
 
+        if (in_array(HasSequences::class, class_uses_recursive($this))) {
+            /**
+             * @phpstan-ignore-next-line
+             *
+             * @var statis&HasSequences $this
+             */
+            $this->runSequence($arguments);
+        }
+
         return $arguments['result'];
     }
 
@@ -265,6 +275,7 @@ abstract class Callback
             ],
         );
 
+        /** @var Closure $callback */
         $callback = Closure::bind($callback, $this);
 
         return Container::getInstance()->call($callback, $arguments);

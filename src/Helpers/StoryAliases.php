@@ -14,6 +14,7 @@ use BradieTilley\Stories\ExpectationChain;
 use BradieTilley\Stories\Invocation;
 use BradieTilley\Stories\InvocationQueue;
 use BradieTilley\Stories\Repeater;
+use BradieTilley\Stories\Sequence;
 use BradieTilley\Stories\Story;
 
 class StoryAliases
@@ -27,6 +28,7 @@ class StoryAliases
         ExpectationChain::class => ExpectationChain::class,
         InvocationQueue::class => InvocationQueue::class,
         Invocation::class => Invocation::class,
+        Sequence::class => Sequence::class,
     ];
 
     protected static array $functions = [

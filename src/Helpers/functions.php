@@ -7,7 +7,9 @@ namespace BradieTilley\Stories\Helpers;
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Alarm;
 use BradieTilley\Stories\Assertion;
+use BradieTilley\Stories\Callback;
 use BradieTilley\Stories\Repeater;
+use BradieTilley\Stories\Sequence;
 use BradieTilley\Stories\Story;
 use Closure;
 
@@ -49,4 +51,14 @@ function repeater(int $max = 1): Repeater
 function alarm(int|float $amount, string $unit = Alarm::UNIT_MICROSECONDS): Alarm
 {
     return Alarm::make($amount, $unit);
+}
+
+/**
+ * Create a new sequence
+ *
+ * @param iterable<Callback> $callbacks
+ */
+function sequence(iterable $callbacks = []): Sequence
+{
+    return Sequence::make($callbacks);
 }
