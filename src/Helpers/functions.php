@@ -56,7 +56,7 @@ function alarm(int|float $amount, string $unit = Alarm::UNIT_MICROSECONDS): Alar
 /**
  * Create a new sequence
  *
- * @param iterable<Callback> $callbacks
+ * @param  iterable<Callback>  $callbacks
  */
 function sequence(iterable $callbacks = []): Sequence
 {

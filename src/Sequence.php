@@ -25,8 +25,8 @@ class Sequence
     }
 
     /**
-     * @param string $method
-     * @param array $parameters
+     * @param  string  $method
+     * @param  array  $parameters
      */
     public function __call($method, $parameters): mixed
     {
