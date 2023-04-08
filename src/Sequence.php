@@ -3,6 +3,7 @@
 namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Helpers\StoryAliases;
+use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\ForwardsCalls;
 use InvalidArgumentException;
@@ -67,5 +68,47 @@ class Sequence
         foreach ($this->items->all() as $callback) {
             $callback->boot($arguments);
         }
+    }
+
+    /**
+     * Add an action for this story
+     *
+     * @param  array<string|Action|Closure>|string|Action|Closure  $action
+     */
+    public function action(array|string|Action|Closure $action, array $arguments = []): static
+    {
+        $action = (is_array($action)) ? $action : [$action];
+
+        $action = array_map(
+            fn (string|Action|Closure $action): Action => Action::prepare($action),
+            $action,
+        );
+
+        foreach ($action as $actionItem) {
+            $this->push($actionItem->with($arguments));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add an assertion for this story
+     *
+     * @param  array<string|Assertion|Closure>|string|Assertion|Closure  $assertion
+     */
+    public function assertion(array|string|Assertion|Closure $assertion, array $arguments = []): static
+    {
+        $assertion = (is_array($assertion)) ? $assertion : [$assertion];
+
+        $assertion = array_map(
+            fn (string|Assertion|Closure $assertion): Assertion => Assertion::prepare($assertion),
+            $assertion,
+        );
+
+        foreach ($assertion as $assertionItem) {
+            $this->push($assertionItem->with($arguments));
+        }
+
+        return $this;
     }
 }

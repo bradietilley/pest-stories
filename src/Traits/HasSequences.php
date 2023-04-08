@@ -4,6 +4,7 @@ namespace BradieTilley\Stories\Traits;
 
 use BradieTilley\Stories\Callback;
 use BradieTilley\Stories\Sequence;
+use Closure;
 
 trait HasSequences
 {
@@ -17,8 +18,14 @@ trait HasSequences
     /**
      * @param  iterable<callback>  $callbacks
      */
-    public function sequence(iterable $callbacks): static
+    public function sequence(Closure|iterable $callbacks): static
     {
+        if ($callbacks instanceof Closure) {
+            $callbacks($this->getSequence());
+
+            return $this;
+        }
+
         $this->getSequence()->pushCallbacks($callbacks);
 
         return $this;
