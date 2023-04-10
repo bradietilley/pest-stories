@@ -16,7 +16,7 @@ use Closure;
 /**
  * Create a new story
  */
-function story(string $name = '', Closure|callable|null $callback = null): Story
+function story(string $name = '', ?Closure $callback = null): Story
 {
     return Story::make($name, $callback);
 }
@@ -24,7 +24,7 @@ function story(string $name = '', Closure|callable|null $callback = null): Story
 /**
  * Create a new assertion
  */
-function assertion(string $name = '', Closure|callable|null $callback = null): Assertion
+function assertion(string $name = null, ?Closure $callback = null): Assertion
 {
     return Assertion::make($name, $callback);
 }
@@ -32,7 +32,7 @@ function assertion(string $name = '', Closure|callable|null $callback = null): A
 /**
  * Create a new action
  */
-function action(string $name = '', Closure|callable|null $callback = null): Action
+function action(string $name = null, ?Closure $callback = null): Action
 {
     return Action::make($name, $callback);
 }

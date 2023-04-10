@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Contracts\InvokableCallback;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
@@ -19,6 +20,9 @@ use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 use Tests\Mocks\PestStoriesMockTestCall;
 
+/**
+ * @method static static make(string $name = '', ?Closure $callback = null, array $arguments = [])
+ */
 class Story extends Callback
 {
     use Conditionable;
@@ -48,7 +52,7 @@ class Story extends Callback
 
     protected ExpectationChain $expectations;
 
-    public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
+    public function __construct(string $name = '', ?Closure $callback = null, array $arguments = [])
     {
         parent::__construct($name, $callback, $arguments);
 
@@ -129,6 +133,15 @@ class Story extends Callback
                 $actionItem->for($for);
             }
 
+            /**
+             * Invokable actions may not be stored in the repostory yet so
+             * record the callback so that we can reference the callback by
+             * its name.
+             */
+            if ($actionItem instanceof InvokableCallback) {
+                $actionItem->store();
+            }
+
             $this->actions[] = [
                 'name' => $actionItem->getName(),
                 'arguments' => $arguments,
@@ -163,6 +176,15 @@ class Story extends Callback
         );
 
         foreach ($assertion as $assertionItem) {
+            /**
+             * Invokable assertions may not be stored in the repostory yet
+             * so record the callback so that we can reference the callback
+             * by its name.
+             */
+            if ($assertionItem instanceof InvokableCallback) {
+                $assertionItem->store();
+            }
+
             $this->assertions[] = [
                 'name' => $assertionItem->getName(),
                 'arguments' => $arguments,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Contracts\InvokableCallback;
 use BradieTilley\Stories\Helpers\CallbackRepository;
 use BradieTilley\Stories\Helpers\StoryAliases;
 use BradieTilley\Stories\Traits\HasSequences;
@@ -12,7 +13,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Str;
 
 /**
- * @method static static make(string $name = '', Closure $callback, array $arguments = [])
+ * @method static static make(string $name = null, Closure $callback, array $arguments = [])
  */
 abstract class Callback
 {
@@ -34,10 +35,21 @@ abstract class Callback
     /** Time limit controller */
     protected ?Alarm $alarm = null;
 
-    public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
+    /** The name of the callback */
+    protected string $name;
+
+    /** The Primary callback */
+    protected ?Closure $callback = null;
+
+    public function __construct(string $name = null, ?Closure $callback = null, array $arguments = [])
     {
-        $this->variable = $name;
-        $this->with($arguments)->store();
+        $name ??= static::getRandomName();
+
+        $this->setName($name)
+            ->as($callback)
+            ->for($name)
+            ->with($arguments)
+            ->store();
     }
 
     /**
@@ -77,7 +89,7 @@ abstract class Callback
             return static::fetch($item);
         }
 
-        return static::make(Str::random(8), $item);
+        return static::make()->as($item);
     }
 
     /**
@@ -122,15 +134,26 @@ abstract class Callback
             'action' => Action::class,
             'assertion' => Assertion::class,
             'story' => Story::class,
-            default => static::class,
+            default => null,
         };
 
-        $class = StoryAliases::getClassAlias($class);
+        /**
+         * Use aliased classes when calling `::make()` on any
+         * base-level callback classes like Action, Assertion
+         * or Story. If a custom child class is referenced in
+         * a ::make() call then use the static class directly
+         */
+        if ($class === static::class) {
+            $class = StoryAliases::getClassAlias($class);
 
-        /** @var static $callback */
-        $callback = new $class(...func_get_args());
+            /** @var static $callback */
+            $callback = new $class(...func_get_args());
 
-        return $callback;
+            return $callback;
+        }
+
+        /** @phpstan-ignore-next-line */
+        return new static(...func_get_args());
     }
 
     /**
@@ -255,6 +278,12 @@ abstract class Callback
             );
         }
 
+        if ($this instanceof InvokableCallback) {
+            $allArguments = $this->getInternalCallArguments($arguments);
+
+            $arguments['result'] = Container::getInstance()->call([$this, '__invoke'], $allArguments);
+        }
+
         return $arguments['result'];
     }
 
@@ -358,5 +387,13 @@ abstract class Callback
     public function alarm(): ?Alarm
     {
         return $this->alarm;
+    }
+
+    /**
+     * Get a random name for this instance
+     */
+    public static function getRandomName(): string
+    {
+        return static::class.'@'.Str::random(8);
     }
 }
