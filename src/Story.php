@@ -49,7 +49,7 @@ class Story extends Callback
 
     protected ExpectationChain $expectations;
 
-    public function __construct(protected string $name, protected ?Closure $callback = null, array $arguments = [])
+    public function __construct(string $name = '', ?Closure $callback = null, array $arguments = [])
     {
         parent::__construct($name, $callback, $arguments);
 
