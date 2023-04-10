@@ -20,6 +20,9 @@ use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 use Tests\Mocks\PestStoriesMockTestCall;
 
+/**
+ * @method static static make(string $name = '', ?Closure $callback = null, array $arguments = [])
+ */
 class Story extends Callback
 {
     use Conditionable;
