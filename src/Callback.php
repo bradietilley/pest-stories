@@ -390,7 +390,7 @@ abstract class Callback
     }
 
     /**
-     * Give this instance a random name
+     * Get a random name for this instance
      */
     public static function getRandomName(): string
     {
