@@ -32,9 +32,7 @@ class Alarm
         $class = StoryAliases::getClassAlias(Alarm::class);
 
         /** @var static $class */
-        $alarm = new $class(...func_get_args());
-
-        return $alarm;
+        return new $class(...func_get_args());
     }
 
     /**

@@ -24,9 +24,7 @@ class InvocationQueue
         $class = StoryAliases::getClassAlias(InvocationQueue::class);
 
         /** @var static $class */
-        $class = new $class(...func_get_args());
-
-        return $class;
+        return new $class(...func_get_args());
     }
 
     /**

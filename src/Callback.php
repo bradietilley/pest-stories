@@ -141,7 +141,8 @@ abstract class Callback
          * Use aliased classes when calling `::make()` on any
          * base-level callback classes like Action, Assertion
          * or Story. If a custom child class is referenced in
-         * a ::make() call then use the static class directly
+         * a ::make() such as MyCustomAction::make() then the
+         * class returned should be static, eg MyCustomAction
          */
         if ($class === static::class) {
             $class = StoryAliases::getClassAlias($class);

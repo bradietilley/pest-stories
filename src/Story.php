@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Contracts\InvokableCallback;
+use BradieTilley\Stories\Exceptions\AlarmException;
 use BradieTilley\Stories\Exceptions\FunctionAliasNotFoundException;
 use BradieTilley\Stories\Exceptions\TestCaseUnavailableException;
 use BradieTilley\Stories\Helpers\StoryAliases;
@@ -82,9 +83,7 @@ class Story extends Callback
         $story = array_map(
             function (string|Story|ExpectationChain $story) {
                 $story = ($story instanceof ExpectationChain) ? $story->story() : $story;
-                $story = (is_string($story)) ? Story::fetch($story) : $story;
-
-                return $story;
+                return (is_string($story)) ? Story::fetch($story) : $story;
             },
             $story,
         );
@@ -134,7 +133,7 @@ class Story extends Callback
             }
 
             /**
-             * Invokable actions may not be stored in the repostory yet so
+             * Invokable actions may not be stored in the repository yet so
              * record the callback so that we can reference the callback by
              * its name.
              */
@@ -177,7 +176,7 @@ class Story extends Callback
 
         foreach ($assertion as $assertionItem) {
             /**
-             * Invokable assertions may not be stored in the repostory yet
+             * Invokable assertions may not be stored in the repository yet
              * so record the callback so that we can reference the callback
              * by its name.
              */
@@ -308,7 +307,9 @@ class Story extends Callback
     /**
      * Run the story under the given test suite.
      *
-     * @param  array  $arguments Not used for stories
+     * @param array $arguments Not used for stories
+     * @throws AlarmException
+     * @throws TestCaseUnavailableException
      */
     public function process(array $arguments = []): mixed
     {
@@ -343,7 +344,7 @@ class Story extends Callback
         $this->internalBootConditionables();
 
         /**
-         * Actions (Setup the scenario)
+         * Actions (Set up the scenario)
          */
         foreach ($this->getActions() as $data) {
             /** @var string $name */
@@ -415,9 +416,7 @@ class Story extends Callback
         /**
          * If an alarm is tracking the time, stop it and throw if we exceeded the limit
          */
-        if ($alarm) {
-            $alarm->stop();
-        }
+        $alarm?->stop();
 
         return $this;
     }
@@ -504,7 +503,7 @@ class Story extends Callback
 
     /**
      * Add a callback to run immediately when the TestCase is
-     * assigned to the Story isntance
+     * assigned to the Story instance
      */
     public function setUp(Closure $callback): static
     {
@@ -515,7 +514,7 @@ class Story extends Callback
 
     /**
      * Add a callback to run immediately before the TestCase is
-     * about to be teared down
+     * about to be torn down
      */
     public function tearDown(Closure $callback): static
     {
@@ -619,7 +618,7 @@ class Story extends Callback
 
             /**
              * The first invocation is always the 'expect' function (or alias) so at this
-             * stage it would be null, but every invocation afterwards SHOULD be an instance
+             * stage it would be null, but every invocation afterward SHOULD be an instance
              * of an Expectation.
              *
              * @var ?Expectation $expectation
@@ -632,7 +631,7 @@ class Story extends Callback
             $expectation = $invocation->setObject($expectation)->invoke();
 
             /**
-             * It should always be an Expecation now.
+             * It should always be an Expectation now.
              *
              * @var Expectation $expectation
              */

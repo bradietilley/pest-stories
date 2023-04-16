@@ -87,6 +87,8 @@ class ExpectationChain
 
     /**
      * Finish chaining expectation logic and return to chaining story logic
+     *
+     * @throws ExpectationChainStoryRequiredException
      */
     public function story(): Story
     {
