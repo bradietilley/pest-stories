@@ -13,7 +13,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Str;
 
 /**
- * @method static static make(string $name = null, Closure $callback, array $arguments = [])
+ * @method static static make(string $name = null, Closure $callback = null, array $arguments = [])
  */
 abstract class Callback
 {

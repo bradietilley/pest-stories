@@ -1,9 +1,6 @@
 <?php
 
 use function BradieTilley\Stories\Helpers\story;
-
-use BradieTilley\Stories\Story;
-use Illuminate\Support\Collection;
 use Tests\Mocks\MockInvokableAction;
 use Tests\Mocks\MockInvokableAssertion;
 

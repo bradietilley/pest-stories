@@ -83,6 +83,7 @@ class Story extends Callback
         $story = array_map(
             function (string|Story|ExpectationChain $story) {
                 $story = ($story instanceof ExpectationChain) ? $story->story() : $story;
+
                 return (is_string($story)) ? Story::fetch($story) : $story;
             },
             $story,
@@ -307,7 +308,8 @@ class Story extends Callback
     /**
      * Run the story under the given test suite.
      *
-     * @param array $arguments Not used for stories
+     * @param  array  $arguments Not used for stories
+     *
      * @throws AlarmException
      * @throws TestCaseUnavailableException
      */
@@ -362,10 +364,10 @@ class Story extends Callback
             );
 
             $action = clone Action::fetch($name);
-            
+
             $value = $action->process($arguments);
             $variable = $action->getVariable();
-            
+
             $this->set($variable, $value);
         }
 
@@ -374,7 +376,7 @@ class Story extends Callback
          */
         $value = parent::boot();
         $key = $this->getVariable();
-        
+
         $arguments[$key] = $value;
         $this->set($key, $value);
 
@@ -402,10 +404,10 @@ class Story extends Callback
             );
 
             $assertion = clone Assertion::fetch($name);
-            
+
             $value = $assertion->process($arguments);
             $variable = $assertion->getVariable();
-            
+
             $this->set($variable, $value);
         }
 

@@ -22,7 +22,9 @@ class Repeater
         $class = StoryAliases::getClassAlias(Repeater::class);
 
         /** @var static $repeater */
-        return new $class(...func_get_args());
+        $repeater = new $class(...func_get_args());
+
+        return $repeater;
     }
 
     /**
