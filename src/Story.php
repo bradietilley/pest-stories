@@ -362,17 +362,19 @@ class Story extends Callback
             );
 
             $action = clone Action::fetch($name);
-            $variable = $action->getVariable();
-
+            
             $value = $action->process($arguments);
+            $variable = $action->getVariable();
+            
             $this->set($variable, $value);
         }
 
         /**
          * Custom story logic
          */
-        $key = $this->getVariable();
         $value = parent::boot();
+        $key = $this->getVariable();
+        
         $arguments[$key] = $value;
         $this->set($key, $value);
 
@@ -400,9 +402,10 @@ class Story extends Callback
             );
 
             $assertion = clone Assertion::fetch($name);
-            $variable = $assertion->getVariable();
-
+            
             $value = $assertion->process($arguments);
+            $variable = $assertion->getVariable();
+            
             $this->set($variable, $value);
         }
 

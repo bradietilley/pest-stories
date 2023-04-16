@@ -16,6 +16,8 @@ class MockInvokableAssertion extends Assertion implements InvokableCallback
 
     public function __invoke(Story $story, string $a, int $b): float
     {
+        $this->for('example_assertion');
+
         self::$invoked[] = [
             'story' => $story,
             'a' => $a,
@@ -24,7 +26,7 @@ class MockInvokableAssertion extends Assertion implements InvokableCallback
             'integer' => $this->integer,
         ];
 
-        return 0.1;
+        return 0.2;
     }
 
     public function withString(string $value): self

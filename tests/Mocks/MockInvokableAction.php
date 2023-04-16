@@ -16,6 +16,8 @@ class MockInvokableAction extends Action implements InvokableCallback
 
     public function __invoke(Story $story, string $a, int $b): float
     {
+        $this->for('example_action');
+
         self::$invoked[] = [
             'story' => $story,
             'a' => $a,

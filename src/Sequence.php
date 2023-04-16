@@ -68,8 +68,8 @@ class Sequence
         foreach ($this->items->all() as $callback) {
             $callback = clone $callback;
 
-            $variable = $callback->getVariable();
             $value = $callback->process($arguments);
+            $variable = $callback->getVariable();
 
             $parent->set($variable, $value);
             $arguments[$variable] = $value;

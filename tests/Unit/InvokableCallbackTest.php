@@ -1,6 +1,9 @@
 <?php
 
 use function BradieTilley\Stories\Helpers\story;
+
+use BradieTilley\Stories\Story;
+use Illuminate\Support\Collection;
 use Tests\Mocks\MockInvokableAction;
 use Tests\Mocks\MockInvokableAssertion;
 
@@ -18,8 +21,9 @@ test('an invokable callback class can be stored multiple times', function () {
         ->action($foo)
         ->action($bar)
         ->assertion($baz)
-        ->assertion($qux)
-        ->process();
+        ->assertion($qux);
+
+    $story->process();
 
     expect(MockInvokableAction::$invoked)->ToBe([
         [
@@ -54,4 +58,7 @@ test('an invokable callback class can be stored multiple times', function () {
             'integer' => 78,
         ],
     ]);
+
+    expect($story->get('example_action'))->toBe(0.1);
+    expect($story->get('example_assertion'))->toBe(0.2);
 });
