@@ -193,8 +193,8 @@ class Action
             $this->timer()->start();
         }
 
-        while ($this->stillRepeating()) {
-            $this->incrementRepeatCounter();
+        while ($this->repeats()) {
+            $this->repeatsIncrement();
 
             $this->process($story, arguments: $arguments, variable: $variable);
         }
