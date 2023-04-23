@@ -264,7 +264,7 @@ action('a', fn () => dump('a'))->action('a1')->action('a2');
 action('b', fn () => dump('b'))->action('b1')->action('b2');
 action('c', fn () => dump('c'))->action('c1')->action('c2');
 
-action('all')->action('a')->action('b')->action('c');
+action('all', fn () => dump('all'))->action('a')->action('b')->action('c');
 
 test('do a lot of things')
     ->action('all');
@@ -279,5 +279,6 @@ test('do a lot of things')
  * c1
  * c2
  * c
+ * all
  */
 ```
