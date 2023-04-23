@@ -25,6 +25,8 @@ class Story
 
     /**
      * Add an action to this story
+     *
+     * @param  array<string, mixed>  $arguments
      */
     public function action(string|Closure|Action $action, array $arguments = [], string $variable = null): static
     {
@@ -77,6 +79,8 @@ class Story
 
     /**
      * Get all shared variables in this story
+     *
+     * @return array<string, mixed>
      */
     public function allData(): array
     {
@@ -85,6 +89,8 @@ class Story
 
     /**
      * Call the given callback with dependency injection
+     *
+     * @param  array<string, mixed>  $additional
      */
     public function callCallback(callable $callback = null, array $additional = []): mixed
     {
@@ -97,6 +103,9 @@ class Story
 
     /**
      * Get a list of arguments that may be injected into Closure callbacks
+     *
+     * @param  array<string, mixed>  $additional
+     * @return array<string, mixed>
      */
     public function getCallbackArguments(array $additional = []): array
     {

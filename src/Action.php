@@ -142,6 +142,8 @@ class Action
 
     /**
      * Run the action against the given story
+     *
+     * @param  array<string, mixed>  $arguments
      */
     private function process(Story $story, array $arguments = [], string $variable = null): void
     {
@@ -186,6 +188,8 @@ class Action
     /**
      * Run the action against the given story, with
      * repeating, etc.
+     *
+     * @param  array<string, mixed>  $arguments
      */
     public function run(Story $story, array $arguments = [], string $variable = null): void
     {

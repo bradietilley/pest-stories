@@ -9,6 +9,7 @@ use BradieTilley\Stories\Exceptions\StoryActionNotFoundException;
 
 class Actions
 {
+    /** @var array<string, Action> */
     protected static array $all = [];
 
     /**
