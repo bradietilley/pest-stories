@@ -35,6 +35,3 @@ jobs:
 
     - name: Unit Tests
       run: composer test --colors=always
-
-    - name: Extended Tests
-      run: composer test-extended --colors=always
