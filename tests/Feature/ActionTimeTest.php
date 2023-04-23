@@ -63,7 +63,7 @@ test('an action will abort mid-way through if it exceeds the timeout with abort 
     expect($ran->toArray())->toBe([
         'before',
     ]);
-});
+})->skip(! function_exists('pcntl_alarm') || ! function_exists('pcntl_signal'));
 
 test('an action will not abort mid-way through if it does not exceed the timeout with abort mode enabled', function () {
     $ran = Collection::make();
