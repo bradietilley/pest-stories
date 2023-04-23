@@ -23,34 +23,26 @@
         }
     ],
     "scripts": {
-        "test": "vendor/bin/pest --exclude-group=extended",
-        "test-extended": "vendor/bin/pest --group=extended",
+        "test": "vendor/bin/pest",
         "pint": "vendor/bin/pint",
         "stan": "vendor/bin/phpstan analyse --no-progress --ansi"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "pestphp/pest": "^2.0",
         "orchestra/testbench": "^8.0",
         "symfony/var-dumper": "^6.1.5",
         "laravel/pint": "^1.4",
         "phpstan/phpstan": "^1.8"
     },
     "require": {
+        "pestphp/pest": "^2.0",
         "illuminate/support": "^10.0",
         "illuminate/container": "^10.0"
     },
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "BradieTilley\\Stories\\Laravel\\StoriesServiceProvider"
-            ]
         }
     }
 }

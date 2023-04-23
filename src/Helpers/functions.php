@@ -1,64 +1,23 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
-use BradieTilley\Stories\Alarm;
-use BradieTilley\Stories\Assertion;
-use BradieTilley\Stories\Callback;
-use BradieTilley\Stories\Repeater;
-use BradieTilley\Stories\Sequence;
 use BradieTilley\Stories\Story;
 use Closure;
 
 /**
- * Create a new story
+ * Create an anonymous story
  */
-function story(string $name = '', ?Closure $callback = null): Story
+function story(): Story
 {
-    return Story::make($name, $callback);
+    return new Story();
 }
 
 /**
- * Create a new assertion
+ * Create an action
  */
-function assertion(string $name = null, ?Closure $callback = null): Assertion
+function action(string $name = null, Closure $callback = null, string $variable = null): Action
 {
-    return Assertion::make($name, $callback);
-}
-
-/**
- * Create a new action
- */
-function action(string $name = null, ?Closure $callback = null): Action
-{
-    return Action::make($name, $callback);
-}
-
-/**
- * Create a new repeater
- */
-function repeater(int $max = 1): Repeater
-{
-    return Repeater::make($max);
-}
-
-/**
- * Create a new alarm
- */
-function alarm(int|float $amount, string $unit = Alarm::UNIT_MICROSECONDS): Alarm
-{
-    return Alarm::make($amount, $unit);
-}
-
-/**
- * Create a new sequence
- *
- * @param  iterable<Callback>  $callbacks
- */
-function sequence(iterable $callbacks = []): Sequence
-{
-    return Sequence::make($callbacks);
+    return new Action($name, $callback, $variable);
 }
