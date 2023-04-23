@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
