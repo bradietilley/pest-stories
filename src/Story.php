@@ -7,9 +7,9 @@ namespace BradieTilley\Stories;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
-use Pest\Expectation;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
+use PHPUnit\Framework\TestCase;
 
 class Story
 {
@@ -129,12 +129,21 @@ class Story
         $arguments = array_replace(
             [
                 'story' => $this,
-                'test' => TestSuite::getInstance()->test,
+                'test' => $this->getTest(),
             ],
             $this->allData(),
             $additional,
         );
 
         return $arguments;
+    }
+
+    /**
+     * Get the test case
+     */
+    public function getTest(): TestCase
+    {
+        /** @phpstan-ignore-next-line */
+        return TestSuite::getInstance()->test;
     }
 }
