@@ -7,7 +7,6 @@ namespace BradieTilley\Stories\Concerns;
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Story;
 use Closure;
-use Pest\Expectation;
 use Pest\Expectations\HigherOrderExpectation;
 
 /**
@@ -28,11 +27,22 @@ trait Stories
     protected ?Story $story = null;
 
     /**
+     * Reset the current instance
+     */
+    protected function setUpStories(): void
+    {
+        Story::setInstance(null);
+    }
+
+    /**
      * Get and or create the story for this test case
      */
     public function story(): Story
     {
-        return $this->story ??= new Story();
+        $this->story ??= new Story();
+        Story::setInstance($this->story);
+
+        return $this->story;
     }
 
     /**

@@ -12,6 +12,10 @@ use PHPUnit\Framework\IncompleteTestError;
 
 uses(Stories::class);
 
+beforeEach(function () {
+    $this->setUpStories();
+});
+
 action('does_nothing', fn () => null);
 action('asserts_something', fn () => expect(true)->toBeTrue());
 action('create_product', function () {
@@ -159,3 +163,15 @@ test('a story data repository supports checking existence', function () {
     expect($story->hasData('foo.bar'))->toBeTrue();
     expect($story->hasData('foo.bar.baz'))->toBeTrue();
 });
+
+test('a new story instance is created via the story helper when not run via Stories trait', function () {
+    // Sanity check
+    expect(Story::getInstance())->toBeNull();
+
+    expect(story() === story())->toBeFalse();
+});
+
+test('the current story instance is available via the story helper function')
+    ->action(function (Story $story) {
+        expect($story === story())->toBeTrue();
+    });

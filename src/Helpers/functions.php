@@ -13,7 +13,7 @@ use Closure;
  */
 function story(): Story
 {
-    return new Story();
+    return Story::getInstance() ?? new Story();
 }
 
 /**

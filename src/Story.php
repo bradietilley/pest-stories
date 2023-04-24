@@ -23,6 +23,24 @@ class Story
      */
     protected array $data = [];
 
+    protected static ?Story $instance = null;
+
+    /**
+     * (Internal function) Set the current story that is being invoked
+     */
+    public static function setInstance(?Story $story): void
+    {
+        static::$instance = $story;
+    }
+
+    /**
+     * Get the current story instance that's being invoked
+     */
+    public static function getInstance(): ?Story
+    {
+        return static::$instance;
+    }
+
     /**
      * Add an action to this story
      *
@@ -31,7 +49,6 @@ class Story
     public function action(string|Closure|Action $action, array $arguments = [], string $variable = null): static
     {
         $action = Action::parse($action);
-
         $action->fresh($this)->run($this, arguments: $arguments, variable: $variable);
 
         return $this;
