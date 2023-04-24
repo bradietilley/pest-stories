@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
-use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Binds;
+use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
