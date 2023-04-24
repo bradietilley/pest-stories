@@ -5,7 +5,7 @@ namespace BradieTilley\Stories\Helpers;
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use Closure;
 use Illuminate\Support\Collection;
-use Pest\Exceptions\ShouldNotHappen;
+use InvalidArgumentException;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -13,24 +13,24 @@ use Throwable;
 
 class CallbackReflection
 {
-    /** @var array<string>|callable */
+    /** @var array<string>|string|Closure */
     protected $callback;
 
     /** @var ?array<string> */
     protected ?array $arguments = null;
 
     /**
-     * @param  array<string>|callable  $callback
+     * @param  array<string>|string|Closure  $callback
      */
-    public function __construct(array|callable $callback)
+    public function __construct(array|string|Closure $callback)
     {
         $this->callback = $callback;
     }
 
     /**
-     * @param  array<string>|callable  $callback
+     * @param  array<string>|string|Closure  $callback
      */
-    public static function make(array|callable $callback): self
+    public static function make(array|string|Closure $callback): self
     {
         return new self($callback);
     }
@@ -62,9 +62,7 @@ class CallbackReflection
             }
 
             if ($reflection === null) {
-                // @codeCoverageIgnoreStart
-                throw ShouldNotHappen::fromMessage('Callback reflection format not supported');
-                // @codeCoverageIgnoreEnd
+                throw new InvalidArgumentException('Callback reflection format not supported');
             }
 
             /** @var array<string> $arguments */
@@ -74,9 +72,7 @@ class CallbackReflection
                 })
                 ->toArray();
         } catch (Throwable $exception) {
-            // @codeCoverageIgnoreStart
             throw FailedToIdentifyCallbackArgumentsException::make($exception);
-            // @codeCoverageIgnoreEnd
         }
 
         return $this->arguments = $arguments;

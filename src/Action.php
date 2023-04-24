@@ -195,6 +195,7 @@ class Action
     public function callCallback(Story $story, callable $callback, array $additional = []): mixed
     {
         if ($this->requiresDataset) {
+            /** @var string|array<string>|Closure $callback */
             $argumentNames = CallbackReflection::make($callback)->arguments();
             $newArguments = [];
 
@@ -215,6 +216,7 @@ class Action
             $additional = array_replace($additional, $newArguments);
         }
 
+        /** @var callable $callback */
         return $story->callCallback($callback, $additional);
     }
 
