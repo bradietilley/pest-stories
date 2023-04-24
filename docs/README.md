@@ -470,3 +470,59 @@ test('can do something as an admin')
 Deferring is not the default behaviour as you can defer logic when it's immediately run, but you cannot immediately run code when the entire chain is deferred.
 
 Should you not want to continually remember which action classes require immediate computation vs those that require deferred computation, you can add the `BradieTilley\Stories\Contracts\Deferred` interface to any action that must be deferred. This will replace the result from the `::make()` method (normally instance of `Action`) with a `PendingCall<Action>` instance, simulating the exact behaviour of `::defer()`. This then allows you to use `::make()` on *all* actions without having to remember these finicky differences.
+
+#### Datasets in Actions
+
+Datasets behave slightly differently in Stories or, specifically, Actions. From the outset, the syntax is no different, but how your arguments are provided to you differs.
+
+In standard Pest or PHPUnit the dataset arguments are simply passed in from left-to-right.
+
+```php
+test('a plain pest test', function (string $word, int $number) {
+    dump($word, $number);
+})->with([
+    'custom subtext 1' => [ 'foo', 123 ],
+    'custom subtext 2' => [ 'bar', 456 ],
+]);
+
+/**
+ * >> a plain pest test with dataset "custom subtext 1"
+ * dumps: foo
+ * dumps: 123
+ * 
+ * >> a plain pest test with dataset "custom subtext 2"
+ * dumps: bar
+ * dumps: 456
+ */
+```
+
+In Pest actions, because Dependency injection allows for the injection of various other variables including the Story or TestCase ([read more](#dependency-injection)), we have to meet in the middle and agree that when we want a dataset to be provided to a specific action, the first *n* arguments represent the *n* dataset arguments.
+
+Not all actions have to support the dataset, it can just be one - or none. You can also retrieve the dataset verbatim using the `story()->getDataset()` method.
+
+To enable automatic injection of all dataset arguments into a single action, you must run the `->dataset()` method on the action. For example:
+
+```php
+action('do_something', function (string $word, int $number) {
+    dump($word, $number);
+})->dataset();
+
+test('a story pest test')
+    ->action('do_something')
+    ->with([
+        'custom subtext 1' => [ 'foo', 123 ],
+        'custom subtext 2' => [ 'bar', 456 ],
+    ]);
+
+/**
+ * >> a plain pest test with dataset "custom subtext 1"
+ * dumps: foo
+ * dumps: 123
+ * 
+ * >> a plain pest test with dataset "custom subtext 2"
+ * dumps: bar
+ * dumps: 456
+ */
+```
+
+In the above example, you can still utilise the [dependency injection](#dependency-injection) within the action arguments however they must occur **after** the dataset arguments. So for example if you wanted an existing variable from another action as well as dataset arguments, you'd need to go: `function ($datasetOne, $datasetTwo, $existingVariable1, $existingVariable2) { ... }`

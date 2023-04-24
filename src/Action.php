@@ -48,6 +48,9 @@ class Action
      */
     protected Collection $actions;
 
+    /** Does this action expect its arguments to be the dataset, verbatim to what is provided by the test? */
+    protected bool $requiresDataset = false;
+
     public function __construct(string $name = null, ?Closure $callback = null, string $variable = null)
     {
         if (! $this->initializedProperty('name')) {
@@ -220,7 +223,7 @@ class Action
          */
         $value = $story->callCallback($callback, [
             'action' => $this,
-        ] + $arguments);
+        ] + $arguments, requiresDataset: $this->requiresDataset);
 
         /**
          * Record the value returned from either the __invoke
@@ -337,6 +340,16 @@ class Action
     public function variable(string $variable): static
     {
         $this->variable = $variable;
+
+        return $this;
+    }
+
+    /**
+     * Expect the dataset to be passed to this action
+     */
+    public function dataset(): static
+    {
+        $this->requiresDataset = true;
 
         return $this;
     }

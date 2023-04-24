@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Helpers\CallbackReflection;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
@@ -108,14 +110,45 @@ class Story
     }
 
     /**
+     * Get the dataset that was provided, if any.
+     *
+     * @return array<int, mixed>
+     */
+    public function getDataset(): array
+    {
+        /** @var array<int, mixed> $dataset */
+        $dataset = $this->getTest()->providedData();
+
+        return $dataset;
+    }
+
+    /**
      * Call the given callback with dependency injection
      *
      * @param  array<string, mixed>  $additional
      */
-    public function callCallback(callable $callback = null, array $additional = []): mixed
+    public function callCallback(callable $callback = null, array $additional = [], bool $requiresDataset = false): mixed
     {
         if ($callback === null) {
             return null;
+        }
+
+        if ($requiresDataset) {
+            $argumentNames = CallbackReflection::make($callback)->arguments();
+            $newArguments = [];
+
+            foreach ($this->getDataset() as $index => $argument) {
+                $argumentName = array_shift($argumentNames);
+
+                // Shouldn't be asking for the dataset if you're not going to utilise the dataset
+                if ($argumentName === null) {
+                    throw new InvalidArgumentException('Expecting for this test story action to accept all dataset values as arguments, missing argument #'.($index + 1));
+                }
+
+                $newArguments[$argumentName] = $argument;
+            }
+
+            $additional = array_replace($additional, $newArguments);
         }
 
         return Container::getInstance()->call($callback, $this->getCallbackArguments($additional));
