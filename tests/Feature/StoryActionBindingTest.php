@@ -9,6 +9,26 @@ use Illuminate\Support\Collection;
 test('an action will be bound to the action itself by default', function () {
     $ran = Collection::make();
     $story = story();
+    Story::setInstance($story);
+
+    $action = action('do_something');
+    $action->as(function () use ($ran) {
+        $ran[] = $this;
+    });
+
+    $action->run($story);
+
+    $actual = $ran->first();
+    $expect = $action;
+
+    expect($actual === $expect)->toBeTrue();
+});
+
+test('an action will be bound to the action when it is preferred to', function () {
+    $ran = Collection::make();
+    $story = story();
+    Story::setInstance($story);
+    Action::preferBindToAction();
 
     $action = action('do_something');
     $action->as(function () use ($ran) {
