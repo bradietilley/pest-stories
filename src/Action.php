@@ -192,12 +192,8 @@ class Action
      *
      * @param  array<string, mixed>  $additional
      */
-    public function callCallback(Story $story, callable $callback = null, array $additional = []): mixed
+    public function callCallback(Story $story, callable $callback, array $additional = []): mixed
     {
-        if ($callback === null) {
-            return null;
-        }
-
         if ($this->requiresDataset) {
             $argumentNames = CallbackReflection::make($callback)->arguments();
             $newArguments = [];
