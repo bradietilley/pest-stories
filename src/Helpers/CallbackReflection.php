@@ -10,18 +10,24 @@ use ReflectionParameter;
 
 class CallbackReflection
 {
-    /** @var callable */
+    /** @var array<string>|callable */
     protected $callback;
 
     /** @var ?array<string> */
     protected ?array $arguments = null;
 
-    public function __construct(callable $callback)
+    /**
+     * @param  array<string>|callable  $callback
+     */
+    public function __construct(array|callable $callback)
     {
         $this->callback = $callback;
     }
 
-    public static function make(callable $callback): self
+    /**
+     * @param  array<string>|callable  $callback
+     */
+    public static function make(array|callable $callback): self
     {
         return new self($callback);
     }
