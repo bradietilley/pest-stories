@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Concerns\Stories;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
 use function BradieTilley\Stories\Helpers\action;
@@ -8,9 +9,20 @@ use BradieTilley\Stories\Story;
 use Illuminate\Support\Collection;
 use Tests\Fixtures\AnExampleAction;
 use Tests\Fixtures\AnExampleActionWithSomething;
+use Tests\Fixtures\DeferredAction;
 use Tests\Fixtures\NonActionExample;
 
 uses(Stories::class);
+
+test('can determine if a class is an action or not', function () {
+    expect(Action::isAction('Exception'))->toBeFalse();
+    expect(Action::isAction(NonActionExample::class))->toBeFalse();
+    expect(Action::isAction('NotExists'))->toBeFalse();
+
+    expect(Action::isAction(Action::class))->toBeTrue();
+    expect(Action::isAction(AnExampleAction::class))->toBeTrue();
+    expect(Action::isAction(DeferredAction::class))->toBeTrue();
+});
 
 test('a class-based action with an invoke method can be referenced by name, namespace or instance', function () {
     AnExampleAction::$ran = [];

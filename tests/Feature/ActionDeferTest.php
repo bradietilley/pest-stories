@@ -9,6 +9,17 @@ use Tests\Fixtures\DeferredAction;
 
 uses(Stories::class);
 
+test('can determine if a class is a deferred action or not', function () {
+    expect(Action::isDeferredAction('Exception'))->toBeFalse();
+    expect(Action::isDeferredAction(NonActionExample::class))->toBeFalse();
+    expect(Action::isDeferredAction('NotExists'))->toBeFalse();
+    expect(Action::isDeferredAction(Action::class))->toBeFalse();
+    expect(Action::isDeferredAction(AnExampleAction::class))->toBeFalse();
+    expect(Action::isDeferredAction(DeferrableAction::class))->toBeFalse();
+
+    expect(Action::isDeferredAction(DeferredAction::class))->toBeTrue();
+});
+
 test('an action can be created and deferred execution', function () {
     Story::setInstance(story());
     DeferrableAction::$ran = [];
