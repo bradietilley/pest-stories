@@ -38,24 +38,21 @@ class CallbackReflection
     public function arguments(): array
     {
         if ($this->arguments !== null) {
+            // @codeCoverageIgnoreStart
             return $this->arguments;
+            // @codeCoverageIgnoreEnd
         }
 
         $reflection = null;
+        $callback = $this->callback;
 
-        if ($this->callback instanceof Closure || is_string($this->callback)) {
-            $reflection = new ReflectionFunction($this->callback);
-        }
-
-        if (is_array($this->callback) && isset($this->callback[0]) && isset($this->callback[1])) {
-            $class = $this->callback[0];
-            $method = $this->callback[1];
+        if ($callback instanceof Closure || is_string($callback)) {
+            $reflection = new ReflectionFunction($callback);
+        } else {
+            $class = $callback[0] ?? '';
+            $method = $callback[1] ?? '';
 
             $reflection = new ReflectionMethod($class, $method);
-        }
-
-        if ($reflection === null) {
-            return $this->arguments = [];
         }
 
         /** @var array<string> $arguments */
