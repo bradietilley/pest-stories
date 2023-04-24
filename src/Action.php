@@ -9,6 +9,7 @@ use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
+use BradieTilley\Stories\PendingCalls\PendingCall;
 use BradieTilley\Stories\Repositories\Actions;
 use Closure;
 use Illuminate\Container\Container;
@@ -91,6 +92,20 @@ class Action
     {
         /** @phpstan-ignore-next-line */
         return new static(...func_get_args());
+    }
+
+    /**
+     * Statically create and defer the building of this action
+     *
+     * @return PendingCall<static>
+     */
+    public static function defer(): PendingCall
+    {
+        /** @phpstan-ignore-next-line */
+        $action = static::make(...func_get_args());
+        /** @var static $action */
+
+        return new PendingCall($action);
     }
 
     /**
@@ -238,8 +253,16 @@ class Action
      * Closure - create Action for this closure
      * ActionCall - returns itself
      */
-    public static function parse(string|Closure|Action $action): Action
+    public static function parse(string|Closure|Action|PendingCall $action): Action
     {
+        if ($action instanceof PendingCall) {
+            $action = $action->invokePendingCall();
+
+            if (! $action instanceof Action) {
+                throw StoryActionInvalidException::make(get_class($action));
+            }
+        }
+
         if (is_string($action) && class_exists($action)) {
             $action = Container::getInstance()->make($original = $action);
 

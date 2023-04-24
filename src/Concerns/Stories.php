@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BradieTilley\Stories\Concerns;
 
 use BradieTilley\Stories\Action;
+use BradieTilley\Stories\PendingCalls\PendingCall;
 use BradieTilley\Stories\Story;
 use Closure;
 use Pest\Expectations\HigherOrderExpectation;
@@ -48,7 +49,7 @@ trait Stories
     /**
      * Add an action to this story / test case
      */
-    public function action(string|Closure|Action $action, array $arguments = [], string $variable = null): static
+    public function action(string|Closure|Action|PendingCall $action, array $arguments = [], string $variable = null): static
     {
         $this->story()->action($action, arguments: $arguments, variable: $variable);
 
