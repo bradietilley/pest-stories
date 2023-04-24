@@ -7,6 +7,7 @@ use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Story;
 use Illuminate\Support\Collection;
 use Tests\Fixtures\AnExampleAction;
+use Tests\Fixtures\AnExampleActionWithSomething;
 use Tests\Fixtures\NonActionExample;
 
 uses(Stories::class);
@@ -31,6 +32,29 @@ test('a class-based action with an invoke method can be referenced by name, name
 test('a class-based action cannot be used if it is not a valid Action', function () {
     story()->action(NonActionExample::class);
 })->throws(StoryActionInvalidException::class);
+
+test('a class-based action is unique when used multiple times', function () {
+    story()
+        ->action($abc = AnExampleActionWithSomething::make()->withSomething('abc'))
+        ->action($def = AnExampleActionWithSomething::make()->withSomething('def'))
+        ->action($ghi = AnExampleActionWithSomething::make()->withSomething('ghi'));
+
+    expect(AnExampleActionWithSomething::$ran)->toBe([
+        'something:abc',
+        'something:def',
+        'something:ghi',
+    ]);
+
+    /**
+     * Expect each name to be different as the class offers
+     * no name so will be given a random one each time.
+     */
+    expect($abc->getName())
+        ->not->toBe($def->getName())
+        ->not->toBe($ghi->getName());
+    expect($def->getName())
+        ->not->toBe($ghi->getName());
+});
 
 test('an action can be passed required arguments', function () {
     action('do_something', function (string $foo, int $bar, float $baz, array $qux) {
