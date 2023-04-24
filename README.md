@@ -31,3 +31,7 @@ uses(BradieTilley\Stories\Concerns\Stories::class);
 ## Documentation
 
 Read the [docs](/docs/README.md).
+
+## Author
+
+- [Bradie Tilley](https://github.com/bradietilley)
