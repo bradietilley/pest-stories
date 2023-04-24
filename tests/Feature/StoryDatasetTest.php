@@ -11,6 +11,8 @@ class AnonymousDatasetTester
     public static array $ran = [];
 
     public static array $ran2 = [];
+
+    public static array $ran3 = [];
 }
 
 action('do_something_with_datasets')->as(function (string $word, Story $story) {
@@ -78,3 +80,15 @@ test('all 3 complex datasets from the previous test were correctly recorded', fu
         null,
     ]);
 });
+
+action('an_action_missing_dataset_parameters', function (string $word) {
+    // won't run
+    AnonymousDatasetTester::$ran3[] = 'it actually ran';
+})->dataset();
+
+test('an action that expects dataset arguments but is missing a dataset parameter will fail')
+    ->action('an_action_missing_dataset_parameters')
+    ->with([
+        'example 1' => ['abc', 123],
+    ])
+    ->throws('The `an_action_missing_dataset_parameters` action is missing dataset argument #2');

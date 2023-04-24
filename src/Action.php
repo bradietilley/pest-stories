@@ -9,7 +9,9 @@ use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
+use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
+use BradieTilley\Stories\Helpers\CallbackReflection;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
 use Closure;
@@ -186,6 +188,41 @@ class Action
     }
 
     /**
+     * Call the given callback with dependency injection
+     *
+     * @param  array<string, mixed>  $additional
+     */
+    public function callCallback(Story $story, callable $callback = null, array $additional = []): mixed
+    {
+        if ($callback === null) {
+            return null;
+        }
+
+        if ($this->requiresDataset) {
+            $argumentNames = CallbackReflection::make($callback)->arguments();
+            $newArguments = [];
+
+            foreach ($story->getDataset() as $index => $argument) {
+                $argumentName = array_shift($argumentNames);
+
+                // Shouldn't be asking for the dataset if you're not going to utilise the dataset
+                if ($argumentName === null) {
+                    throw ActionMustAcceptAllDatasetArgumentsException::make(
+                        action: $this,
+                        datasetIndexMissing: $index + 1,
+                    );
+                }
+
+                $newArguments[$argumentName] = $argument;
+            }
+
+            $additional = array_replace($additional, $newArguments);
+        }
+
+        return $story->callCallback($callback, $additional);
+    }
+
+    /**
      * Run the action against the given story
      *
      * @param  array<string, mixed>  $arguments
@@ -221,9 +258,9 @@ class Action
          * Call the callback (__invoke method or Closure callback)
          * with the story's arguments
          */
-        $value = $story->callCallback($callback, [
+        $value = $this->callCallback($story, $callback, [
             'action' => $this,
-        ] + $arguments, requiresDataset: $this->requiresDataset);
+        ] + $arguments);
 
         /**
          * Record the value returned from either the __invoke
@@ -346,6 +383,8 @@ class Action
 
     /**
      * Expect the dataset to be passed to this action
+     *
+     * @codeCoverageIgnore -- this method is run but code coverage is turning a blind eye
      */
     public function dataset(): static
     {
