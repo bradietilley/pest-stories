@@ -2,7 +2,9 @@
 
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Concerns\Stories;
+use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\story;
+use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Story;
 use Tests\Fixtures\DeferrableAction;
 use Tests\Fixtures\DeferredAction;
@@ -114,5 +116,12 @@ test('a Deferred action is deferred invocation when created via make method - ex
         'ghi',
         'invoke',
     ]);
+});
 
+test('the action function can return a PendingActionCall', function () {
+    $result = action(DeferrableAction::class);
+    expect($result)->toBeInstanceOf(Action::class);
+
+    $result = action(DeferredAction::class);
+    expect($result)->toBeInstanceOf(PendingActionCall::class);
 });

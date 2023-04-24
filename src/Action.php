@@ -21,7 +21,7 @@ use ReflectionClass;
 use ReflectionProperty;
 
 /**
- * @method static static make(string $name = null, ?Closure $callback = null, string $variable = null)
+ * @method static static|PendingActionCall make(string $name = null, ?Closure $callback = null, string $variable = null)
  */
 class Action
 {
@@ -318,8 +318,13 @@ class Action
      */
     public static function isDeferredAction(string $class): bool
     {
-        return self::isAction($class)
-            && (new ReflectionClass($class))->implementsInterface(Deferred::class);
+        if (! self::isAction($class)) {
+            return false;
+        }
+
+        $deferred = (new ReflectionClass($class))->implementsInterface(Deferred::class);
+
+        return $deferred;
     }
 
     /**
@@ -327,7 +332,8 @@ class Action
      *
      * string - lookup Action of the same name
      * Closure - create Action for this closure
-     * ActionCall - returns itself
+     * Action - returns itself
+     * PendingActionCall - returns itself
      */
     public static function parse(string|Closure|Action|PendingActionCall $action): Action|PendingActionCall
     {
