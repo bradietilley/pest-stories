@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Concerns\Events;
+use BradieTilley\Stories\Concerns\Binds;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
@@ -21,6 +23,8 @@ class Action
 {
     use Repeats;
     use Times;
+    use Events;
+    use Binds;
 
     /**
      * The name of the action
@@ -55,6 +59,21 @@ class Action
         $this->callback = $callback;
         $this->actions = Collection::make();
         $this->remember();
+        $this->boot();
+    }
+
+    /**
+     * Boot this action and all of its traits
+     */
+    public function boot(): void
+    {
+        foreach (class_uses_recursive($this) as $trait) {
+            $method = 'boot'.Str::afterLast($trait, '\\');
+
+            if (method_exists($this, $method)) {
+                $this->{$method}();
+            }
+        }
     }
 
     /**
@@ -147,6 +166,8 @@ class Action
      */
     private function process(Story $story, array $arguments = [], string $variable = null): void
     {
+        $this->callbackRun('before');
+
         /**
          * If this action calls for other actions to be run, then run those
          * other actions first.
@@ -165,7 +186,7 @@ class Action
          * instead of the __invoke method
          */
         if ($this->callback !== null) {
-            $callback = \Pest\Support\Closure::bind($this->callback, $story);
+            $callback = $this->bindToPreferred($this->callback);
         }
 
         /**
@@ -183,6 +204,8 @@ class Action
          */
         $variable ??= $this->getVariable();
         $story->setData($variable, $value);
+
+        $this->callbackRun('after');
     }
 
     /**
