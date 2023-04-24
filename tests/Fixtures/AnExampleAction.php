@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Sample;
+namespace Tests\Fixtures;
 
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Story;

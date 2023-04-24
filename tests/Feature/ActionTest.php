@@ -6,8 +6,8 @@ use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Story;
 use Illuminate\Support\Collection;
-use Tests\Sample\AnExampleAction;
-use Tests\Sample\NonActionExample;
+use Tests\Fixtures\AnExampleAction;
+use Tests\Fixtures\NonActionExample;
 
 uses(Stories::class);
 
