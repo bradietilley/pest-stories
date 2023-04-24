@@ -72,7 +72,9 @@ class PendingActionCall
         $action = new $name(...$args);
 
         if (! $action instanceof Action) {
+            // @codeCoverageIgnoreStart
             throw StoryActionInvalidException::make($name);
+            // @codeCoverageIgnoreEnd
         }
 
         /**

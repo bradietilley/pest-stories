@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Concerns\Stories;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Story;
@@ -79,3 +80,28 @@ test('a Deferred action is deferred invocation when created via make method - in
             'invoke',
         ]);
     });
+
+test('a Deferred action is deferred invocation when created via make method - external to a test story call', function () {
+    DeferredAction::$ran = [];
+
+    $pending = DeferredAction::make()->abc()->def()->ghi();
+    $action = Action::resolve($pending);
+
+    expect(DeferredAction::$ran)->toBe([
+        'construct',
+        'abc',
+        'def',
+        'ghi',
+    ]);
+
+    $action->run(story());
+
+    expect(DeferredAction::$ran)->toBe([
+        'construct',
+        'abc',
+        'def',
+        'ghi',
+        'invoke',
+    ]);
+
+});
