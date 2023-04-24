@@ -12,7 +12,7 @@ test('an action can be created and deferred execution', function () {
     Story::setInstance(story());
     DeferrableAction::$ran = [];
 
-    $action = DeferrableAction::defer()->abc()->def()->ghi();
+    $action = DeferrableAction::defer()->abc()->def()->ghi()->collection->push('foobar');
     expect(DeferrableAction::$ran)->toBe([]);
 
     $action = $action->resolvePendingAction();
@@ -30,6 +30,10 @@ test('an action can be created and deferred execution', function () {
         'def',
         'ghi',
         'invoke',
+    ]);
+
+    expect($action->collection->toArray())->toBe([
+        'foobar',
     ]);
 });
 

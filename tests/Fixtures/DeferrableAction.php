@@ -3,6 +3,7 @@
 namespace Tests\Fixtures;
 
 use BradieTilley\Stories\Action;
+use Illuminate\Support\Collection;
 
 class DeferrableAction extends Action
 {
@@ -10,8 +11,11 @@ class DeferrableAction extends Action
 
     public static array $ran = [];
 
+    public Collection $collection;
+
     public function __construct()
     {
+        $this->collection = Collection::make();
         static::$ran[] = 'construct';
 
         parent::__construct();
