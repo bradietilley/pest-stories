@@ -8,6 +8,7 @@ use BradieTilley\Stories\Concerns\Binds;
 use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
+use BradieTilley\Stories\Contracts\Deferred;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
 use BradieTilley\Stories\PendingCalls\PendingCall;
 use BradieTilley\Stories\Repositories\Actions;
@@ -86,18 +87,32 @@ class Action
     }
 
     /**
-     * Statically create this action
+     * Statically create this action.
+     * Note: If the action is a Deferred action (see interface) then
+     * the action returned is a pending call.
+     *
+     * @return PendingCall<static>|static
      */
-    public static function make(): static
+    public static function make(): PendingCall|static
     {
         /** @phpstan-ignore-next-line */
-        return new static(...func_get_args());
+        $action = new static(...func_get_args());
+
+        if ($action instanceof Deferred) {
+            /** @var PendingCall<static> $action */
+            $action = new PendingCall($action);
+        }
+
+        return $action;
     }
 
     /**
      * Statically create and defer the building of this action
+     * Note: Only a `PendingCall` instance is returned, never `static`. The `static` return typehint is added for IDEs that can't compute templates.
      *
-     * @return PendingCall<static>
+     * @phpstan-ignore-next-line
+     *
+     * @return PendingCall<static>|static
      */
     public static function defer(): PendingCall
     {

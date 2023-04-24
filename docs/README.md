@@ -13,6 +13,7 @@ Pest Stories can really boil down to a couple key areas:
   - [Variables](#variables)
   - [Dependency Injection](#dependency-injection)
   - [Nesting Actions](#nested-actions)
+  - [Deferring Actions](#deferring-actions)
 
 ## Stories
 
@@ -32,8 +33,6 @@ test('your test case name')
 test('you test case name 2')
     ->story()->...;
 ```
-
-<a id="docs-stories-data-repo"></a>
 
 ### Data Repository
 
@@ -365,7 +364,6 @@ As described in the [Stories > Data Repository](#stories-data-repo) section, dot
   - i.e. avoid spaces and special symbols.
   - Variable names with spaces or special symbols will be supported but will not support Dependency Injection (see "Action Callbacks" section below).
 
-<a id="docs-actions-di"></a>
 
 #### Dependency Injection
 
@@ -394,7 +392,6 @@ test('can do something')
     });
 ```
 
-<a id="docs-actions-nesting"></a>
 
 #### Nested Actions
 
@@ -436,3 +433,40 @@ test('do a lot of things')
  * all
  */
 ```
+
+#### Deferring Actions
+
+When you add an action by its name, the computation of the action is deferred by default as the entire `->action('do_something')` method call is deferred by Pest until the Test Case is invoked.
+
+The execution of any logic inside the argument list is run immediately however (basic PHP stuff). In the above example of `->action('do_something')`, the string literal of `'do_something'` is in fact immediately calculated, but for a plain string this is not really relevant, as no computing really occurs, but of course if this was a concentation of strings it'd be calculated immediately -- and this is where you may need to handle things differently.
+
+So it's worth nothing that when you add an action by instance (`->action(MyAction::make())`), the `::make()` method is immediately computed, meaning the `__construct` is immediately computed and any chained methods (e.g. `MyAction::make()->withSomething()`) are also immediately computed. If any logic in these methods rely on a booted Laravel application (i.e. they reference the API, DB, session, etc) then it will cause issues.
+
+In these cases, it's recommended to use the `::defer()` method instead of the `::make()` method, which will defer the entire construction and configuration (chained methods) of the action until the test case runs the action, allowing you to reference the application (API, database, sessions, etc) directly in these configuration (chained) methods.
+
+There's no real need to immediate invoke logic in these setup methods, except to reduce the code complexity as there'd be no storing of properties that requires you to later reference those properties in the `__invoke`  method and run everything in there. I'm not going to tell
+you how to code something, so if you need to achieve something like the example below, `::defer()` will help you. 
+
+```php
+class AsUser extends Action
+{
+    public function admin(): static
+    {
+        actingAs(User::factory()->create([
+            'is_admin' => true,
+        ]));
+
+        return $this;
+    }
+}
+
+test('can do something as an admin')
+    ->action(AsUser::make()->admin()); // application/DB not booted - error
+
+test('can do something as an admin')
+    ->action(AsUser::defer()->admin()); // works as you'd expect.
+```
+
+Deferring is not the default behaviour as you can defer logic when it's immediately run, but you cannot immediately run code when the entire chain is deferred.
+
+Should you not want to continually remember which action classes require immediate computation vs those that require deferred computation, you can add the `BradieTilley\Stories\Contracts\Deferred` interface to any action that must be deferred. This will replace the result from the `::make()` method (normally instance of `Action`) with a `PendingCall<Action>` instance, simulating the exact behaviour of `::defer()`. This then allows you to use `::make()` on *all* actions without having to remember these finicky differences.

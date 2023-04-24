@@ -10,6 +10,13 @@ class DeferrableAction extends Action
 
     public static array $ran = [];
 
+    public function __construct()
+    {
+        static::$ran[] = 'construct';
+
+        parent::__construct();
+    }
+
     public function __invoke(): int
     {
         static::$ran[] = 'invoke';
