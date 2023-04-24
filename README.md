@@ -5,17 +5,28 @@ A clean approach for writing large test suites.
 ![Static Analysis](https://github.com/bradietilley/pest-stories/actions/workflows/static.yml/badge.svg)
 ![Tests](https://github.com/bradietilley/pest-stories/actions/workflows/tests.yml/badge.svg)
 
-## Installation
-
-```
-composer require bradietilley/pest-stories --dev
-```
 
 ## Introduction
 
 User stories are short, simple descriptions of a feature or functionality of a software application, typically written from the perspective of an end user.
 
 Pest Stories is a PHP package that extends the PestPHP testing framework, allowing developers to write user stories in a clear and reusable way, making it easier to maintain and test their software applications.
+
+
+## Installation
+
+```
+composer require bradietilley/pest-stories --dev
+```
+
+To add Stories to your test suites, add the following trait via Pest's `uses()` helper:
+
+```php
+uses(BradieTilley\Stories\Concerns\Stories::class);
+```
+
+*Refer to Pest's documentation on how to use the `uses()` helper.*
+
 
 ## Documentation
 
@@ -75,35 +86,61 @@ In this example below we'll test a few areas of a card game that's built in Lara
 
 ```php
 /**
- * Defining actions
+ * Defining actions - this could be done in tests/Pest.php or another test/Actions.php 
+ */
+
+/**
+ * In this action we'll create a Game model and store is locally as 'game'
  */
 action('create_game', function () {
     $game = Game::factory()->create();
 }, 'game');
 
+/**
+ * Create a new user and player with the given username, then join the Game that is
+ * stored in the local 'game' variable
+ */
 action('join_game', function (Game $game, string $username) {
     $game->players()->save(
-        new Player([
+        Player::factory()->create([
             'username' => $username,
         ]),
     );
 });
 
+/**
+ * Simulate the Game (local 'game' variable) being dealt
+ */
 action('deal_game', function (Game $game) {
     $game->start()->deal();
 });
 
+/**
+ * Create a game, join 3 players, then deal it.
+ * 
+ * This will serve as a starting point for many tests and all we have
+ * to call is `->action('base_game')` 
+ */
 action('base_game')
     ->action('create_game')
     ->action('join_game', [ 'username' => 'Jason Statham' ])
     ->action('join_game', [ 'username' => 'Dwayne Johnson' ])
     ->action('join_game', [ 'username' => 'Vin Diesel' ])
-    ->action('create_game');
+    ->action('deal_game');
 
+/**
+ * Set the local test variable 'turn' to be the current turn determined by
+ * the 'turn' relation on the Game.
+ */
 action('get_turn', function (Game $game) {
     return $game->refresh()->turn;
 }, 'turn');
 
+/**
+ * Using the turn variable, act as the player and play either a random card
+ * or a specific card in their hand. Store the API response as the 'response'
+ * variable against the story
+ */
 action('play_turn', function (Turn $turn, TestCase $test, ?string $cardToPlay = null) {
     actingAs($turn->player->user);
 
@@ -116,10 +153,16 @@ action('play_turn', function (Turn $turn, TestCase $test, ?string $cardToPlay = 
     ]);
 }, 'response');
 
+/**
+ * Assert the previous TestResponse 'response' variable was ok.
+ */
 action('assert:ok', function (TestResponse $response) {
     $response->assertOk();
 });
 
+/**
+ * Assert that it is the given player's turn
+ */
 action('is_turn', function (Game $game, string $player) {
     $actual = $game->refresh()->turn->player->username;
 
@@ -127,52 +170,89 @@ action('is_turn', function (Game $game, string $player) {
 });
 
 /**
- * Adding actions to tests
+ * Adding actions to tests. These may be in Feature or wherever else you wish. Just be sure to have added the Stories trait via uses()
+ */
+
+/**
+ * 1 - base_game: create game, join 3 players, deal
+ * 2 - is_turn: Assert it's Jason Statham's turn (he was first to join)
  */
 test('when a game is dealt, one player is given a turn')
     ->action('base_game')
-    ->action('get_turn')
     ->action('is_turn', 'Jason Statham');
 
+/**
+ * 1 - base_game: create game, join 3 players, deal
+ * 2 - is_turn: Assert it's Jason Statham's turn (he was first to join)
+ * 3 - play_turn: act as turn player (Jason Statham), pick a random card and play it
+ * 4 - is_turn: Assert it's Dwayne Johnson's turn (he was second to join)
+ * 5 - play_turn: act as turn player (Dwayne Johsnon), pick a random card and play it
+ * 6 - is_turn: Assert it's Vin Diesel's turn (he was third to join)
+ * 7 - play_turn: act as turn player (Vin Diesel), pick a random card and play it
+ * 8 - is_turn: Assert it's Jason Statham's turn again (come full circle)
+ */
 test('when a game is dealt and the player plays their turn, the next person is given a turn')
     ->action('base_game')
+
     ->action('is_turn', 'Jason Statham')
-
     ->action('play_turn')
+
     ->action('is_turn', 'Dwayne Johnson')
-
     ->action('play_turn')
+
     ->action('is_turn', 'Vin Diesel')
-
     ->action('play_turn')
+
     ->action('is_turn', 'Jason Statham');
 ```
 
-As the above demonstrates, you can reference the actions you want to run by their `name`. 
+As the above demonstrates, you can create actions in a similar way to how you'd normally create a pest `test` using the `test($name, $callback)` syntax, then, you can add these actions to a test by referencing the name given to each action.
 
 #### Different ways to add actions
 
 **Using name identifiers:**
 
+As above, a basic way to creating resuable actions using the `BradieTilley\Stories\Helpers\action` function.
+
 ```php
+use BradieTilley\Stories\Helpers\action;
+
 action('do_something', function () {
     dump('do something here');
 })
 
 test('can do something')
     ->action('do_something');
+
+/**
+ * Dumps "do something here" when the "can do something" test is run
+ */
 ```
 
 **Using inline closures:**
+
+Sometimes your action may be so unique that it may not be worth creating a reusable action, so in these
+cases you can instead define them as inline closures. 
 
 ```php
 test('can do something')
     ->action(function () {
         dump('do something here');
     });
+
+/**
+ * Dumps "do something here" when the "can do something" test is run
+ */
 ```
 
 **Using Action class names:**
+
+While the aforementioned approaches support a lot of scenarios, there may be scenarios where you need your action to store internal properties or run
+a number of methods, or you may wish to add traits to your action classes to support reusable code through actions. This can be achieved by creating
+an Action class that extends `BradieTilley\Stories\Action`.
+
+Once created, you can add the action to a story/test by passing in the underlying `$name` property, or by passing in the namespace of the Action. See
+below and the "Using instantiated action classes" section below as a couple examples:
 
 ```php
 use BradieTilley\Stories\Action;
@@ -187,9 +267,18 @@ class MyAction extends Action
 
 test('can do something')
     ->action(MyAction::class);
+    
+/**
+ * Dumps "do something here" when the "can do something" test is run
+ */
 ```
 
 **Using instantiated action classes:**
+
+Carrying on from the above, you may wish to instantiate the `Action` class so that you can give the action some context or to control aspects of the action.
+
+The `::make()` method accepts any number of arguments that are passed directly to the `__construct`, which you may override if need be. For custom action classes
+you do not need to call `parent::__construct()` from your construct.
 
 ```php
 use BradieTilley\Stories\Action;
@@ -203,7 +292,7 @@ class MyAction extends Action
 
     public function withSomething(): self
     {
-        //
+        // add something here
 
         return $this;
     }
@@ -211,20 +300,84 @@ class MyAction extends Action
 
 test('can do something')
     ->action(MyAction::make()->withSomething());
+    
+/**
+ * Dumps "do something here" when the "can do something" test is run
+ */
 ```
+
+
+#### Action names
+
+It's recommended to name each action in either camel or snake case for variable purposes (see "Action Callbacks" sections below for more info).
+
+An action created using the `action` helper function will accept a name as the first parameter. This allows the action to be added to stories/tests using the
+same name, as described in the various examples above.
+
+**Default names**
+
+By default if you provide no name a random name will be given, meaning you'll be unable to reference it by name (unless you inspect the Actions repository).
+
+Any class-based Action that does not have an explicit `$name` property specified will be given a random name that's prefixed with the namespace of the class, for example `Tests\Actions\CanViewModel@1n4rf90d`
+
+**Overriding names**
+
+The name can be overridden after-the-fact using the `->name($name)` method. Note: The `Actions` repository will have already recorded it under its original name
+so if you intend to reference this action by its name you'll need to run `->remember()` to store it under the new name.
+
 
 #### Action variables
 
-Actions may return a variable after being invoked. This value is shared back to the parent story's variable repository (see above for more information)  
+Actions may return a variable after being invoked. This value is shared back to the parent story's variable repository, using the action's variable name as the identifier for the variable.
+
+By default, the variable name is the same as the action name, for example `action('do_something', fn () => 123)` will set the `do_something` variable to `123` once invoked against a story.
+
+**Getting the variable name**
+
+You can retrieve the current variable name by using the `->getVariable()` method:
+
+```php
+dump(
+    action('do_something', fn () => 123)->getVariable()
+);
+// Dumps "do_something"
+```
+
+**Setting the variable name**
+
+You may override the variable name using the `->variable()` method or the `variable` argument (in the constructor or `::make()` method), or by replacing the `variable` property in an Action class.
+
+```php
+$action = action('do_something', fn () => 123, variable: 'something');
+dump($action->getVariable()); // Dumps "something"
+
+$action = action('do_something', fn () => 123)->variable('something_else');
+dump($action->getVariable()); // Dumps "something_else"
+
+class MyAction extends Action
+{
+    protected string $variable = 'something_great';
+}
+dump(MyAction::make()->getVariable()); // Dumps "something_great"
+```
+
+**Recommendations and limitations**
+
+- Avoid dots (`.`) in names.
+  - Variable names with dots will be supported but will not support Dependency Injection (see "Action Callbacks" section below).
+  - Variable names with dots will translate to nested variables using dot-notation, so `foo.bar` will be stored under `foo => [ bar => 'here' ]`.
+- Use `camelCase` (or `snake_case`) names.
+  - i.e. avoid spaces and special symbols.
+  - Variable names with spaces or special symbols will be supported but will not support Dependency Injection (see "Action Callbacks" section below).
 
 #### Action Callbacks
 
 When ran, action callbacks are invoked with Laravel's container dependency injection - so you can retrieve any singleton or bound interface class you wish by utilising typed arguments.
 
-In Pest Stories, the dependency injection is given a few extra helpful differences:
+Further to this, Pest Stories supports dependency injection with a few specific differences:
 
 - `\BradieTilley\Stories\Story $story` yields the current story.
-- `\PHPUnit\Framework\TestCase $test` yields the current test case (which may be your `Tests\TestCase`).
+- `\PHPUnit\Framework\TestCase $test` yields the current test case (which you can typehint to your `Tests\TestCase` file if you're using an extended TestCase like in Laravel).
 - any variable stored in the data repository will yield its value.
 
 For example:
@@ -270,6 +423,8 @@ test('do a lot of things')
     ->action('all');
 
 /**
+ * Dumps:
+ * 
  * a1
  * a2
  * a
