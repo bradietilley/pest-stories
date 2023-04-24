@@ -9,7 +9,7 @@ use BradieTilley\Stories\Story;
 use Closure;
 
 /**
- * Create an anonymous story
+ * Fetch the current story instance or create an anonymous story
  */
 function story(): Story
 {
@@ -21,5 +21,5 @@ function story(): Story
  */
 function action(string $name = null, Closure $callback = null, string $variable = null): Action
 {
-    return new Action($name, $callback, $variable);
+    return Action::make($name, $callback, $variable);
 }

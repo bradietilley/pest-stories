@@ -10,12 +10,12 @@ use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
-use BradieTilley\Stories\PendingCalls\PendingCall;
+use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
 use Closure;
-use Illuminate\Container\Container;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use ReflectionProperty;
 
 /**
@@ -44,7 +44,7 @@ class Action
     protected ?Closure $callback = null;
 
     /**
-     * @var Collection<int, Action>
+     * @var Collection<int, Action|PendingActionCall>
      */
     protected Collection $actions;
 
@@ -90,37 +90,29 @@ class Action
      * Statically create this action.
      * Note: If the action is a Deferred action (see interface) then
      * the action returned is a pending call.
-     *
-     * @return PendingCall<static>|static
      */
-    public static function make(): PendingCall|static
+    public static function make(): PendingActionCall|static
     {
-        /** @phpstan-ignore-next-line */
-        $action = new static(...func_get_args());
-
-        if ($action instanceof Deferred) {
-            /** @var PendingCall<static> $action */
-            $action = new PendingCall($action);
+        // If deferred by default, we must return a PendingActionCall instead (defer construction and calculation of the object)
+        if (self::isDeferredAction(static::class)) {
+            return static::defer(...func_get_args());
         }
 
-        return $action;
+        /** @phpstan-ignore-next-line */
+        return new static(...func_get_args());
     }
 
     /**
      * Statically create and defer the building of this action
-     * Note: Only a `PendingCall` instance is returned, never `static`. The `static` return typehint is added for IDEs that can't compute templates.
+     * Note: Only a `PendingCall` instance is returned, never `static`. `static` is only provided to assist IDEs.
      *
      * @phpstan-ignore-next-line
      *
-     * @return PendingCall<static>|static
+     * @return PendingActionCall|static
      */
-    public static function defer(): PendingCall
+    public static function defer(): PendingActionCall
     {
-        /** @phpstan-ignore-next-line */
-        $action = static::make(...func_get_args());
-        /** @var static $action */
-
-        return new PendingCall($action);
+        return new PendingActionCall(static::class, func_get_args());
     }
 
     /**
@@ -173,9 +165,10 @@ class Action
     /**
      * Require this action to be run as part of this action.
      */
-    public function action(string|Closure|Action $action): static
+    public function action(string|Closure|Action $action): static|PendingActionCall
     {
         $action = Action::parse($action);
+
         $this->actions->push($action);
 
         return $this;
@@ -202,7 +195,9 @@ class Action
          * If this action calls for other actions to be run, then run those
          * other actions first.
          */
-        $this->actions->each(fn (Action $action) => $action->fresh($story)->run($story));
+        $this->actions
+            ->map(fn (Action|PendingActionCall $action) => self::resolve($action))
+            ->each(fn (Action $action) => $action->fresh($story)->run($story));
 
         /**
          * Default to use the __invoke method as the callback
@@ -262,28 +257,49 @@ class Action
     }
 
     /**
+     * Determine if the given class A) exists and B) is either the base
+     * Action class or a subclass of the Action class
+     */
+    public static function isAction(string $class): bool
+    {
+        if ($class === Action::class) {
+            return true;
+        }
+
+        if (! class_exists($class)) {
+            return false;
+        }
+
+        return (new ReflectionClass($class))->isSubclassOf(Action::class);
+    }
+
+    /**
+     * Determine if the given class A) is an action class and B) is a Deferred action.
+     *
+     * @param  class-string  $class
+     */
+    public static function isDeferredAction(string $class): bool
+    {
+        return self::isAction($class)
+            && (new ReflectionClass($class))->implementsInterface(Deferred::class);
+    }
+
+    /**
      * Convert the given action into an ActionCall.
      *
      * string - lookup Action of the same name
      * Closure - create Action for this closure
      * ActionCall - returns itself
      */
-    public static function parse(string|Closure|Action|PendingCall $action): Action
+    public static function parse(string|Closure|Action|PendingActionCall $action): Action|PendingActionCall
     {
-        if ($action instanceof PendingCall) {
-            $action = $action->invokePendingCall();
-
-            if (! $action instanceof Action) {
-                throw StoryActionInvalidException::make(get_class($action));
-            }
-        }
-
         if (is_string($action) && class_exists($action)) {
-            $action = Container::getInstance()->make($original = $action);
-
-            if (! $action instanceof Action) {
-                throw StoryActionInvalidException::make($original);
+            if (! self::isAction($action)) {
+                throw StoryActionInvalidException::make($action);
             }
+
+            $action = $action::make();
+            /** @var Action|PendingActionCall $action */
         }
 
         if (is_string($action)) {
@@ -295,6 +311,14 @@ class Action
         }
 
         return $action;
+    }
+
+    /**
+     * Resolve the pending action call or return the Action
+     */
+    public static function resolve(Action|PendingActionCall $action): Action
+    {
+        return ($action instanceof PendingActionCall) ? $action->resolvePendingAction() : $action;
     }
 
     /**

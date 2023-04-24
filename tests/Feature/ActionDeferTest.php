@@ -13,11 +13,9 @@ test('an action can be created and deferred execution', function () {
     DeferrableAction::$ran = [];
 
     $action = DeferrableAction::defer()->abc()->def()->ghi();
-    expect(DeferrableAction::$ran)->toBe([
-        'construct',
-    ]);
+    expect(DeferrableAction::$ran)->toBe([]);
 
-    $action = $action->invokePendingCall();
+    $action = $action->resolvePendingAction();
     expect(DeferrableAction::$ran)->toBe([
         'construct',
         'abc',
@@ -54,8 +52,8 @@ test('an action is deferred invocation when created via defer method - in a test
     ->action(DeferrableAction::defer()->abc()->def()->ghi())
     ->action(function () {
         expect(DeferrableAction::$ran)->toBe([
-            // 'construct', // no construct as it is constructed before `$ran = []` is run
             'other actions',
+            'construct', // construct is deferred
             'abc',
             'def',
             'ghi',
@@ -69,8 +67,8 @@ test('a Deferred action is deferred invocation when created via make method - in
     ->action(DeferredAction::make()->abc()->def()->ghi())
     ->action(function () {
         expect(DeferredAction::$ran)->toBe([
-            // 'construct', // no construct as it is constructed before `$ran = []` is run
             'other actions',
+            'construct', // construct is deferred
             'abc',
             'def',
             'ghi',

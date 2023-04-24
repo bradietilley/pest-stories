@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
-use BradieTilley\Stories\PendingCalls\PendingCall;
+use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
@@ -47,9 +47,11 @@ class Story
      *
      * @param  array<string, mixed>  $arguments
      */
-    public function action(string|Closure|Action|PendingCall $action, array $arguments = [], string $variable = null): static
+    public function action(string|Closure|Action|PendingActionCall $action, array $arguments = [], string $variable = null): static
     {
         $action = Action::parse($action);
+        $action = Action::resolve($action);
+
         $action->fresh($this)->run($this, arguments: $arguments, variable: $variable);
 
         return $this;
