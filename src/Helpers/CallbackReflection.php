@@ -2,11 +2,14 @@
 
 namespace BradieTilley\Stories\Helpers;
 
+use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use Closure;
 use Illuminate\Support\Collection;
+use Pest\Exceptions\ShouldNotHappen;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionParameter;
+use Throwable;
 
 class CallbackReflection
 {
@@ -43,24 +46,38 @@ class CallbackReflection
             // @codeCoverageIgnoreEnd
         }
 
-        $reflection = null;
-        $callback = $this->callback;
+        try {
+            $reflection = null;
+            $callback = $this->callback;
 
-        if ($callback instanceof Closure || is_string($callback)) {
-            $reflection = new ReflectionFunction($callback);
-        } else {
-            $class = $callback[0] ?? '';
-            $method = $callback[1] ?? '';
+            if ($callback instanceof Closure || is_string($callback)) {
+                $reflection = new ReflectionFunction($callback);
+            }
 
-            $reflection = new ReflectionMethod($class, $method);
+            if (is_array($callback) && isset($callback[0]) && isset($callback[1])) {
+                $class = $callback[0];
+                $method = $callback[1];
+
+                $reflection = new ReflectionMethod($class, $method);
+            }
+
+            if ($reflection === null) {
+                // @codeCoverageIgnoreStart
+                throw ShouldNotHappen::fromMessage('Callback reflection format not supported');
+                // @codeCoverageIgnoreEnd
+            }
+
+            /** @var array<string> $arguments */
+            $arguments = Collection::make($reflection->getParameters())
+                ->map(function (ReflectionParameter $parameter) {
+                    return $parameter->getName();
+                })
+                ->toArray();
+        } catch (Throwable $exception) {
+            // @codeCoverageIgnoreStart
+            throw FailedToIdentifyCallbackArgumentsException::make($exception);
+            // @codeCoverageIgnoreEnd
         }
-
-        /** @var array<string> $arguments */
-        $arguments = Collection::make($reflection->getParameters())
-            ->map(function (ReflectionParameter $parameter) {
-                return $parameter->getName();
-            })
-            ->toArray();
 
         return $this->arguments = $arguments;
     }
