@@ -49,9 +49,14 @@ trait Stories
     /**
      * Add an action to this story / test case
      */
-    public function action(string|Closure|Action|PendingActionCall $action, array $arguments = [], string $variable = null): static
+    public function action(string|Closure|Action|PendingActionCall $action, array $arguments = [], string $variable = null, bool $dataset = false): static
     {
-        $this->story()->action($action, arguments: $arguments, variable: $variable);
+        $this->story()->action(
+            action: $action,
+            arguments: $arguments,
+            variable: $variable,
+            dataset: $dataset,
+        );
 
         return $this;
     }

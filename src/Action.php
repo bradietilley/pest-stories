@@ -11,6 +11,7 @@ use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
 use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
+use BradieTilley\Stories\Exceptions\StoryActionNotFoundException;
 use BradieTilley\Stories\Helpers\CallbackReflection;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
@@ -328,6 +329,16 @@ class Action
     }
 
     /**
+     * Fetch the given action (disregard the current action object)
+     *
+     * @throws StoryActionNotFoundException
+     */
+    public function fetch(string $name): Action
+    {
+        return Actions::fetch($name);
+    }
+
+    /**
      * Convert the given action into an ActionCall.
      *
      * string - lookup Action of the same name
@@ -395,5 +406,13 @@ class Action
         $this->requiresDataset = true;
 
         return $this;
+    }
+
+    /**
+     * Does this action require the dataset
+     */
+    public function requiresDataset(): bool
+    {
+        return $this->requiresDataset;
     }
 }

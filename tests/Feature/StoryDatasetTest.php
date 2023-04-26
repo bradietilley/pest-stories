@@ -13,6 +13,8 @@ class AnonymousDatasetTester
     public static array $ran2 = [];
 
     public static array $ran3 = [];
+
+    public static array $ran4 = [];
 }
 
 action('do_something_with_datasets')->as(function (string $word, Story $story) {
@@ -24,6 +26,16 @@ action('do_something_with_datasets')->as(function (string $word, Story $story) {
         'bar',
     ]);
 })->dataset();
+
+action('do_something_in_general')->as(function (string $word, Story $story) {
+    AnonymousDatasetTester::$ran4[] = $word;
+
+    expect($word)->toBeIn([
+        '111',
+        '222',
+        '333',
+    ]);
+});
 
 test('a test can continue to use datasets like in normal pest')
     ->action('do_something_with_datasets')
@@ -92,3 +104,28 @@ test('an action that expects dataset arguments but is missing a dataset paramete
         'example 1' => ['abc', 123],
     ])
     ->throws('The `an_action_missing_dataset_parameters` action is missing dataset argument #2');
+
+action('an_action_missing_dataset_parameters', function (string $word) {
+    // won't run
+    AnonymousDatasetTester::$ran3[] = 'it actually ran';
+})->dataset();
+
+test('a normal action can be temporarily assigned the dataset using action with the dataset flag')
+    ->action('do_something_in_general', dataset: true)
+    ->with([
+        '111',
+        '222',
+        '333',
+    ]);
+
+test('after a normal action is temporarily assigned the dataaset')
+    ->action(function () {
+        expect(AnonymousDatasetTester::$ran4)->toBe([
+            '111',
+            '222',
+            '333',
+        ]);
+
+        $requiresDataset = action()->fetch('do_something_in_general')->requiresDataset();
+        expect($requiresDataset)->toBeFalse();
+    });
