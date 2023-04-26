@@ -200,7 +200,7 @@ class Action
             $argumentNames = CallbackReflection::make($callback)->arguments();
             $newArguments = [];
 
-            foreach ($story->getDataset() as $index => $argument) {
+            foreach ($story->dataset()->all() as $index => $argument) {
                 $argumentName = array_shift($argumentNames);
 
                 // Shouldn't be asking for the dataset if you're not going to utilise the dataset

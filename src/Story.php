@@ -26,6 +26,8 @@ class Story
 
     protected static ?Story $instance = null;
 
+    protected ?Dataset $dataset = null;
+
     /**
      * (Internal function) Set the current story that is being invoked
      */
@@ -114,16 +116,18 @@ class Story
     }
 
     /**
-     * Get the dataset that was provided, if any.
-     *
-     * @return array<int, mixed>
+     * Get the dataset variables for this story
      */
-    public function getDataset(): array
+    public function dataset(): Dataset
     {
-        /** @var array<int, mixed> $dataset */
-        $dataset = $this->getTest()->providedData();
+        if ($this->dataset === null) {
+            /** @var array<int, mixed> $dataset */
+            $dataset = $this->getTest()->providedData();
 
-        return $dataset;
+            $this->dataset ??= new Dataset($dataset);
+        }
+
+        return $this->dataset;
     }
 
     /**

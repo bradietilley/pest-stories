@@ -498,7 +498,7 @@ test('a plain pest test', function (string $word, int $number) {
 
 In Pest actions, because Dependency injection allows for the injection of various other variables including the Story or TestCase ([read more](#dependency-injection)), we have to meet in the middle and agree that when we want a dataset to be provided to a specific action, the first *n* arguments represent the *n* dataset arguments.
 
-Not all actions have to support the dataset, it can just be one - or none. You can also retrieve the dataset verbatim using the `story()->getDataset()` method.
+Not all actions have to support the dataset, it can just be one - or none. You can also retrieve the dataset verbatim using the `story()->dataset()` method.
 
 To enable automatic injection of all dataset arguments into a single action, you must run the `->dataset()` method on the action. For example:
 
