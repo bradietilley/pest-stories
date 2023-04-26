@@ -1,6 +1,7 @@
 <?php
 
 use BradieTilley\Stories\Concerns\Stories;
+use BradieTilley\Stories\Exceptions\DatasetVariableUnavailableException;
 use function BradieTilley\Stories\Helpers\dataset;
 
 uses(Stories::class);
@@ -36,7 +37,7 @@ test('a dataset value can be fetched')
 
 test('a dataset value can be overwritten on the fly')
     ->action(function () {
-        expect(dataset()->all())->toBe([
+        expect(dataset()->toArray())->toBe([
             'a',
             'b',
             'c',
@@ -54,11 +55,49 @@ test('a dataset value can be overwritten on the fly')
         dataset(2, '3');
         expect(dataset(2))->toBe('3');
 
-        expect(dataset()->all())->toBe([
+        expect(dataset()->toArray())->toBe([
             '1',
             '2',
             '3',
         ]);
+    })
+    ->with([
+        'values' => ['a', 'b', 'c'],
+    ]);
+
+test('an exception is thrown when fetching a dataset index that does not exist')
+    ->action(fn () => dataset()->get(0))
+    ->throws(DatasetVariableUnavailableException::class, 'The dataset (variable #0) is unavailable');
+
+test('the dataset can be interacted with as an array')
+    ->action(function () {
+        $dataset = dataset();
+
+        expect(isset($dataset[0]))->toBeTrue();
+        expect(isset($dataset[1]))->toBeTrue();
+        expect(isset($dataset[2]))->toBeTrue();
+        expect(isset($dataset[3]))->toBeFalse();
+        expect(isset($dataset['a']))->toBeFalse();
+
+        expect($dataset[0])->toBe('a');
+        expect($dataset[1])->toBe('b');
+        expect($dataset[2])->toBe('c');
+
+        $dataset[0] = '1';
+        $dataset[1] = '2';
+        $dataset[2] = '3';
+        $dataset['a'] = '4';
+
+        expect($dataset[0])->toBe('1');
+        expect($dataset[1])->toBe('2');
+        expect($dataset[2])->toBe('3');
+
+        expect(isset($dataset['a']))->toBeFalse();
+        expect($dataset['a'])->toBeNull();
+        unset($dataset['a']);
+
+        unset($dataset[2]);
+        expect($dataset[2])->toBeNull();
     })
     ->with([
         'values' => ['a', 'b', 'c'],
