@@ -358,7 +358,7 @@ dump(MyAction::make()->getVariable()); // Dumps "something_great"
 As described in the [Stories > Data Repository](#stories-data-repo) section, dot notation is supported. Because of this, there's a few naming conventions you should aim for and/or avoid.
 
 - Avoid dots (`.`) in names unless you wish for something to be nested.
-  - Variable names with dots will be supported but will not support Dependency Injection (see [Dependenct Injection](#actions-di) section below).
+  - Variable names with dots will be supported but will not support Dependency Injection (see [Dependency Injection](#dependency-injection) section below).
   - Variable names with dots will translate to nested variables using dot-notation, so `foo.bar` will be stored under `foo => [ bar => 'here' ]`.
 - Use `camelCase` (or `snake_case`) names.
   - i.e. avoid spaces and special symbols.

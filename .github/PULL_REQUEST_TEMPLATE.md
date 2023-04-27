@@ -1,5 +1,19 @@
-<!--- Provide a general summary of your changes in the Title above -->
+## Type
 
-...
+- [ ] Feature
+- [ ] Bug Fix
+- [ ] Maintenance
 
-- [ ] I have read the **[CONTRIBUTING](https://github.com/bradietilley/pest-stories/blob/main/.github/CONTRIBUTING.md)** document.
+## Breaking change?
+
+- [ ] Yes
+- [ ] No
+- [ ] Unsure
+
+## Details
+
+_Explain the changes you've made_
+
+## Contributing Guideline
+
+Please read the [Contributing](https://github.com/bradietilley/pest-stories/blob/master/.github/CONTRIBUTING.md) Guideline doc.
