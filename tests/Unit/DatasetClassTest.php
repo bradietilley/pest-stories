@@ -102,3 +102,23 @@ test('the dataset can be interacted with as an array')
     ->with([
         'values' => ['a', 'b', 'c'],
     ]);
+
+test('the dataset can be iterated')
+    ->action(function () {
+        $expectKeys = [0, 1, 2, 3, 4];
+        $expectValues = ['a', 'b', 'c', 'd', 'e'];
+
+        $actualKeys = [];
+        $actualValues = [];
+
+        foreach (dataset() as $key => $value) {
+            $actualKeys[] = $key;
+            $actualValues[] = $value;
+        }
+
+        expect($actualKeys)->toBe($expectKeys);
+        expect($actualValues)->toBe($expectValues);
+    })
+    ->with([
+        'values' => ['a', 'b', 'c', 'd', 'e'],
+    ]);
