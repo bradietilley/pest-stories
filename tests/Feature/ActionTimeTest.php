@@ -27,8 +27,7 @@ test('an action will not fail by default', function () {
 
 test('an action will pass if it does not exceed the specified time limit', function () {
     $action = action('do_something', function () {
-        // Sleep for 0.1 seconds
-        usleep(100000);
+        // runtime < 0.5 seconds
     })->timeout(0.5);
 
     $action->run(story());
