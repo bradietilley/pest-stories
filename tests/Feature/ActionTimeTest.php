@@ -9,7 +9,7 @@ test('an action will fail if it exceeds the specified time limit', function () {
     $action = action('do_something', function () {
         // Sleep for 0.11 seconds
         usleep(110000);
-    })->timeout(0.1);
+    })->timeout(0.05);
 
     $action->run(story());
     expect(false)->toBeTrue();
