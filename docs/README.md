@@ -473,7 +473,7 @@ Should you not want to continually remember which action classes require immedia
 
 #### Datasets in Actions
 
-Datasets behave slightly differently in Stories or, specifically, Actions. From the outset, the syntax is no different, but how your arguments are provided to you differs.
+Datasets behave slightly differently in Stories or, specifically, Actions. From the outset, the syntax is no different, but how you interact with the arguments may differ.
 
 In standard Pest or PHPUnit the dataset arguments are simply passed in from left-to-right.
 
@@ -496,11 +496,11 @@ test('a plain pest test', function (string $word, int $number) {
  */
 ```
 
-In Pest actions, because Dependency injection allows for the injection of various other variables including the Story or TestCase ([read more](#dependency-injection)), we have to meet in the middle and agree that when we want a dataset to be provided to a specific action, the first *n* arguments represent the *n* dataset arguments.
+In Pest actions, it's the same, but the way the arguments are passed in must continue to work with the action's [Dependency Injection](#dependency-injection).
 
-Not all actions have to support the dataset, it can just be one - or none. You can also retrieve the dataset verbatim using the `story()->getDataset()` method.
+By default any action will allow any arguments, including story variables and a few keywords - `$test`, `$story` and `$action`. If you want an action to take the story's dataset arguments just like in normal Pest and PHPUnit, you can tag an action as requiring a dataset.
 
-To enable automatic injection of all dataset arguments into a single action, you must run the `->dataset()` method on the action. For example:
+**Marking as action as supporting/requiring a dataset**
 
 ```php
 action('do_something', function (string $word, int $number) {
@@ -525,4 +525,118 @@ test('a story pest test')
  */
 ```
 
-In the above example, you can still utilise the [dependency injection](#dependency-injection) within the action arguments however they must occur **after** the dataset arguments. So for example if you wanted an existing variable from another action as well as dataset arguments, you'd need to go: `function ($datasetOne, $datasetTwo, $existingVariable1, $existingVariable2) { ... }`
+**Adding an action and temporarily require datasets**
+
+In this scenario, an action may take some arguments but not be specifically requiring the dataset provided from each story the action is added to, but you may wish to inject the dataset into this action on a case-by-case basis. An example of this could be an `as_role` action that accepts a `$role` argument -- most occurrence of this action may not interact with the dataset, but, you may wish to utilise a story's dataset on the action just for the given story.
+
+To achieve this:
+
+
+```php
+action('as_role', function (string $role) {
+    dump($role);
+})->dataset();
+
+test('can do something')
+    ->action('do_something', dataset: true)
+    ->with([
+        'as a super admin' => [ 'super_admin' ],
+        'as an admin' => [ 'admin' ],
+        'as a customer' => [ 'customer' ],
+    ]);
+
+/**
+ * >> can do something with dataset "as a super admin"
+ * dumps: super_admin
+ * 
+ * >> can do something with dataset "as an admin"
+ * dumps: admin
+ * 
+ * >> can do something with dataset "as a customer"
+ * dumps: customer
+ */
+```
+
+**Retrieving the dataset arguments anywhere**
+
+The above two automated solutions may not cater for all scenarios. You could instead retrieve the dataset arguments using the `story()->dataset()` method or `dataset()` function.
+
+This resolves an instance of `BradieTilley\Stories\Dataset` which stores each argument provided in the current dataset.
+
+```php
+->action(function () {
+    $dataset = story()->dataset();
+
+    // interact with $dataset
+})
+->with([
+    'something abc' => [
+        'abc',
+        123,
+    ],
+    'something def' => [
+        'def',
+        456,
+    ],
+    'something ghi' => [
+        'ghi',
+        789,
+    ],
+]);
+```
+
+**Getting a dataset argument**
+
+```php
+dataset(0);
+
+dataset()[0];
+
+dataset()->get(0);
+
+story()->dataset()->get(0);
+```
+
+**Setting/overwriting a dataset argument**
+
+```php
+dataset(0, 'Replace with this value')
+
+dataset()[0] = 'Replace with this value';
+
+dataset()->set(0, 'Replace with this value');
+
+story()->dataset()->set(0, 'Replace with this value');
+```
+
+**Checking a dataset argument**
+
+```php
+dataset()->has(0);
+
+isset(dataset()[0]);
+
+story()->dataset()->has(0);
+```
+
+**Unsetting a dataset argument**
+
+```php
+dataset()->unset(0);
+
+unset(dataset()[0]);
+
+story()->dataset()->unset(0);
+```
+
+**Iterating the dataset arguments**
+
+```php
+foreach (dataset() as $index => $value) {
+    
+}
+
+foreach (story()->dataset() as $index => $value) {
+    
+}
+```
