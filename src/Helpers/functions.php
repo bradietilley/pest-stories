@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Action;
-use BradieTilley\Stories\Dataset;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
+use BradieTilley\Stories\Repositories\Dataset;
 use BradieTilley\Stories\Story;
 use Closure;
 
