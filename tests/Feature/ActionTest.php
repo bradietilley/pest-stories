@@ -29,7 +29,7 @@ test('a class-based action with an invoke method can be referenced by name, name
     $action = AnExampleAction::make();
 
     story()
-        ->action(fn (Story $story) => $story->setData('abc', 8))
+        ->action(fn (Story $story) => $story->set('abc', 8))
         ->action(AnExampleAction::class)
         ->action('an_example_action')
         ->action($action);
@@ -84,7 +84,7 @@ test('an action can be passed required arguments', function () {
         'baz' => 4.5,
         'qux' => [6, 7, 8, 9, 0],
     ]);
-    $result = $story->getData('result');
+    $result = $story->get('result');
 
     expect($result)->toBe([
         'string' => 'Working',

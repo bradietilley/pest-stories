@@ -7,6 +7,7 @@ namespace BradieTilley\Stories;
 use BradieTilley\Stories\Concerns\Binds;
 use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
+use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
 use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException;
@@ -30,6 +31,7 @@ class Action
     use Times;
     use Events;
     use Binds;
+    use Reposes;
 
     /**
      * The name of the action
@@ -200,14 +202,16 @@ class Action
             $argumentNames = CallbackReflection::make($callback)->arguments();
             $newArguments = [];
 
-            foreach ($story->dataset()->all() as $index => $argument) {
+            $index = 0;
+            foreach ($story->dataset()->all() as $argument) {
+                $index++;
                 $argumentName = array_shift($argumentNames);
 
                 // Shouldn't be asking for the dataset if you're not going to utilise the dataset
                 if ($argumentName === null) {
                     throw ActionMustAcceptAllDatasetArgumentsException::make(
                         action: $this,
-                        datasetIndexMissing: $index + 1,
+                        datasetIndexMissing: $index,
                     );
                 }
 
@@ -267,7 +271,7 @@ class Action
          * the variable specified with this action.
          */
         $variable ??= $this->getVariable();
-        $story->setData($variable, $value);
+        $story->set($variable, $value);
 
         $this->callbackRun('after');
     }

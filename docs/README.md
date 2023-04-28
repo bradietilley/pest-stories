@@ -44,18 +44,18 @@ The data repository is powered by `\Illuminate\Support\Arr::` so dot notation is
 test('your test')
     ->action(function (Story $story) {
         // Get a variable
-        $bar = $story->getData('foor.bar', default: null);
+        $bar = $story->get('foor.bar', default: null);
 
         // Set a variable
-        $story->setData('foo.baz', value: 123);
+        $story->set('foo.baz', value: 123);
 
         // Check existence of a variable
-        if ($story->hasData('foo.baz')) {
+        if ($story->has('foo.baz')) {
             // do something
         }
 
         // Get all variables
-        $data = $story->allData();
+        $data = $story->all();
     });
 ```
 
@@ -388,7 +388,7 @@ test('can do something')
         // $story is the underlying story for the test
         // $test is the underlying test from `test('can do something')`
         // $product is derived from the returned value from 'create_product'
-        $product === $story->getData('product'); // true
+        $product === $story->get('product'); // true
     });
 ```
 

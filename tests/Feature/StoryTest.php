@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Pest\Factories\TestCaseMethodFactory;
 use Pest\PendingCalls\TestCall;
 use PHPUnit\Framework\IncompleteTestError;
+use Tests\Fixtures\AnExampleActionWithData;
 
 uses(Stories::class);
 
@@ -35,7 +36,7 @@ test('can do something like in pest')
 
 test('can do something nice with variables')
     ->action(function (Story $story) {
-        expect($story->getData('product'))->toBeNull();
+        expect($story->get('product'))->toBeNull();
     })
     ->action('create_product')
     ->action(function (Story $story, array $product) {
@@ -45,13 +46,13 @@ test('can do something nice with variables')
             'sku' => 'test',
         ];
 
-        expect($story->getData('product'))->toBe($expect);
+        expect($story->get('product'))->toBe($expect);
         expect($product)->toBe($expect);
     });
 
 test('another test will not inherit story variables from another story')
     ->action(function (Story $story) {
-        expect($story->getData('product'))->toBeNull();
+        expect($story->get('product'))->toBeNull();
     });
 
 test('an action with a name uses the given name')
@@ -149,19 +150,41 @@ test('a story can call a null callback safely', function () {
 });
 
 test('a story data repository supports checking existence', function () {
-    $story = story();
+    $story = story()->use();
 
-    expect($story->hasData('foo'))->toBeFalse();
+    expect($story->has('foo'))->toBeFalse();
 
-    $story->setData('foo', [
+    $story->set('foo', [
         'bar' => [
             'baz' => 123,
         ],
     ]);
 
-    expect($story->hasData('foo'))->toBeTrue();
-    expect($story->hasData('foo.bar'))->toBeTrue();
-    expect($story->hasData('foo.bar.baz'))->toBeTrue();
+    expect($story->has('foo'))->toBeTrue();
+    expect($story->has('foo.bar'))->toBeTrue();
+    expect($story->has('foo.bar.baz'))->toBeTrue();
+
+    $story->merge([
+        'foo' => [
+            'baz' => [
+                'bar' => 456,
+            ],
+        ],
+    ]);
+
+    expect($story->all())->toBe([
+        'foo' => [
+            'bar' => [
+                'baz' => 123,
+            ],
+            'baz' => [
+                'bar' => 456,
+            ],
+        ],
+    ]);
+
+    $story->data->flush();
+    expect($story->all())->toBe([]);
 });
 
 test('a new story instance is created via the story helper when not run via Stories trait', function () {
@@ -174,4 +197,15 @@ test('a new story instance is created via the story helper when not run via Stor
 test('the current story instance is available via the story helper function')
     ->action(function (Story $story) {
         expect($story === story())->toBeTrue();
+    });
+
+test('an action can communicate easily with its parent story via reposes')
+    ->action(function () {
+        $abc = story()->get('abc');
+        expect($abc)->toBeNull();
+    })
+    ->action(AnExampleActionWithData::make())
+    ->action(function () {
+        $abc = story()->get('abc');
+        expect($abc)->toBe(123);
     });

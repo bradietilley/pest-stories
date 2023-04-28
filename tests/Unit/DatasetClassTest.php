@@ -1,7 +1,7 @@
 <?php
 
 use BradieTilley\Stories\Concerns\Stories;
-use BradieTilley\Stories\Exceptions\DatasetVariableUnavailableException;
+use BradieTilley\Stories\Exceptions\DataVariableUnavailableException;
 use function BradieTilley\Stories\Helpers\dataset;
 
 uses(Stories::class);
@@ -67,7 +67,7 @@ test('a dataset value can be overwritten on the fly')
 
 test('an exception is thrown when fetching a dataset index that does not exist')
     ->action(fn () => dataset()->get(0))
-    ->throws(DatasetVariableUnavailableException::class, 'The dataset (variable #0) is unavailable');
+    ->throws(DataVariableUnavailableException::class, 'The data (variable `0`) is unavailable');
 
 test('the dataset can be interacted with as an array')
     ->action(function () {
@@ -92,12 +92,23 @@ test('the dataset can be interacted with as an array')
         expect($dataset[1])->toBe('2');
         expect($dataset[2])->toBe('3');
 
-        expect(isset($dataset['a']))->toBeFalse();
-        expect($dataset['a'])->toBeNull();
+        expect(isset($dataset['a']))->toBeTrue();
+        expect($dataset['a'])->toBe('4');
         unset($dataset['a']);
 
         unset($dataset[2]);
         expect($dataset[2])->toBeNull();
+
+        $dataset->merge([
+            0 => 'new',
+            'a' => 'new2',
+        ]);
+
+        expect($dataset->toArray())->toBe([
+            0 => 'new',
+            1 => '2',
+            'a' => 'new2',
+        ]);
     })
     ->with([
         'values' => ['a', 'b', 'c'],

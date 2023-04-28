@@ -4,29 +4,34 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
+use BradieTilley\Stories\Repositories\DataRepository;
 use Closure;
 use Illuminate\Container\Container;
-use Illuminate\Support\Arr;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 
 class Story
 {
+    use Reposes;
+
+    protected static ?Story $instance = null;
+
     /**
      * @var array<int, Action>
      */
     protected array $actions = [];
 
-    /**
-     * @var array<mixed>
-     */
-    protected array $data = [];
-
-    protected static ?Story $instance = null;
+    public DataRepository $data;
 
     protected ?Dataset $dataset = null;
+
+    public function __construct()
+    {
+        $this->data = new DataRepository();
+    }
 
     /**
      * (Internal function) Set the current story that is being invoked
@@ -42,6 +47,16 @@ class Story
     public static function getInstance(): ?Story
     {
         return static::$instance;
+    }
+
+    /**
+     * (Internal function) use this story as the current instance
+     */
+    public function use(): static
+    {
+        self::setInstance($this);
+
+        return $this;
     }
 
     /**
@@ -72,47 +87,11 @@ class Story
     {
         if (is_string($expect)) {
             /** @phpstan-ignore-next-line */
-            return expect($this)->getData($expect);
+            return expect($this)->get($expect);
         }
 
         /** @phpstan-ignore-next-line */
         return expect($this)->callCallback($expect);
-    }
-
-    /**
-     * Get a shared variable in this story
-     */
-    public function getData(string $key, mixed $default = null): mixed
-    {
-        return Arr::get($this->data, $key, $default);
-    }
-
-    /**
-     * Set a shared variable in this story
-     */
-    public function setData(string $key, mixed $value): static
-    {
-        Arr::set($this->data, $key, $value);
-
-        return $this;
-    }
-
-    /**
-     * Check the existence of a shared variable in this story
-     */
-    public function hasData(string $key): bool
-    {
-        return Arr::has($this->data, $key);
-    }
-
-    /**
-     * Get all shared variables in this story
-     *
-     * @return array<string, mixed>
-     */
-    public function allData(): array
-    {
-        return $this->data;
     }
 
     /**
@@ -147,8 +126,8 @@ class Story
     /**
      * Get a list of arguments that may be injected into Closure callbacks
      *
-     * @param  array<string, mixed>  $additional
-     * @return array<string, mixed>
+     * @param  array<mixed>  $additional
+     * @return array<mixed>
      */
     public function getCallbackArguments(array $additional = []): array
     {
@@ -157,7 +136,7 @@ class Story
                 'story' => $this,
                 'test' => $this->getTest(),
             ],
-            $this->allData(),
+            $this->all(),
             $additional,
         );
 

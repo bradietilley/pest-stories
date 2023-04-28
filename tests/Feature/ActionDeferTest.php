@@ -5,7 +5,6 @@ use BradieTilley\Stories\Concerns\Stories;
 use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
-use BradieTilley\Stories\Story;
 use Tests\Fixtures\DeferrableAction;
 use Tests\Fixtures\DeferredAction;
 
@@ -23,7 +22,7 @@ test('can determine if a class is a deferred action or not', function () {
 });
 
 test('an action can be created and deferred execution', function () {
-    Story::setInstance(story());
+    story()->use();
     DeferrableAction::$ran = [];
 
     $action = DeferrableAction::defer()->abc()->def()->ghi()->collection->push('foobar');
