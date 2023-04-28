@@ -146,7 +146,7 @@ test('a story will fail when fetching an action that does not exist')
     ->throws(StoryActionNotFoundException::class, 'Story action `this action does not exist` could not be found');
 
 test('a story can call a null callback safely', function () {
-    expect(story()->callCallback(null))->toBeNull();
+    expect(story()->call(null))->toBeNull();
 });
 
 test('a story data repository supports checking existence', function () {
