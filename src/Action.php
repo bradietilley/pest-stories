@@ -7,6 +7,7 @@ namespace BradieTilley\Stories;
 use BradieTilley\Stories\Concerns\Binds;
 use BradieTilley\Stories\Concerns\Events;
 use BradieTilley\Stories\Concerns\Repeats;
+use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
 use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException;
@@ -30,6 +31,7 @@ class Action
     use Times;
     use Events;
     use Binds;
+    use Reposes;
 
     /**
      * The name of the action

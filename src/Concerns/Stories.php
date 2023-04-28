@@ -41,7 +41,7 @@ trait Stories
     public function story(): Story
     {
         $this->story ??= new Story();
-        Story::setInstance($this->story);
+        $this->story->use();
 
         return $this->story;
     }

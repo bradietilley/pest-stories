@@ -4,25 +4,29 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use Closure;
 use Illuminate\Container\Container;
-use Illuminate\Support\Arr;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 
 class Story
 {
+    use Reposes;
+
     /**
      * @var array<int, Action>
      */
     protected array $actions = [];
 
     /**
+     * Variable repository
+     *
      * @var array<mixed>
      */
-    protected array $data = [];
+    public array $data = [];
 
     protected static ?Story $instance = null;
 
@@ -42,6 +46,16 @@ class Story
     public static function getInstance(): ?Story
     {
         return static::$instance;
+    }
+
+    /**
+     * (Internal function) use this story as the current instance
+     */
+    public function use(): static
+    {
+        self::setInstance($this);
+
+        return $this;
     }
 
     /**
@@ -77,42 +91,6 @@ class Story
 
         /** @phpstan-ignore-next-line */
         return expect($this)->callCallback($expect);
-    }
-
-    /**
-     * Get a shared variable in this story
-     */
-    public function getData(string $key, mixed $default = null): mixed
-    {
-        return Arr::get($this->data, $key, $default);
-    }
-
-    /**
-     * Set a shared variable in this story
-     */
-    public function setData(string $key, mixed $value): static
-    {
-        Arr::set($this->data, $key, $value);
-
-        return $this;
-    }
-
-    /**
-     * Check the existence of a shared variable in this story
-     */
-    public function hasData(string $key): bool
-    {
-        return Arr::has($this->data, $key);
-    }
-
-    /**
-     * Get all shared variables in this story
-     *
-     * @return array<string, mixed>
-     */
-    public function allData(): array
-    {
-        return $this->data;
     }
 
     /**

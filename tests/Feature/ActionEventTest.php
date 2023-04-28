@@ -2,11 +2,10 @@
 
 use function BradieTilley\Stories\Helpers\action;
 use function BradieTilley\Stories\Helpers\story;
-use BradieTilley\Stories\Story;
 use Illuminate\Support\Collection;
 
 test('an action before and after event correctly fire in order', function () {
-    Story::setInstance(story());
+    story()->use();
     $ran = Collection::make();
 
     action('a1')

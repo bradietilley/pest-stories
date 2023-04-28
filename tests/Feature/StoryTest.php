@@ -149,7 +149,7 @@ test('a story can call a null callback safely', function () {
 });
 
 test('a story data repository supports checking existence', function () {
-    $story = story();
+    $story = story()->use();
 
     expect($story->hasData('foo'))->toBeFalse();
 
