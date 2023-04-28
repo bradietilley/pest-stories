@@ -561,7 +561,7 @@ test('can do something')
 
 The above two automated solutions may not cater for all scenarios. You could instead retrieve the dataset arguments using the `story()->dataset()` method or `dataset()` function.
 
-This resolves an instance of `BradieTilley\Stories\Dataset` which stores each argument provided in the current dataset.
+This resolves an instance of `BradieTilley\Stories\Repositories\Dataset` which stores each argument provided in the current dataset.
 
 ```php
 ->action(function () {

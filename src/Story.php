@@ -7,6 +7,7 @@ namespace BradieTilley\Stories;
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\DataRepository;
+use BradieTilley\Stories\Repositories\Dataset;
 use Closure;
 use Illuminate\Container\Container;
 use Pest\Expectations\HigherOrderExpectation;
