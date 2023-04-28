@@ -16,4 +16,4 @@ _Explain the changes you've made_
 
 ## Contributing Guideline
 
-Please read the [Contributing](https://github.com/bradietilley/pest-stories/blob/master/.github/CONTRIBUTING.md) Guideline doc.
+Please read the [Contributing](https://github.com/bradietilley/pest-stories/blob/main/.github/CONTRIBUTING.md) Guideline doc.
