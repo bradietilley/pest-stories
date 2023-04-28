@@ -6,6 +6,7 @@ namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
+use BradieTilley\Stories\Repositories\DataRepository;
 use Closure;
 use Illuminate\Container\Container;
 use Pest\Expectations\HigherOrderExpectation;
@@ -16,21 +17,21 @@ class Story
 {
     use Reposes;
 
+    protected static ?Story $instance = null;
+
     /**
      * @var array<int, Action>
      */
     protected array $actions = [];
 
-    /**
-     * Variable repository
-     *
-     * @var array<mixed>
-     */
-    public array $data = [];
-
-    protected static ?Story $instance = null;
+    public DataRepository $data;
 
     protected ?Dataset $dataset = null;
+
+    public function __construct()
+    {
+        $this->data = new DataRepository();
+    }
 
     /**
      * (Internal function) Set the current story that is being invoked
@@ -125,8 +126,8 @@ class Story
     /**
      * Get a list of arguments that may be injected into Closure callbacks
      *
-     * @param  array<string, mixed>  $additional
-     * @return array<string, mixed>
+     * @param  array<mixed>  $additional
+     * @return array<mixed>
      */
     public function getCallbackArguments(array $additional = []): array
     {

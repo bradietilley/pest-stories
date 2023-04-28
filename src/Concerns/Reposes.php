@@ -3,16 +3,29 @@
 namespace BradieTilley\Stories\Concerns;
 
 use function BradieTilley\Stories\Helpers\story;
-use Illuminate\Support\Arr;
+use BradieTilley\Stories\Repositories\DataRepository;
+use BradieTilley\Stories\Story;
 
 trait Reposes
 {
+    /**
+     * Get the data repository to use for this story or action
+     */
+    private function getStoryRepository(): DataRepository
+    {
+        if ($this instanceof Story) {
+            return $this->data;
+        }
+
+        return story()->data;
+    }
+
     /**
      * Get a shared variable in this story
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return Arr::get(story()->data, $key, $default);
+        return $this->getStoryRepository()->getOr($key, $default);
     }
 
     /**
@@ -20,7 +33,7 @@ trait Reposes
      */
     public function set(string $key, mixed $value): static
     {
-        Arr::set(story()->data, $key, $value);
+        $this->getStoryRepository()->set($key, $value);
 
         return $this;
     }
@@ -30,17 +43,17 @@ trait Reposes
      */
     public function has(string $key): bool
     {
-        return Arr::has(story()->data, $key);
+        return $this->getStoryRepository()->has($key);
     }
 
     /**
      * Get all shared variables in this story
      *
-     * @return array<string, mixed>
+     * @return array<mixed>
      */
     public function all(): array
     {
-        return story()->data;
+        return $this->getStoryRepository()->all();
     }
 
     /**
@@ -50,7 +63,7 @@ trait Reposes
      */
     public function merge(array $data): static
     {
-        story()->data = array_replace(story()->data, $data);
+        $this->getStoryRepository()->merge($data);
 
         return $this;
     }

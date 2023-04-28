@@ -202,14 +202,16 @@ class Action
             $argumentNames = CallbackReflection::make($callback)->arguments();
             $newArguments = [];
 
+            $index = 0;
             foreach ($story->dataset()->all() as $index => $argument) {
+                $index++;
                 $argumentName = array_shift($argumentNames);
 
                 // Shouldn't be asking for the dataset if you're not going to utilise the dataset
                 if ($argumentName === null) {
                     throw ActionMustAcceptAllDatasetArgumentsException::make(
                         action: $this,
-                        datasetIndexMissing: $index + 1,
+                        datasetIndexMissing: $index,
                     );
                 }
 
