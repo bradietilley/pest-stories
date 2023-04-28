@@ -48,7 +48,7 @@ test('a data repo can remember values')
         expect($repo->get('abc'))->toBe('my text');
         expect($repo->has('def'))->toBeFalse();
 
-        $value = $repo->remember('abc', fn () => 'my second text');
+        $value = story()->remember('abc', fn () => 'my second text');
         expect($value)->toBe('my text');
 
         expect($repo->get('abc'))->toBe('my text');

@@ -5,6 +5,7 @@ namespace BradieTilley\Stories\Concerns;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\Repositories\DataRepository;
 use BradieTilley\Stories\Story;
+use Closure;
 
 trait Reposes
 {
@@ -66,5 +67,13 @@ trait Reposes
         $this->getStoryRepository()->merge($data);
 
         return $this;
+    }
+
+    /**
+     * Set the data if not set, and fetch it.
+     */
+    public function remember(int|string $index, Closure $callback): mixed
+    {
+        return $this->getStoryRepository()->remember($index, $callback);
     }
 }
