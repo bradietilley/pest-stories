@@ -98,6 +98,17 @@ test('the dataset can be interacted with as an array')
 
         unset($dataset[2]);
         expect($dataset[2])->toBeNull();
+
+        $dataset->merge([
+            0 => 'new',
+            'a' => 'new2',
+        ]);
+
+        expect($dataset->toArray())->toBe([
+            0 => 'new',
+            1 => '2',
+            'a' => 'new2',
+        ]);
     })
     ->with([
         'values' => ['a', 'b', 'c'],
