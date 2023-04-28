@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Pest\Factories\TestCaseMethodFactory;
 use Pest\PendingCalls\TestCall;
 use PHPUnit\Framework\IncompleteTestError;
+use Tests\Fixtures\AnExampleActionWithData;
 
 uses(Stories::class);
 
@@ -162,6 +163,25 @@ test('a story data repository supports checking existence', function () {
     expect($story->has('foo'))->toBeTrue();
     expect($story->has('foo.bar'))->toBeTrue();
     expect($story->has('foo.bar.baz'))->toBeTrue();
+
+    $story->merge([
+        'foo' => [
+            'baz' => [
+                'bar' => 456,
+            ],
+        ],
+    ]);
+
+    expect($story->all())->toBe([
+        'foo' => [
+            'bar' => [
+                'baz' => 123,
+            ],
+            'baz' => [
+                'bar' => 456,
+            ],
+        ],
+    ]);
 });
 
 test('a new story instance is created via the story helper when not run via Stories trait', function () {
@@ -174,4 +194,15 @@ test('a new story instance is created via the story helper when not run via Stor
 test('the current story instance is available via the story helper function')
     ->action(function (Story $story) {
         expect($story === story())->toBeTrue();
+    });
+
+test('an action can communicate easily with its parent story via reposes')
+    ->action(function () {
+        $abc = story()->get('abc');
+        expect($abc)->toBeNull();
+    })
+    ->action(AnExampleActionWithData::make())
+    ->action(function () {
+        $abc = story()->get('abc');
+        expect($abc)->toBe(123);
     });
