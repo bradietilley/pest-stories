@@ -69,7 +69,7 @@ class Action
 
         $this->callback = $callback;
         $this->actions = Collection::make();
-        $this->remember();
+        $this->store();
         $this->boot();
     }
 
@@ -144,7 +144,7 @@ class Action
      * Store this action in the action repository so that
      * it can be referenced later
      */
-    public function remember(): static
+    public function store(): static
     {
         Actions::store($this->name, $this);
 
