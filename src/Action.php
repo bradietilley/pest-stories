@@ -196,7 +196,7 @@ class Action
      *
      * @param  array<string, mixed>  $additional
      */
-    public function callCallback(Story $story, callable $callback, array $additional = []): mixed
+    public function call(Story $story, callable $callback, array $additional = []): mixed
     {
         if ($this->requiresDataset) {
             /** @var string|array<string>|Closure $callback */
@@ -223,7 +223,7 @@ class Action
         }
 
         /** @var callable $callback */
-        return $story->callCallback($callback, $additional);
+        return $story->call($callback, $additional);
     }
 
     /**
@@ -262,7 +262,7 @@ class Action
          * Call the callback (__invoke method or Closure callback)
          * with the story's arguments
          */
-        $value = $this->callCallback($story, $callback, [
+        $value = $this->call($story, $callback, [
             'action' => $this,
         ] + $arguments);
 

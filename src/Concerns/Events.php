@@ -35,7 +35,7 @@ trait Events
         $story = story();
 
         foreach ($this->callbacks[$name] ?? [] as $callback) {
-            $story->callCallback($callback, [
+            $story->call($callback, [
                 'action' => $this,
             ]);
         }

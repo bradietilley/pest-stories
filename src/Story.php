@@ -91,7 +91,7 @@ class Story
         }
 
         /** @phpstan-ignore-next-line */
-        return expect($this)->callCallback($expect);
+        return expect($this)->call($expect);
     }
 
     /**
@@ -114,7 +114,7 @@ class Story
      *
      * @param  array<string, mixed>  $additional
      */
-    public function callCallback(callable $callback = null, array $additional = []): mixed
+    public function call(callable $callback = null, array $additional = []): mixed
     {
         if ($callback === null) {
             return null;

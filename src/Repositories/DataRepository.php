@@ -92,7 +92,7 @@ class DataRepository implements Arrayable, ArrayAccess, Iterator
     public function remember(int|string $index, Closure $callback): mixed
     {
         if (! $this->has($index)) {
-            $this->set($index, story()->callCallback($callback));
+            $this->set($index, story()->call($callback));
         }
 
         return $this->get($index);
