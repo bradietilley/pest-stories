@@ -69,7 +69,7 @@ class DataRepository implements Arrayable, ArrayAccess, Iterator
      */
     public function merge(array $data): self
     {
-        $this->data = array_replace($this->data, $data);
+        $this->data = array_replace_recursive($this->data, $data);
 
         return $this;
     }
