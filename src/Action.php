@@ -14,6 +14,7 @@ use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
 use BradieTilley\Stories\Exceptions\StoryActionNotFoundException;
 use BradieTilley\Stories\Helpers\CallbackReflection;
+use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
 use Closure;
@@ -282,8 +283,10 @@ class Action
      *
      * @param  array<string, mixed>  $arguments
      */
-    public function run(Story $story, array $arguments = [], string $variable = null): void
+    public function run(Story $story = null, array $arguments = [], string $variable = null): void
     {
+        $story ??= story();
+
         if ($this->hasTimer()) {
             $this->timer()->start();
         }
