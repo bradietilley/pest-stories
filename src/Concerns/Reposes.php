@@ -10,7 +10,7 @@ trait Reposes
     /**
      * Get a shared variable in this story
      */
-    public function getData(string $key, mixed $default = null): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
         return Arr::get(story()->data, $key, $default);
     }
@@ -18,7 +18,7 @@ trait Reposes
     /**
      * Set a shared variable in this story
      */
-    public function setData(string $key, mixed $value): static
+    public function set(string $key, mixed $value): static
     {
         Arr::set(story()->data, $key, $value);
 
@@ -28,7 +28,7 @@ trait Reposes
     /**
      * Check the existence of a shared variable in this story
      */
-    public function hasData(string $key): bool
+    public function has(string $key): bool
     {
         return Arr::has(story()->data, $key);
     }
@@ -38,7 +38,7 @@ trait Reposes
      *
      * @return array<string, mixed>
      */
-    public function allData(): array
+    public function all(): array
     {
         return story()->data;
     }
@@ -48,7 +48,7 @@ trait Reposes
      *
      * @param  array<mixed>  $data
      */
-    public function mergeData(array $data): static
+    public function merge(array $data): static
     {
         story()->data = array_replace(story()->data, $data);
 

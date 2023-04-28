@@ -86,7 +86,7 @@ class Story
     {
         if (is_string($expect)) {
             /** @phpstan-ignore-next-line */
-            return expect($this)->getData($expect);
+            return expect($this)->get($expect);
         }
 
         /** @phpstan-ignore-next-line */
@@ -135,7 +135,7 @@ class Story
                 'story' => $this,
                 'test' => $this->getTest(),
             ],
-            $this->allData(),
+            $this->all(),
             $additional,
         );
 

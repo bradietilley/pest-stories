@@ -269,7 +269,7 @@ class Action
          * the variable specified with this action.
          */
         $variable ??= $this->getVariable();
-        $story->setData($variable, $value);
+        $story->set($variable, $value);
 
         $this->callbackRun('after');
     }
