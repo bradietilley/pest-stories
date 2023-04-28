@@ -4,6 +4,8 @@ namespace BradieTilley\Stories\Repositories;
 
 use ArrayAccess;
 use BradieTilley\Stories\Exceptions\DataVariableUnavailableException;
+use function BradieTilley\Stories\Helpers\story;
+use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Iterator;
@@ -82,6 +84,18 @@ class DataRepository implements Arrayable, ArrayAccess, Iterator
         $this->data = [];
 
         return $this;
+    }
+
+    /**
+     * Set the data if not set, and fetch it.
+     */
+    public function remember(int|string $index, Closure $callback): mixed
+    {
+        if (! $this->has($index)) {
+            $this->set($index, story()->callCallback($callback));
+        }
+
+        return $this->get($index);
     }
 
     /**
