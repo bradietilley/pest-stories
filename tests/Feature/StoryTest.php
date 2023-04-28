@@ -182,6 +182,9 @@ test('a story data repository supports checking existence', function () {
             ],
         ],
     ]);
+
+    $story->data->flush();
+    expect($story->all())->toBe([]);
 });
 
 test('a new story instance is created via the story helper when not run via Stories trait', function () {

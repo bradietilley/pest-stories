@@ -75,6 +75,16 @@ class DataRepository implements Arrayable, ArrayAccess, Iterator
     }
 
     /**
+     * Empty this data repository
+     */
+    public function flush(): self
+    {
+        $this->data = [];
+
+        return $this;
+    }
+
+    /**
      * Convert this to array (fetch all)
      *
      * @return array<mixed>
