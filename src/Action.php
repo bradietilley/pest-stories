@@ -203,7 +203,7 @@ class Action
             $newArguments = [];
 
             $index = 0;
-            foreach ($story->dataset()->all() as $index => $argument) {
+            foreach ($story->dataset()->all() as $argument) {
                 $index++;
                 $argumentName = array_shift($argumentNames);
 
