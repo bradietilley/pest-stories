@@ -58,7 +58,7 @@ class PendingActionCall
         }
 
         // Fetch the namespace and construct arguments
-        $construct = array_shift($this->pending);
+        $construct = $this->pending[0];
 
         /** @var class-string $name */
         $name = $construct['name'];
@@ -83,7 +83,11 @@ class PendingActionCall
          */
         $result = $action;
 
-        foreach ($this->pending as $invocation) {
+        foreach ($this->pending as $index => $invocation) {
+            if ($index === 0) {
+                continue;
+            }
+
             /** @var string $name */
             $name = $invocation['name'];
 
