@@ -127,3 +127,12 @@ test('nested actions', function () {
         'all',
     ]);
 });
+
+test('the result of an action is returned from the run and process methods')
+    ->action(function () {
+        $result = AnExampleAction::make()->run(arguments: [
+            'abc' => 8,
+        ]);
+
+        expect($result)->toBe(16);
+    });

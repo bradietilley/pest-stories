@@ -231,7 +231,7 @@ class Action
      *
      * @param  array<string, mixed>  $arguments
      */
-    private function process(Story $story, array $arguments = [], string $variable = null): void
+    private function process(Story $story, array $arguments = [], string $variable = null): mixed
     {
         $this->callbackRun('before');
 
@@ -275,6 +275,8 @@ class Action
         $story->set($variable, $value);
 
         $this->callbackRun('after');
+
+        return $value;
     }
 
     /**
@@ -283,7 +285,7 @@ class Action
      *
      * @param  array<string, mixed>  $arguments
      */
-    public function run(Story $story = null, array $arguments = [], string $variable = null): void
+    public function run(Story $story = null, array $arguments = [], string $variable = null): mixed
     {
         $story ??= story();
 
@@ -291,15 +293,19 @@ class Action
             $this->timer()->start();
         }
 
+        $result = null;
+
         while ($this->repeats()) {
             $this->repeatsIncrement();
 
-            $this->process($story, arguments: $arguments, variable: $variable);
+            $result = $this->process($story, arguments: $arguments, variable: $variable);
         }
 
         if ($this->hasTimer()) {
             $this->timer()->end()->check();
         }
+
+        return $result;
     }
 
     /**
