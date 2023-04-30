@@ -35,7 +35,7 @@ function action(string $name = null, Closure $callback = null, string $variable 
  *
  * @return Dataset|mixed
  */
-function dataset(int $index = null, mixed $value = null): mixed
+function dataset(int|string $index = null, mixed $value = null): mixed
 {
     $dataset = story()->dataset();
 
