@@ -473,7 +473,7 @@ Should you not want to continually remember which action classes require immedia
 
 #### Datasets in Actions
 
-Datasets behave slightly differently in Stories or, specifically, Actions. From the outset, the syntax is no different, but how you interact with the arguments may differ.
+Datasets behave slightly differently in Stories or, specifically, Actions. From the outset, the syntax is no different, but how you interact with the arguments slightly differs.
 
 In standard Pest or PHPUnit the dataset arguments are simply passed in from left-to-right.
 
@@ -496,78 +496,62 @@ test('a plain pest test', function (string $word, int $number) {
  */
 ```
 
-In Pest actions, it's the same, but the way the arguments are passed in must continue to work with the action's [Dependency Injection](#dependency-injection).
+In Pest actions, it's mostly the same, but due to the [Dependency Injection](#dependency-injection) feature, these arguments must be named to leverage automatic injection, and it didn't make sense to continue to support
+the left-to-right injection approach, albeit supported for Pest Stories version `0.3`.
 
-By default any action will allow any arguments, including story variables and a few keywords - `$test`, `$story` and `$action`. If you want an action to take the story's dataset arguments just like in normal Pest and PHPUnit, you can tag an action as requiring a dataset.
+So how can you leverage datasets?
 
-**Marking as action as supporting/requiring a dataset**
+**String keyed dataset arguments**
 
 ```php
 action('do_something', function (string $word, int $number) {
-    dump($word, $number);
-})->dataset();
+    dump('word: ' . $word, 'number 1: ' . $number);
+});
+
+action('do_something_else_with_number', function (string $word, int $number) {
+    dump('number 2: ' . $number);
+});
 
 test('a story pest test')
     ->action('do_something')
+    ->action('do_something_else_with_number')
     ->with([
-        'custom subtext 1' => [ 'foo', 123 ],
-        'custom subtext 2' => [ 'bar', 456 ],
+        'custom subtext 1' => [
+            'word' => 'foo',
+            'number' => 123,
+        ],
+        'custom subtext 2' => [
+            'number' => 456,
+            'word' => 'bar', // the ordering of arguments is irrelevant unlike in standard Pest/PHPUnit.
+        ],
     ]);
 
 /**
  * >> a plain pest test with dataset "custom subtext 1"
- * dumps: foo
- * dumps: 123
+ * 
+ *     word: foo
+ *     number 1: 123
+ *     number 2: 123
  * 
  * >> a plain pest test with dataset "custom subtext 2"
- * dumps: bar
- * dumps: 456
- */
-```
-
-**Adding an action and temporarily require datasets**
-
-In this scenario, an action may take some arguments but not be specifically requiring the dataset provided from each story the action is added to, but you may wish to inject the dataset into this action on a case-by-case basis. An example of this could be an `as_role` action that accepts a `$role` argument -- most occurrence of this action may not interact with the dataset, but, you may wish to utilise a story's dataset on the action just for the given story.
-
-To achieve this:
-
-
-```php
-action('as_role', function (string $role) {
-    dump($role);
-})->dataset();
-
-test('can do something')
-    ->action('do_something', dataset: true)
-    ->with([
-        'as a super admin' => [ 'super_admin' ],
-        'as an admin' => [ 'admin' ],
-        'as a customer' => [ 'customer' ],
-    ]);
-
-/**
- * >> can do something with dataset "as a super admin"
- * dumps: super_admin
  * 
- * >> can do something with dataset "as an admin"
- * dumps: admin
- * 
- * >> can do something with dataset "as a customer"
- * dumps: customer
+ *     word: bar
+ *     number 1: 456
+ *     number 2: 456
  */
 ```
 
 **Retrieving the dataset arguments anywhere**
 
-The above two automated solutions may not cater for all scenarios. You could instead retrieve the dataset arguments using the `story()->dataset()` method or `dataset()` function.
+The above automated solution may not cater for all scenarios, or you may dislike the repetition of string keys in your dataset and opt for plain integer keyed datasets.
 
-This resolves an instance of `BradieTilley\Stories\Repositories\Dataset` which stores each argument provided in the current dataset.
+Instead, you could retrieve the dataset arguments using the `story()->dataset()` method or `dataset()` function. This resolves an instance of `BradieTilley\Stories\Repositories\Dataset` which stores each argument provided in the current dataset. This supports both integer and string keyed dataset arguments.
 
 ```php
 ->action(function () {
     $dataset = story()->dataset();
 
-    // interact with $dataset
+    // interact with $dataset (see examples below)
 })
 ->with([
     'something abc' => [
@@ -588,55 +572,125 @@ This resolves an instance of `BradieTilley\Stories\Repositories\Dataset` which s
 **Getting a dataset argument**
 
 ```php
-dataset(0);
+// Helper function
+dataset(0); // e.g. abc
+dataset(1); // e.g. 123
 
-dataset()[0];
+// Array Access
+dataset()[0]; // e.g. abc
 
-dataset()->get(0);
+// Via instance
+dataset()->get(0); // e.g. abc
 
-story()->dataset()->get(0);
+// Via story instance
+story()->dataset()->get(0); // e.g. abc
 ```
 
 **Setting/overwriting a dataset argument**
 
 ```php
-dataset(0, 'Replace with this value')
+// Helper function
+dataset(0, 'New value')
 
-dataset()[0] = 'Replace with this value';
+// Array Access
+dataset()[0] = 'New value';
 
-dataset()->set(0, 'Replace with this value');
+// Via instance
+dataset()->set(0, 'New value');
 
-story()->dataset()->set(0, 'Replace with this value');
+// Via story instance
+story()->dataset()->set(0, 'New value');
 ```
 
 **Checking a dataset argument**
 
 ```php
-dataset()->has(0);
-
+// Array Access
 isset(dataset()[0]);
 
+// Via instance
+dataset()->has(0);
+
+// Via story instance
 story()->dataset()->has(0);
 ```
 
 **Unsetting a dataset argument**
 
 ```php
-dataset()->unset(0);
-
+// Array Access
 unset(dataset()[0]);
 
+// Via instance
+dataset()->unset(0);
+
+// Via story instance
 story()->dataset()->unset(0);
 ```
 
 **Iterating the dataset arguments**
 
 ```php
+// Via instance
 foreach (dataset() as $index => $value) {
     
 }
 
+// Via story instance
 foreach (story()->dataset() as $index => $value) {
     
 }
+```
+
+**Mapping integer keys to story variables**
+
+Should you want to easily map the integer keyed dataset values to story variables, you can always manually map them using the `test()->mapDataset()` or `dataset()->mapIntoStory()` methods.
+
+```php
+test('do something')
+    ->mapDataset([
+        'word',
+        'number',
+    ])
+    ->action(function (int $number, string $word) {
+        // word:   abc, def
+        // number: 123, 456
+    })
+    ->with([
+        ['abc', 123],
+        ['def', 456],
+    ]);
+```
+
+or
+
+```php
+test('do something')
+    ->action(function () {
+        dataset()->mapIntoStory([
+            'word',
+            'number',
+        ]);
+
+        story()->get('word');   // word:   abc, def
+        story()->get('number'); // number: 123, 456
+    });
+    ->with([
+        ['abc', 123],
+        ['def', 456],
+    ]);
+```
+
+While these two methods exist, it would still be recommended to use string based dataset arguments such as the below example for better flexibility:
+
+```php
+test('do something')
+    ->action(function () {
+        story()->get('word');   // word:   abc, def
+        story()->get('number'); // number: 123, 456
+    });
+    ->with([
+        [ 'word' => 'abc', 'number' => 123],
+        [ 'word' => 'def', 'number' => 456],
+    ]);
 ```
