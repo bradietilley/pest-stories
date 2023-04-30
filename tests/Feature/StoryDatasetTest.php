@@ -2,6 +2,7 @@
 
 use BradieTilley\Stories\Concerns\Stories;
 use function BradieTilley\Stories\Helpers\action;
+use function BradieTilley\Stories\Helpers\dataset;
 use BradieTilley\Stories\Story;
 
 uses(Stories::class);
@@ -129,3 +130,55 @@ test('after a normal action is temporarily assigned the dataaset')
         $requiresDataset = action()->fetch('do_something_in_general')->requiresDataset();
         expect($requiresDataset)->toBeFalse();
     });
+
+class TestStoryDatasetCounter
+{
+    public static int $index = 0;
+
+    public const DATASET_ONE = [
+        'abc' => 111,
+        'def' => 222,
+        'ghi' => 333,
+    ];
+
+    public const DATASET_TWO = [
+        'abc' => 444,
+        'def' => 555,
+        'ghi' => 666,
+    ];
+
+    public const DATASET_THREE = [
+        'abc' => 777,
+        'def' => 888,
+        'ghi' => 999,
+    ];
+}
+
+test('an test may be given a dataset with keyed values')
+    ->action(function () {
+        TestStoryDatasetCounter::$index++;
+
+        expect(dataset()->has('abc'))->toBeTrue();
+        expect(dataset()->has('def'))->toBeTrue();
+        expect(dataset()->has('ghi'))->toBeTrue();
+        expect(dataset()->has('jkl'))->toBeFalse();
+
+        $expect = match (TestStoryDatasetCounter::$index) {
+            1 => TestStoryDatasetCounter::DATASET_ONE,
+            2 => TestStoryDatasetCounter::DATASET_TWO,
+            3 => TestStoryDatasetCounter::DATASET_THREE,
+            default => throw new \Exception('Fail'),
+        };
+
+        expect(dataset()->all())->toBe($expect);
+
+        $actualAbc = dataset('abc');
+        $expectAbc = $expect['abc'];
+
+        expect($actualAbc)->toBe($expectAbc);
+    })
+    ->with([
+        'custom message 1' => TestStoryDatasetCounter::DATASET_ONE,
+        'custom message 2' => TestStoryDatasetCounter::DATASET_TWO,
+        'custom message 3' => TestStoryDatasetCounter::DATASET_THREE,
+    ]);
