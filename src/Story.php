@@ -69,16 +69,12 @@ class Story
      *
      * @param  array<string, mixed>  $arguments
      */
-    public function action(string|Closure|Action|PendingActionCall $action, array $arguments = [], string $variable = null, bool $dataset = false): static
+    public function action(string|Closure|Action|PendingActionCall $action, array $arguments = [], string $variable = null): static
     {
         $action = Action::parse($action);
         $action = Action::resolve($action);
 
         $action = $action->fresh($this);
-
-        if ($dataset) {
-            $action->dataset();
-        }
 
         $action->run($this, arguments: $arguments, variable: $variable);
 

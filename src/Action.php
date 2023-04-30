@@ -11,10 +11,8 @@ use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\Concerns\Times;
 use BradieTilley\Stories\Contracts\Deferred;
-use BradieTilley\Stories\Exceptions\ActionMustAcceptAllDatasetArgumentsException;
 use BradieTilley\Stories\Exceptions\StoryActionInvalidException;
 use BradieTilley\Stories\Exceptions\StoryActionNotFoundException;
-use BradieTilley\Stories\Helpers\CallbackReflection;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
@@ -66,9 +64,6 @@ class Action
      * persisted here is not shared back to the story.
      */
     public DataRepository $internal;
-
-    /** Does this action expect its arguments to be the dataset, verbatim to what is provided by the test? */
-    protected bool $requiresDataset = false;
 
     public function __construct(string $name = null, ?Closure $callback = null, string $variable = null)
     {
@@ -212,30 +207,6 @@ class Action
      */
     public function call(Story $story, callable $callback, array $additional = []): mixed
     {
-        if ($this->requiresDataset) {
-            /** @var string|array<string>|Closure $callback */
-            $argumentNames = CallbackReflection::make($callback)->arguments();
-            $newArguments = [];
-
-            $index = 0;
-            foreach ($story->dataset()->all() as $argument) {
-                $index++;
-                $argumentName = array_shift($argumentNames);
-
-                // Shouldn't be asking for the dataset if you're not going to utilise the dataset
-                if ($argumentName === null) {
-                    throw ActionMustAcceptAllDatasetArgumentsException::make(
-                        action: $this,
-                        datasetIndexMissing: $index,
-                    );
-                }
-
-                $newArguments[$argumentName] = $argument;
-            }
-
-            $additional = array_replace($additional, $newArguments);
-        }
-
         /** @var callable $callback */
         return $story->call($callback, $additional);
     }
@@ -443,25 +414,5 @@ class Action
         $this->variable = $variable;
 
         return $this;
-    }
-
-    /**
-     * Expect the dataset to be passed to this action
-     *
-     * @codeCoverageIgnore -- this method is run but code coverage is turning a blind eye
-     */
-    public function dataset(): static
-    {
-        $this->requiresDataset = true;
-
-        return $this;
-    }
-
-    /**
-     * Does this action require the dataset
-     */
-    public function requiresDataset(): bool
-    {
-        return $this->requiresDataset;
     }
 }
