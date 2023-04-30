@@ -17,6 +17,7 @@ use BradieTilley\Stories\Helpers\CallbackReflection;
 use function BradieTilley\Stories\Helpers\story;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\Actions;
+use BradieTilley\Stories\Repositories\DataRepository;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -54,6 +55,14 @@ class Action
      */
     protected Collection $actions;
 
+    /**
+     * Internal data reposity for this action alone.
+     *
+     * Unlike that provided by `Reposes` trait, data
+     * persisted here is not shared back to the story.
+     */
+    public DataRepository $internal;
+
     /** Does this action expect its arguments to be the dataset, verbatim to what is provided by the test? */
     protected bool $requiresDataset = false;
 
@@ -68,6 +77,7 @@ class Action
         }
 
         $this->callback = $callback;
+        $this->internal = new DataRepository();
         $this->actions = Collection::make();
         $this->store();
         $this->boot();

@@ -2,6 +2,7 @@
 
 use BradieTilley\Stories\Concerns\Stories;
 use function BradieTilley\Stories\Helpers\story;
+use Tests\Fixtures\AnExampleActionWithInternalData;
 
 uses(Stories::class);
 
@@ -73,3 +74,7 @@ test('a data repo can merge in bulk data')
         expect($repo->get('b'))->toBe('2');
         expect($repo->get('c'))->toBe('3');
     });
+
+test('an action has its own internal data repo')
+    ->action(fn () => story()->set('foo', 123))
+    ->action(AnExampleActionWithInternalData::class);
