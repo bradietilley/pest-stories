@@ -135,6 +135,8 @@ class TestStoryDatasetCounter
 {
     public static int $index = 0;
 
+    public static int $index2 = 0;
+
     public const DATASET_ONE = [
         'abc' => 111,
         'def' => 222,
@@ -154,7 +156,7 @@ class TestStoryDatasetCounter
     ];
 }
 
-test('an test may be given a dataset with keyed values')
+test('a test may be given a dataset with keyed values')
     ->action(function () {
         TestStoryDatasetCounter::$index++;
 
@@ -176,6 +178,34 @@ test('an test may be given a dataset with keyed values')
         $expectAbc = $expect['abc'];
 
         expect($actualAbc)->toBe($expectAbc);
+    })
+    ->with([
+        'custom message 1' => TestStoryDatasetCounter::DATASET_ONE,
+        'custom message 2' => TestStoryDatasetCounter::DATASET_TWO,
+        'custom message 3' => TestStoryDatasetCounter::DATASET_THREE,
+    ]);
+
+test('an action used by a story can accept dataset arguments by their respective names')
+    ->action(function (int $abc, int $def, int $ghi) {
+        TestStoryDatasetCounter::$index2++;
+
+        expect(dataset()->has('abc'))->toBeTrue();
+        expect(dataset()->has('def'))->toBeTrue();
+        expect(dataset()->has('ghi'))->toBeTrue();
+        expect(dataset()->has('jkl'))->toBeFalse();
+
+        $expect = match (TestStoryDatasetCounter::$index2) {
+            1 => TestStoryDatasetCounter::DATASET_ONE,
+            2 => TestStoryDatasetCounter::DATASET_TWO,
+            3 => TestStoryDatasetCounter::DATASET_THREE,
+            default => throw new \Exception('Fail'),
+        };
+
+        expect([
+            $abc,
+            $def,
+            $ghi,
+        ])->toBe(array_values($expect));
     })
     ->with([
         'custom message 1' => TestStoryDatasetCounter::DATASET_ONE,
