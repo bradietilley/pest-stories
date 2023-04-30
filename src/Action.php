@@ -267,6 +267,28 @@ class Action
         ] + $arguments);
 
         /**
+         * If the value returned is an action that is not the current
+         * action then we'll run that action right here right now.
+         *
+         * Typically this is seen when an inline action is defined and
+         * returns another action, which is an alternative way of
+         * deferring the computation of the action's chained methods.
+         *
+         * Example:
+         *
+         *     test('do something')
+         *         ->action(fn () => CreateUser::make()->admin()->login(), variable: 'user');
+         *
+         * The value of the action (inline action callback) becomes the
+         * value returned from the action within, so in the example above
+         * the 'user' variable becomes a User model (presuming CreateUser
+         * returns a User model).
+         */
+        if (($value instanceof Action) && ($value !== $this)) {
+            $value = $value->run($story, $arguments);
+        }
+
+        /**
          * Record the value returned from either the __invoke
          * method or the Closure callback against the story using
          * the variable specified with this action.

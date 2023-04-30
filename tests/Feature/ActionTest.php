@@ -136,3 +136,11 @@ test('the result of an action is returned from the run and process methods')
 
         expect($result)->toBe(16);
     });
+
+test('an action that returns another action results in the inner action being invoked')
+    ->action(fn () => AnExampleAction::make(), [
+        'abc' => 123,
+    ])
+    ->action(function (int $abc) {
+        expect($abc)->toBe(246);
+    });
