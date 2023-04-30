@@ -11,14 +11,16 @@ use BradieTilley\Stories\Repositories\DataRepository;
 use BradieTilley\Stories\Repositories\Dataset;
 use Closure;
 use Illuminate\Container\Container;
+use Illuminate\Support\Traits\Conditionable;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
 
 class Story
 {
-    use Reposes;
+    use Conditionable;
     use ProxiesData;
+    use Reposes;
 
     protected static ?Story $instance = null;
 

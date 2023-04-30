@@ -22,6 +22,7 @@ use BradieTilley\Stories\Repositories\DataRepository;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Conditionable;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -30,12 +31,13 @@ use ReflectionProperty;
  */
 class Action
 {
-    use Repeats;
-    use Times;
-    use Events;
     use Binds;
-    use Reposes;
+    use Conditionable;
+    use Events;
     use ProxiesData;
+    use Repeats;
+    use Reposes;
+    use Times;
 
     /**
      * The name of the action
