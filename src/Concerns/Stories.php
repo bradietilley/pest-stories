@@ -61,6 +61,18 @@ trait Stories
     }
 
     /**
+     * Map the dataset keys into story variables
+     *
+     * @param  array<string, string>  $map
+     */
+    public function mapDataset(array $map): static
+    {
+        $this->story()->dataset()->mapIntoStory($map);
+
+        return $this;
+    }
+
+    /**
      * Add an expectation to this story / test case
      */
     public function expects(string|Closure $action): HigherOrderExpectation

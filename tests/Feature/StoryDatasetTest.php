@@ -122,3 +122,16 @@ test('an action used by a story can fetch dataset arguments by their integer ind
         array_values(TestStoryDatasetCounter::DATASET_TWO),
         array_values(TestStoryDatasetCounter::DATASET_THREE),
     ]);
+
+test('you can map integer dataset into story variables')
+    ->mapDataset([
+        'word',
+        'number',
+    ])
+    ->action(function (string $word, int $number) {
+        expect($word)->toBe('abc');
+        expect($number)->toBe(123);
+    })
+    ->with([
+        ['abc', 123],
+    ]);
