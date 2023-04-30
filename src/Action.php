@@ -6,6 +6,7 @@ namespace BradieTilley\Stories;
 
 use BradieTilley\Stories\Concerns\Binds;
 use BradieTilley\Stories\Concerns\Events;
+use BradieTilley\Stories\Concerns\ProxiesData;
 use BradieTilley\Stories\Concerns\Repeats;
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\Concerns\Times;
@@ -34,6 +35,7 @@ class Action
     use Events;
     use Binds;
     use Reposes;
+    use ProxiesData;
 
     /**
      * The name of the action

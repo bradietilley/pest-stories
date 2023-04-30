@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Concerns\ProxiesData;
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\DataRepository;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 class Story
 {
     use Reposes;
+    use ProxiesData;
 
     protected static ?Story $instance = null;
 
