@@ -141,6 +141,7 @@ class Story
                 'story' => $this,
                 'test' => $this->getTest(),
             ],
+            $this->dataset()->all(),
             $this->all(),
             $additional,
         );
