@@ -15,6 +15,7 @@ use Illuminate\Support\Traits\Conditionable;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class Story
 {
@@ -102,7 +103,7 @@ class Story
     {
         if ($this->dataset === null) {
             /** @var array<int, mixed> $dataset */
-            $dataset = $this->getTest()->providedData();
+            $dataset = $this->getTestSafe()?->providedData() ?? [];
 
             $this->dataset ??= new Dataset($dataset);
         }
@@ -135,7 +136,7 @@ class Story
         $arguments = array_replace(
             [
                 'story' => $this,
-                'test' => $this->getTest(),
+                'test' => $this->getTestSafe(),
             ],
             $this->dataset()->all(),
             $this->all(),
@@ -143,6 +144,21 @@ class Story
         );
 
         return $arguments;
+    }
+
+    /**
+     * Get the test case or null if not booted yet.
+     *
+     * This is when you're using story() outside of a test case
+     * such as in the beforeAll function.
+     */
+    public function getTestSafe(): ?TestCase
+    {
+        try {
+            return $this->getTest();
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
