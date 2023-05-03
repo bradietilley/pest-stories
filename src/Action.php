@@ -59,7 +59,7 @@ class Action
     protected Collection $actions;
 
     /**
-     * Internal data reposity for this action alone.
+     * Internal data repository for this action alone.
      *
      * Unlike that provided by `Reposes` trait, data
      * persisted here is not shared back to the story.
