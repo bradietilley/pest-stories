@@ -252,8 +252,9 @@ class Action
         ] + $arguments);
 
         /**
-         * If the value returned is an action that is not the current
-         * action then we'll run that action right here right now.
+         * If the value returned is a pending action call or an action
+         * that is not the current action then we'll run that action
+         * right here right now.
          *
          * Typically this is seen when an inline action is defined and
          * returns another action, which is an alternative way of
@@ -269,9 +270,7 @@ class Action
          * the 'user' variable becomes a User model (presuming CreateUser
          * returns a User model).
          */
-        if (($value instanceof Action) && ($value !== $this)) {
-            $value = $value->run($story, $arguments);
-        }
+        $value = $this->resolveValue($value, $story, $arguments, $variable);
 
         /**
          * Record the value returned from either the __invoke
@@ -394,6 +393,28 @@ class Action
     public static function resolve(Action|PendingActionCall $action): Action
     {
         return ($action instanceof PendingActionCall) ? $action->resolvePendingAction() : $action;
+    }
+
+    /**
+     * Resolve the given Pending Action Call, Action or return the given value
+     *
+     * @param  array<mixed>  $arguments
+     */
+    public function resolveValue(mixed $action, Story $story, array $arguments = [], string $variable = null): mixed
+    {
+        if ($action instanceof PendingActionCall) {
+            $action = $this->resolve($action);
+        }
+
+        if (($action instanceof Action) && ($action !== $this)) {
+            $action = $action->run(
+                story: $story,
+                arguments: $arguments,
+                variable: $variable
+            );
+        }
+
+        return $action;
     }
 
     /**
