@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use ReflectionClass;
+use ReflectionFunction;
 use ReflectionProperty;
 
 /**
@@ -381,7 +382,7 @@ class Action
         }
 
         if ($action instanceof Closure) {
-            $action = new Action('inline@'.Str::random(8), $action);
+            $action = new Action(self::generateNameForClosure($action), $action);
         }
 
         return $action;
@@ -435,5 +436,26 @@ class Action
         $this->variable = $variable;
 
         return $this;
+    }
+
+    /**
+     * Generate a name from the given closure
+     */
+    public static function generateNameForClosure(Closure $closure): string
+    {
+        $reflection = new ReflectionFunction($closure);
+
+        $file = $reflection->getFileName();
+        $line = $reflection->getStartLine();
+        $rand = Str::random(8);
+
+        $name = sprintf(
+            'inline@%s:%d[%s]',
+            $file,
+            $line,
+            $rand,
+        );
+
+        return $name;
     }
 }

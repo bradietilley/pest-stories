@@ -5,26 +5,28 @@ namespace BradieTilley\Stories\Helpers;
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use Closure;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionParameter;
 use Throwable;
 
+/** @property array<string>|string|Closure $callback */
 class CallbackReflection
 {
-    /** @var array<string>|string|Closure */
-    protected $callback;
-
     /** @var ?array<string> */
     protected ?array $arguments = null;
+
+    protected ?string $uniqueName = null;
+
+    protected ReflectionFunction|ReflectionMethod|null $reflection = null;
 
     /**
      * @param  array<string>|string|Closure  $callback
      */
-    public function __construct(array|string|Closure $callback)
+    public function __construct(protected array|string|Closure $callback)
     {
-        $this->callback = $callback;
     }
 
     /**
@@ -36,6 +38,38 @@ class CallbackReflection
     }
 
     /**
+     * Get the reflection of the method or function
+     */
+    public function reflection(): ReflectionFunction|ReflectionMethod
+    {
+        if ($this->reflection !== null) {
+            return $this->reflection;
+        }
+
+        $reflection = null;
+        $callback = $this->callback;
+
+        if ($callback instanceof Closure || is_string($callback)) {
+            $reflection = new ReflectionFunction($callback);
+        }
+
+        if (is_array($callback) && isset($callback[0]) && isset($callback[1])) {
+            $class = $callback[0];
+            $method = $callback[1];
+
+            $reflection = new ReflectionMethod($class, $method);
+        }
+
+        if ($reflection === null) {
+            throw new InvalidArgumentException('Callback reflection format not supported');
+        }
+
+        return $reflection;
+    }
+
+    /**
+     * Get a list of argument names expected by the given closure
+     *
      * @return array<string>
      */
     public function arguments(): array
@@ -47,26 +81,8 @@ class CallbackReflection
         }
 
         try {
-            $reflection = null;
-            $callback = $this->callback;
-
-            if ($callback instanceof Closure || is_string($callback)) {
-                $reflection = new ReflectionFunction($callback);
-            }
-
-            if (is_array($callback) && isset($callback[0]) && isset($callback[1])) {
-                $class = $callback[0];
-                $method = $callback[1];
-
-                $reflection = new ReflectionMethod($class, $method);
-            }
-
-            if ($reflection === null) {
-                throw new InvalidArgumentException('Callback reflection format not supported');
-            }
-
             /** @var array<string> $arguments */
-            $arguments = Collection::make($reflection->getParameters())
+            $arguments = Collection::make($this->reflection()->getParameters())
                 ->map(function (ReflectionParameter $parameter) {
                     return $parameter->getName();
                 })
@@ -76,5 +92,40 @@ class CallbackReflection
         }
 
         return $this->arguments = $arguments;
+    }
+
+    /**
+     * Get a unique name for this callback.
+     *
+     * The format of the name for closures will be:
+     *
+     *     inline@\Path\to\FileWithClosure.php:123[RaNd0M]
+     *
+     * or for non-closures it will be:
+     *
+     *     func@\Path\to\ClassWithMethod.php:456[R4nD0m]
+     */
+    public function uniqueName(): string
+    {
+        if ($this->uniqueName !== null) {
+            // @codeCoverageIgnoreStart
+            return $this->uniqueName;
+            // @codeCoverageIgnoreEnd
+        }
+
+        $type = ($this->callback instanceof Closure) ? 'inline' : 'func';
+        $file = $this->reflection()->getFileName();
+        $line = $this->reflection()->getStartLine();
+        $rand = Str::random(8);
+
+        $name = sprintf(
+            '%s@%s:%d[%s]',
+            $type,
+            $file,
+            $line,
+            $rand,
+        );
+
+        return $this->uniqueName = $name;
     }
 }
