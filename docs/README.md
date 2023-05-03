@@ -14,6 +14,7 @@ Pest Stories can really boil down to a couple key areas:
   - [Dependency Injection](#dependency-injection)
   - [Nesting Actions](#nested-actions)
   - [Deferring Actions](#deferring-actions)
+- [Pest Features](#pest-features)
 
 ## Stories
 
@@ -694,3 +695,23 @@ test('do something')
         [ 'word' => 'def', 'number' => 456],
     ]);
 ```
+
+# Pest Features
+
+All of Pest's features should continue to operate as normal, as Pest Stories is powered through a Test Case trait.
+
+These include (but presumably are not limited to):
+
+- `test('')->with('dataset')` - see [dataset](#datasets-in-actions)
+- `test('')->skip('this test was skipped')`
+- `test('')->todo()`
+- `test('')->group('api', 'third_party')`
+- `test('')->throws(SomeException::class, 'Some exception message')`
+- `test('')->depends()`
+- `test('')->only()`
+- `test('')->covers('ClassOrFunction')`
+- `beforeAll($callback)`
+- `afterAll($callback)`
+- `beforeEach($callback)`
+- `afterEach($callback)`
+- `uses(TraitOrClass::class)->in('Dir')`
