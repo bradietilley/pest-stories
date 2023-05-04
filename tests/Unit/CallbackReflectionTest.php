@@ -2,7 +2,7 @@
 
 use BradieTilley\Stories\Action;
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
-use BradieTilley\Stories\Helpers\CallbackReflection;
+use BradieTilley\Stories\Helpers\ReflectionCallback;
 use Illuminate\Support\Str;
 
 test('a callback reflection can identify arguments of a closure', function () {
@@ -14,7 +14,7 @@ test('a callback reflection can identify arguments of a closure', function () {
         'def',
         'ghi',
     ];
-    $actual = CallbackReflection::make($callable)->arguments();
+    $actual = ReflectionCallback::make($callable)->arguments();
 
     expect($actual)->toBe($expect);
 });
@@ -26,7 +26,7 @@ test('a callback reflection can identify arguments of a global function', functi
         'description',
         'closure',
     ];
-    $actual = CallbackReflection::make($callable)->arguments();
+    $actual = ReflectionCallback::make($callable)->arguments();
 
     expect($actual)->toBe($expect);
 });
@@ -42,27 +42,27 @@ test('a callback reflection can identify arguments of a class method', function 
         'arguments',
         'variable',
     ];
-    $actual = CallbackReflection::make($callable)->arguments();
+    $actual = ReflectionCallback::make($callable)->arguments();
 
     expect($actual)->toBe($expect);
 });
 
 test('cannot reflect a function that does not exist', function () {
-    CallbackReflection::make('a_function_that_does_not_exist')->arguments();
+    ReflectionCallback::make('a_function_that_does_not_exist')->arguments();
 })->throws(
     FailedToIdentifyCallbackArgumentsException::class,
     'Failed to identify callback arguments: Function a_function_that_does_not_exist() does not exist',
 );
 
 test('cannot reflect a class method that does not exist', function () {
-    CallbackReflection::make([Action::class, 'aMethodThatDoesNotExist'])->arguments();
+    ReflectionCallback::make([Action::class, 'aMethodThatDoesNotExist'])->arguments();
 })->throws(
     FailedToIdentifyCallbackArgumentsException::class,
     'Failed to identify callback arguments: Method BradieTilley\Stories\Action::aMethodThatDoesNotExist() does not exist',
 );
 
 test('cannot reflect a class method that is invalid', function () {
-    CallbackReflection::make([
+    ReflectionCallback::make([
         'only one argument',
     ])->arguments();
 })->throws(
@@ -78,7 +78,7 @@ test('can generate a unique name for a closure', function () {
     $file = __FILE__;
 
     $expect = "inline@{$file}:{$line}";
-    $callback = CallbackReflection::make($closure);
+    $callback = ReflectionCallback::make($closure);
 
     $actual = $callback->uniqueName();
     expect($actual)->toStartWith($expect);
