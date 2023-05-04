@@ -86,3 +86,38 @@ test('can generate a unique name for a closure', function () {
     $actual = Str::replaceFirst($expect, '', $actual);
     expect($actual)->toMatch('/^\[[a-z0-9]{8}\]$/i');
 });
+
+test('can generate an exceptionName for any given callback', function () {
+    /**
+     * Closure
+     */
+    $line = __LINE__ + 1;
+    $closure = fn () => null;
+
+    $actual = ReflectionCallback::make($closure)->exceptionName();
+    $expect = 'callable: `'.__FILE__.':'.$line.'`';
+    expect($actual)->toBe($expect);
+
+    /**
+     * Function
+     */
+    $actual = ReflectionCallback::make('pest_stories_test_function_example')->exceptionName();
+    $expect = 'function: `pest_stories_test_function_example()`';
+    expect($actual)->toBe($expect);
+
+    /**
+     * Method
+     */
+    $actual = ReflectionCallback::make(['PestStoriesTestFunctionExample', 'someMethod'])->exceptionName();
+    $expect = 'method: `PestStoriesTestFunctionExample::someMethod()`';
+    expect($actual)->toBe($expect);
+});
+
+test('cannot generate exceptionName for invalid array-based callable', function () {
+    /**
+     * Method
+     */
+    $actual = ReflectionCallback::make([348975349875, 'someMethod'])->exceptionName();
+    $expect = 'method: <unknown array format>';
+    expect($actual)->toBe($expect);
+});

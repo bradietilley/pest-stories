@@ -176,7 +176,7 @@ class ReflectionCallback
         $reflection = ReflectionCallback::make($callback);
 
         return sprintf(
-            '%s:%d',
+            'callable: `%s:%d`',
             $reflection->reflection()->getFileName(),
             $reflection->reflection()->getStartLine(),
         );
