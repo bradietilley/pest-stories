@@ -4,12 +4,10 @@ namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use Closure;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use ReflectionFunction;
 use ReflectionMethod;
-use ReflectionParameter;
 use Throwable;
 
 /** @property array<string|object>|string|Closure $callback */
@@ -63,11 +61,10 @@ class ReflectionCallback
             // @codeCoverageIgnoreEnd
         }
 
-        $reflection = null;
         $callback = $this->callback;
 
         if ($callback instanceof Closure || is_string($callback)) {
-            $reflection = new ReflectionFunction($callback);
+            return $this->reflection = new ReflectionFunction($callback);
         }
 
         if (is_array($callback) && isset($callback[0]) && isset($callback[1])) {
@@ -76,14 +73,10 @@ class ReflectionCallback
             /** @var string $method */
             $method = $callback[1];
 
-            $reflection = new ReflectionMethod($class, $method);
+            return $this->reflection = new ReflectionMethod($class, $method);
         }
 
-        if ($reflection === null) {
-            throw new InvalidArgumentException('Callback reflection format not supported');
-        }
-
-        return $reflection;
+        throw new InvalidArgumentException('Callback reflection format not supported');
     }
 
     /**
@@ -99,18 +92,17 @@ class ReflectionCallback
             // @codeCoverageIgnoreEnd
         }
 
+        $this->arguments = [];
+
         try {
-            /** @var array<string> $arguments */
-            $arguments = Collection::make($this->reflection()->getParameters())
-                ->map(function (ReflectionParameter $parameter) {
-                    return $parameter->getName();
-                })
-                ->toArray();
+            foreach ($this->reflection()->getParameters() as $parameter) {
+                $this->arguments[] = $parameter->getName();
+            }
         } catch (Throwable $exception) {
             throw FailedToIdentifyCallbackArgumentsException::make($exception);
         }
 
-        return $this->arguments = $arguments;
+        return $this->arguments;
     }
 
     /**
