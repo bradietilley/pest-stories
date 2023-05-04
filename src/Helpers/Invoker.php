@@ -3,6 +3,7 @@
 namespace BradieTilley\Stories\Helpers;
 
 use BradieTilley\Stories\Contracts\Invoker as ContractsInvoker;
+use BradieTilley\Stories\Exceptions\CallbackNotCallableException;
 use Closure;
 use Illuminate\Support\Collection;
 use Throwable;
@@ -27,8 +28,8 @@ class Invoker implements ContractsInvoker
         try {
             /** @var callable $callback */
             return $callback(...$args);
-        } catch (Throwable $e) {
-            dd($e, $callback, $args);
+        } catch (Throwable $throwable) {
+            throw CallbackNotCallableException::make($callback, $throwable);
         }
     }
 
