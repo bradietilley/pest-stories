@@ -58,6 +58,8 @@ class ReflectionCallback
     public function reflection(): ReflectionFunction|ReflectionMethod
     {
         if ($this->reflection !== null) {
+            // @codeCoverageIgnoreStart
+            // @codeCoverageIgnoreStart
             return $this->reflection;
         }
 
