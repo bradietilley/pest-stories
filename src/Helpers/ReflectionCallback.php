@@ -59,8 +59,8 @@ class ReflectionCallback
     {
         if ($this->reflection !== null) {
             // @codeCoverageIgnoreStart
-            // @codeCoverageIgnoreStart
             return $this->reflection;
+            // @codeCoverageIgnoreEnd
         }
 
         $reflection = null;
