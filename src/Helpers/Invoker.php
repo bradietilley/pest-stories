@@ -6,8 +6,8 @@ use BradieTilley\Stories\Contracts\Invoker as ContractsInvoker;
 use BradieTilley\Stories\Exceptions\CallbackNotCallableException;
 use BradieTilley\Stories\Exceptions\MissingRequiredArgumentsException;
 use Closure;
+use Error;
 use Illuminate\Support\Collection;
-use Throwable;
 use TypeError;
 
 class Invoker implements ContractsInvoker
@@ -38,8 +38,12 @@ class Invoker implements ContractsInvoker
             }
 
             throw MissingRequiredArgumentsException::make($callback, $error);
-        } catch (Throwable $throwable) {
-            throw CallbackNotCallableException::make($callback, $throwable);
+        } catch (Error $error) {
+            if (! $this->relevantVisibilityError($error)) {
+                throw $error;
+            }
+
+            throw CallbackNotCallableException::make($callback, $error);
         }
     }
 
@@ -60,6 +64,26 @@ class Invoker implements ContractsInvoker
 
         /** @var array<int, mixed> $arguments */
         return $arguments;
+    }
+
+    public function relevantVisibilityError(Error $error): bool
+    {
+        $file = $error->getFile();
+        $line = $error->getLine();
+
+        if ($file !== __FILE__) {
+            return false;
+        }
+
+        if ($line !== self::INVOKES_FROM_LINE) {
+            return false;
+        }
+
+        $message = $error->getMessage();
+        $regex = '/Call to (private|protected) method .+/';
+        $relevant = (bool) preg_match($regex, $message);
+
+        return $relevant;
     }
 
     public function relevantTypeError(TypeError $error): bool

@@ -1,5 +1,6 @@
 <?php
 
+use BradieTilley\Stories\Exceptions\CallbackNotCallableException;
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use BradieTilley\Stories\Exceptions\MissingRequiredArgumentsException;
 use BradieTilley\Stories\Helpers\Invoker;
@@ -8,6 +9,7 @@ use BradieTilley\Stories\Story;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
 use Tests\Fixtures\AnExampleAction;
+use Tests\Fixtures\AnExampleClassWithPrivateMethod;
 
 test('invoker can invoke a basic closure', function () {
     $ran = Collection::make();
@@ -124,7 +126,50 @@ test('a story cannot invoke a method that is missing a required argument', funct
     MissingRequiredArgumentsException::class,
     'Missing required arguments for callback invocation: Tests\Fixtures\AnExampleAction::__invoke(): Argument #2 ($abc) must be of type int, null given',
 );
-// ->throws(
-//     CallbackNotCallableException::class,
-//     'Cannot call non-callable callback: method: `Tests\Fixtures\AnExampleAction::__invoke()`',
-// );
+
+test('an invoked callback that throws an internal exception will bubble out of the invoker', function () {
+    Story::invokeUsing(Invoker::make());
+
+    story()->fresh()
+        ->use()
+        ->set('def', 111) // no abc
+        ->call(function () {
+            throw new InvalidArgumentException('An example error that still bubbles outside of Invoker');
+        });
+})->throws(
+    InvalidArgumentException::class,
+    'An example error that still bubbles outside of Invoker',
+);
+
+test('can invoke methods on objects', function (string $visibility, string $static, int $return, ?string $expectError = null) {
+    Story::invokeUsing(Invoker::make());
+
+    $class = ($static === 'static') ? AnExampleClassWithPrivateMethod::class : new AnExampleClassWithPrivateMethod();
+    $static = ucfirst($static);
+    $method = "{$visibility}InvokeMe{$static}";
+
+    $value = null;
+    $exception = null;
+
+    try {
+        $value = story()->fresh()
+            ->use()
+            ->call([$class, $method]);
+    } catch (CallbackNotCallableException $exception) {
+    }
+
+    if ($expectError === null) {
+        expect($exception)->toBeNull();
+        expect($value)->toBe($return);
+    } else {
+        expect($exception->getMessage())->toBe($expectError);
+        expect($value)->toBeNull();
+    }
+})->with([
+    'private method' => ['private', '', 1, 'Cannot call non-callable callback: method: `Tests\Fixtures\AnExampleClassWithPrivateMethod::privateInvokeMe()`'],
+    'protected method' => ['protected', '', 2, 'Cannot call non-callable callback: method: `Tests\Fixtures\AnExampleClassWithPrivateMethod::protectedInvokeMe()`'],
+    'public method' => ['public', '', 3, null],
+    'private static method' => ['private', 'static', 4, 'Cannot call non-callable callback: method: `Tests\Fixtures\AnExampleClassWithPrivateMethod::privateInvokeMeStatic()`'],
+    'protected static method' => ['protected', 'static', 5, 'Cannot call non-callable callback: method: `Tests\Fixtures\AnExampleClassWithPrivateMethod::protectedInvokeMeStatic()`'],
+    'public static method' => ['public', 'static', 6, null],
+]);
