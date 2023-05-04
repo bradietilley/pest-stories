@@ -3,6 +3,7 @@
 namespace BradieTilley\Stories\Concerns;
 
 use BradieTilley\Stories\Contracts\Invoker;
+use BradieTilley\Stories\Helpers\Invoker as HelpersInvoker;
 use Closure;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Container\Container;
@@ -41,7 +42,7 @@ trait Invokes
     /**
      * Call the given callback with dependency injection
      *
-     * @param  array<string>|string|Closure|callable  $callback
+     * @param  array<string|object>|string|Closure|callable  $callback
      * @param  array<string, mixed>  $additional
      */
     public function call(array|string|Closure|callable $callback = null, array $additional = []): mixed
@@ -52,7 +53,10 @@ trait Invokes
 
         $arguments = $this->getCallbackArguments($additional);
 
-        return $this->invoker()->call($callback, $arguments);
+        /** @var Invoker|Container|HelpersInvoker $invoker */
+        $invoker = $this->invoker();
+
+        return $invoker->call($callback, $arguments);
     }
 
     /**

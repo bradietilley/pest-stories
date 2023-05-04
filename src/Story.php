@@ -57,6 +57,19 @@ class Story
     }
 
     /**
+     * Create a fresh story. The use case for this is rare.
+     *
+     * Useful in the following syntax:
+     *
+     *      story()->fresh()->use();
+     */
+    public function fresh(): static
+    {
+        /** @phpstan-ignore-next-line */
+        return new static();
+    }
+
+    /**
      * (Internal function) use this story as the current instance
      */
     public function use(): static
