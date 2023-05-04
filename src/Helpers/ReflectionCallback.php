@@ -13,16 +13,24 @@ use ReflectionParameter;
 use Throwable;
 
 /** @property array<string>|string|Closure $callback */
-class CallbackReflection
+class ReflectionCallback
 {
     /** @var ?array<string> */
     protected ?array $arguments = null;
 
+    /**
+     * A unique name for this callback (see uniqueName() method)
+     */
     protected ?string $uniqueName = null;
 
+    /**
+     * The underlying ReflectionFunctionAbstract instance
+     */
     protected ReflectionFunction|ReflectionMethod|null $reflection = null;
 
     /**
+     * The callback function, method or Closure
+     * 
      * @var array<string>|string|Closure
      */
     protected array|string|Closure $callback;

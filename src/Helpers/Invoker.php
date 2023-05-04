@@ -41,7 +41,7 @@ class Invoker implements ContractsInvoker
      */
     public static function arguments(array|string|Closure|callable $callback, array $parameters = []): array
     {
-        $reflection = CallbackReflection::make($callback);
+        $reflection = ReflectionCallback::make($callback);
 
         $arguments = Collection::make($reflection->arguments())
             ->map(fn (string $key) => $parameters[$key])
