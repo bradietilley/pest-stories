@@ -10,7 +10,7 @@ use Error;
 use Illuminate\Support\Collection;
 use TypeError;
 
-class Invoker implements ContractsInvoker
+class StoryInvoker implements ContractsInvoker
 {
     public const INVOKES_FROM_LINE = 34;
 
