@@ -3,9 +3,8 @@
 namespace BradieTilley\Stories\Concerns;
 
 use BradieTilley\Stories\Contracts\Invoker;
-use BradieTilley\Stories\Helpers\Invoker as HelpersInvoker;
+use BradieTilley\Stories\Helpers\StoryInvoker;
 use Closure;
-use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Container\Container;
 
 /**
@@ -20,13 +19,13 @@ use Illuminate\Contracts\Container\Container;
 trait Invokes
 {
     /** The invoker instance to use when invoking callables */
-    protected static Invoker|null $invokeUsing = null;
+    protected static Invoker|Container|null $invokeUsing = null;
 
     /**
      * Replace the injectable instance with the given one, or default
      * to use Laravel's Container by passing null
      */
-    public static function invokeUsing(?Invoker $invoker): void
+    public static function invokeUsing(Invoker|Container|null $invoker): void
     {
         static::$invokeUsing = $invoker;
     }
@@ -36,7 +35,7 @@ trait Invokes
      */
     public function invoker(): Invoker|Container
     {
-        return static::$invokeUsing ?? Application::getInstance();
+        return static::$invokeUsing ?? new StoryInvoker();
     }
 
     /**
@@ -53,7 +52,7 @@ trait Invokes
 
         $arguments = $this->getCallbackArguments($additional);
 
-        /** @var Invoker|Container|HelpersInvoker $invoker */
+        /** @var Invoker|Container|StoryInvoker $invoker */
         $invoker = $this->invoker();
 
         return $invoker->call($callback, $arguments);

@@ -3,9 +3,10 @@
 use BradieTilley\Stories\Exceptions\CallbackNotCallableException;
 use BradieTilley\Stories\Exceptions\FailedToIdentifyCallbackArgumentsException;
 use BradieTilley\Stories\Exceptions\MissingRequiredArgumentsException;
-use BradieTilley\Stories\Helpers\Invoker;
 use function BradieTilley\Stories\Helpers\story;
+use BradieTilley\Stories\Helpers\StoryInvoker;
 use BradieTilley\Stories\Story;
+use Illuminate\Container\Container as ApplicationContainer;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
 use Tests\Fixtures\AnExampleAction;
@@ -20,7 +21,7 @@ test('invoker can invoke a basic closure', function () {
         return $ran->count();
     };
 
-    $invoker = Invoker::make();
+    $invoker = StoryInvoker::make();
 
     $response = $invoker->call($callback, [
         'bar' => 456,
@@ -51,18 +52,20 @@ test('invoker can invoke a basic closure', function () {
     ]);
 });
 
-test('a story invoker will be default be the laravel container', function () {
-    Story::invokeUsing(null);
+test('a story invoker will can be configured to be the laravel container', function () {
+    Story::invokeUsing(ApplicationContainer::getInstance());
 
     $story = story();
     expect($story->invoker())->toBeInstanceOf(Container::class);
+
+    Story::invokeUsing(null);
 });
 
-test('a story invoker can be configured to be the Pest Stories Invoker', function () {
-    Story::invokeUsing(Invoker::make());
+test('a story invoker will by default be the Pest Stories Invoker', function () {
+    Story::invokeUsing(null);
 
     $story = story();
-    expect($story->invoker())->toBeInstanceOf(Invoker::class);
+    expect($story->invoker())->toBeInstanceOf(StoryInvoker::class);
 });
 
 test('a story can invoke a custom closure callback', function () {
@@ -105,7 +108,7 @@ test('a story can invoke a custom Action __invoke method', function () {
 });
 
 test('a story cannot invoke a method that does not exist', function () {
-    Story::invokeUsing(Invoker::make());
+    Story::invokeUsing(StoryInvoker::make());
 
     story()->use()
         ->set('abc', 111)
@@ -116,7 +119,7 @@ test('a story cannot invoke a method that does not exist', function () {
 );
 
 test('a story cannot invoke a method that is missing a required argument', function () {
-    Story::invokeUsing(Invoker::make());
+    Story::invokeUsing(StoryInvoker::make());
 
     story()->fresh()
         ->use()
@@ -128,7 +131,7 @@ test('a story cannot invoke a method that is missing a required argument', funct
 );
 
 test('an invoked callback that throws an internal exception will bubble out of the invoker', function () {
-    Story::invokeUsing(Invoker::make());
+    Story::invokeUsing(StoryInvoker::make());
 
     story()->fresh()
         ->use()
@@ -142,7 +145,7 @@ test('an invoked callback that throws an internal exception will bubble out of t
 );
 
 test('can invoke methods on objects', function (string $visibility, string $static, int $return, ?string $expectError = null) {
-    Story::invokeUsing(Invoker::make());
+    Story::invokeUsing(StoryInvoker::make());
 
     $class = ($static === 'static') ? AnExampleClassWithPrivateMethod::class : new AnExampleClassWithPrivateMethod();
     $static = ucfirst($static);
