@@ -7,13 +7,28 @@ use BradieTilley\Stories\Exceptions\CallbackNotCallableException;
 use BradieTilley\Stories\Exceptions\MissingRequiredArgumentsException;
 use Closure;
 use Error;
-use Illuminate\Support\Collection;
 use TypeError;
 
+/**
+ * Provides similar functionality to Laravel's Container instance
+ * in terms of being able to call a callback and pass in arguments.
+ *
+ * Laravel's `Container::getInstance()->call()` is fantastic, but
+ * Xdebugging into StoryInvoker's `call()` method is 1 "step-over"
+ * for it to reach the invocation of the callback and perform a full
+ * invocation within 0.003s (based on benchmark test). On the other
+ * hand Xdebugging into Container's `call()` method is hundreds of
+ * step-in's and step-over's, and performs a full inocation within
+ * 0.006s (based on the same benchmark). Considering what it's doing,
+ * that's great, but for this purpose we don't need anything fancy.
+ *
+ * You can always opt in to use Container by running the below
+ * in your Pest.php file:
+ *
+ *     Story::invokeUsing(app());
+ */
 class StoryInvoker implements ContractsInvoker
 {
-    public const INVOKES_FROM_LINE = 34;
-
     public static function make(): self
     {
         return new self();
@@ -62,9 +77,11 @@ class StoryInvoker implements ContractsInvoker
     {
         $reflection = ReflectionCallback::make($callback);
 
-        $arguments = Collection::make($reflection->arguments())
-            ->map(fn (string $key) => $parameters[$key] ?? null)
-            ->toArray();
+        $arguments = [];
+
+        foreach ($reflection->arguments() as $key) {
+            $arguments[$key] = $parameters[$key] ?? null;
+        }
 
         /** @var array<int, mixed> $arguments */
         return $arguments;
@@ -76,12 +93,6 @@ class StoryInvoker implements ContractsInvoker
         $line = $error->getLine();
 
         if ($file !== __FILE__) {
-            // @codeCoverageIgnoreStart
-            return false;
-            // @codeCoverageIgnoreEnd
-        }
-
-        if ($line !== self::INVOKES_FROM_LINE) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
@@ -105,12 +116,6 @@ class StoryInvoker implements ContractsInvoker
         }
 
         if (($trace['file'] ?? '') !== __FILE__) {
-            // @codeCoverageIgnoreStart
-            return false;
-            // @codeCoverageIgnoreEnd
-        }
-
-        if (($trace['line'] ?? -1) !== self::INVOKES_FROM_LINE) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
