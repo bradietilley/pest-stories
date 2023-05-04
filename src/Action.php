@@ -204,11 +204,11 @@ class Action
     /**
      * Call the given callback with dependency injection
      *
+     * @param  array<string>|string|Closure|callable  $callback
      * @param  array<string, mixed>  $additional
      */
-    public function call(Story $story, callable $callback, array $additional = []): mixed
+    public function call(Story $story, array|string|Closure|callable $callback, array $additional = []): mixed
     {
-        /** @var callable $callback */
         return $story->call($callback, $additional);
     }
 

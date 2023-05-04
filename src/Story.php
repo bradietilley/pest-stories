@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace BradieTilley\Stories;
 
+use BradieTilley\Stories\Concerns\Invokes;
 use BradieTilley\Stories\Concerns\ProxiesData;
 use BradieTilley\Stories\Concerns\Reposes;
 use BradieTilley\Stories\PendingCalls\PendingActionCall;
 use BradieTilley\Stories\Repositories\DataRepository;
 use BradieTilley\Stories\Repositories\Dataset;
 use Closure;
-use Illuminate\Container\Container;
 use Illuminate\Support\Traits\Conditionable;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
@@ -22,6 +22,7 @@ class Story
     use Conditionable;
     use ProxiesData;
     use Reposes;
+    use Invokes;
 
     protected static ?Story $instance = null;
 
@@ -109,20 +110,6 @@ class Story
         }
 
         return $this->dataset;
-    }
-
-    /**
-     * Call the given callback with dependency injection
-     *
-     * @param  array<string, mixed>  $additional
-     */
-    public function call(callable $callback = null, array $additional = []): mixed
-    {
-        if ($callback === null) {
-            return null;
-        }
-
-        return Container::getInstance()->call($callback, $this->getCallbackArguments($additional));
     }
 
     /**

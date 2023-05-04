@@ -23,16 +23,23 @@ class CallbackReflection
     protected ReflectionFunction|ReflectionMethod|null $reflection = null;
 
     /**
-     * @param  array<string>|string|Closure  $callback
+     * @var array<string>|string|Closure
      */
-    public function __construct(protected array|string|Closure $callback)
+    protected array|string|Closure $callback;
+
+    /**
+     * @param  array<string>|string|Closure|callable  $callback
+     */
+    public function __construct(array|string|Closure|callable $callback)
     {
+        /** @phpstan-ignore-next-line */
+        $this->callback = $callback;
     }
 
     /**
-     * @param  array<string>|string|Closure  $callback
+     * @param  array<string>|string|Closure|callable  $callback
      */
-    public static function make(array|string|Closure $callback): self
+    public static function make(array|string|Closure|callable $callback): self
     {
         return new self($callback);
     }
