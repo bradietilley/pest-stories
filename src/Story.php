@@ -15,7 +15,6 @@ use Illuminate\Support\Traits\Conditionable;
 use Pest\Expectations\HigherOrderExpectation;
 use Pest\TestSuite;
 use PHPUnit\Framework\TestCase;
-use Throwable;
 
 class Story
 {
@@ -154,11 +153,7 @@ class Story
      */
     public function getTestSafe(): ?TestCase
     {
-        try {
-            return $this->getTest();
-        } catch (Throwable) {
-            return null;
-        }
+        return TestSuite::getInstance()->test;
     }
 
     /**
@@ -167,6 +162,6 @@ class Story
     public function getTest(): TestCase
     {
         /** @phpstan-ignore-next-line */
-        return TestSuite::getInstance()->test;
+        return $this->getTestSafe();
     }
 }

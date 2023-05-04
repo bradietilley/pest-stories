@@ -145,3 +145,12 @@ test('an action that returns another action results in the inner action being in
     ->action(function (int $abc) {
         expect($abc)->toBe(246);
     });
+
+test('an action that returns another action results in the inner action being invoked - deferred')
+    ->action(fn () => null)
+    ->action(fn () => AnExampleAction::defer(), [
+        'abc' => 123,
+    ])
+    ->action(function (int $abc) {
+        expect($abc)->toBe(246);
+    });

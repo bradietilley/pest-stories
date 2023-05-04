@@ -67,6 +67,8 @@ trait Invokes
      */
     public function getCallbackArguments(array $additional = []): array
     {
+        // @codeCoverageIgnoreStart
         return $additional;
+        // @codeCoverageIgnoreEnd
     }
 }

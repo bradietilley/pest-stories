@@ -34,13 +34,17 @@ class Invoker implements ContractsInvoker
             return $callback(...$args);
         } catch (TypeError $error) {
             if (! $this->relevantTypeError($error)) {
+                // @codeCoverageIgnoreStart
                 throw $error;
+                // @codeCoverageIgnoreEnd
             }
 
             throw MissingRequiredArgumentsException::make($callback, $error);
         } catch (Error $error) {
             if (! $this->relevantVisibilityError($error)) {
+                // @codeCoverageIgnoreStart
                 throw $error;
+                // @codeCoverageIgnoreEnd
             }
 
             throw CallbackNotCallableException::make($callback, $error);
@@ -72,11 +76,15 @@ class Invoker implements ContractsInvoker
         $line = $error->getLine();
 
         if ($file !== __FILE__) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         if ($line !== self::INVOKES_FROM_LINE) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $message = $error->getMessage();
@@ -91,15 +99,21 @@ class Invoker implements ContractsInvoker
         $trace = $error->getTrace()[0] ?? null;
 
         if ($trace === null) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         if (($trace['file'] ?? '') !== __FILE__) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         if (($trace['line'] ?? -1) !== self::INVOKES_FROM_LINE) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $message = $error->getMessage();
