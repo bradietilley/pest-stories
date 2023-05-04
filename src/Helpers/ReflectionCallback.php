@@ -12,7 +12,7 @@ use ReflectionMethod;
 use ReflectionParameter;
 use Throwable;
 
-/** @property array<string>|string|Closure $callback */
+/** @property array<string|object>|string|Closure $callback */
 class ReflectionCallback
 {
     /** @var ?array<string> */
@@ -30,13 +30,13 @@ class ReflectionCallback
 
     /**
      * The callback function, method or Closure
-     * 
-     * @var array<string>|string|Closure
+     *
+     * @var array<string|object>|string|Closure
      */
     protected array|string|Closure $callback;
 
     /**
-     * @param  array<string>|string|Closure|callable  $callback
+     * @param  array<string|object>|string|Closure|callable  $callback
      */
     public function __construct(array|string|Closure|callable $callback)
     {
@@ -45,7 +45,7 @@ class ReflectionCallback
     }
 
     /**
-     * @param  array<string>|string|Closure|callable  $callback
+     * @param  array<string|object>|string|Closure|callable  $callback
      */
     public static function make(array|string|Closure|callable $callback): self
     {
@@ -71,7 +71,9 @@ class ReflectionCallback
         }
 
         if (is_array($callback) && isset($callback[0]) && isset($callback[1])) {
+            /** @var string|object $class */
             $class = $callback[0];
+            /** @var string $method */
             $method = $callback[1];
 
             $reflection = new ReflectionMethod($class, $method);
@@ -144,5 +146,39 @@ class ReflectionCallback
         );
 
         return $this->uniqueName = $name;
+    }
+
+    public function exceptionName(): string
+    {
+        $callback = $this->callback;
+
+        if (is_string($callback)) {
+            return sprintf('function: `%s()`', $callback);
+        }
+
+        if (is_array($callback)) {
+            if (count($callback) === 2) {
+                $object = $callback[0] ?? null;
+                $method = $callback[1] ?? null;
+
+                if ((is_string($object) || is_object($object)) && is_string($method)) {
+                    if (is_object($object)) {
+                        $object = get_class($object);
+                    }
+
+                    return sprintf('method: `%s::%s()`', $object, $method);
+                }
+            }
+
+            return 'method: <unknown array format>';
+        }
+
+        $reflection = ReflectionCallback::make($callback);
+
+        return sprintf(
+            '%s:%d',
+            $reflection->reflection()->getFileName(),
+            $reflection->reflection()->getStartLine(),
+        );
     }
 }
