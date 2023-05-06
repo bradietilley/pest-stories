@@ -64,6 +64,15 @@ test('a story invoker will can be configured to be the laravel container', funct
     Story::invokeUsing(null);
 });
 
+test('a story invoker will can be configured to be the laravel container via app()', function () {
+    Story::invokeUsing(app());
+
+    $story = story();
+    expect($story->invoker())->toBeInstanceOf(Container::class);
+
+    Story::invokeUsing(null);
+});
+
 test('a story invoker will by default be the Pest Stories Invoker', function () {
     Story::invokeUsing(null);
 
