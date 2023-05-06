@@ -15,6 +15,7 @@ Pest Stories can really boil down to a couple key areas:
   - [Nesting Actions](#nested-actions)
   - [Deferring Actions](#deferring-actions)
 - [Pest Features](#pest-features)
+- [Troubleshooting](#troubleshooting)
 
 ## Stories
 
@@ -715,3 +716,19 @@ These include (but presumably are not limited to):
 - `beforeEach($callback)`
 - `afterEach($callback)`
 - `uses(TraitOrClass::class)->in('Dir')`
+
+# Troubleshooting
+
+## Exceptions
+
+### `Target class [url] does not exist.`
+
+**Issue:** Laravel's `action()` global function is used instead of the TestCase's `action()` method which is provided by `BradieTilley\Stories\Concerns\Stories` trait. 
+
+**Solution:** Simply add the `BradieTilley\Stories\Concerns\Stories` trait to your `TestCase.php` file, or add it via Pest's `uses` helper function `uses(\BradieTilley\Stories\Concerns\Stories::class);`
+
+### `Missing required arguments for callback invocation: {action}: Argument #{argIndex} (${argName}) must be of type {typeExpect}, {typeActual} given`
+
+**Issue:** An action is getting invoked that requires an argument. This argument must be fulfilled by another action, dataset, or by manually providing data to a story or action.
+
+**Solution:** The solution is dependent on what you're trying to achieve and what you've already done. You may have an action that sets the `{argName}` variable and you're expecting one thing but it's setting another. You may have forgotten to add an action or dataset. There's no single solution for this exception.
