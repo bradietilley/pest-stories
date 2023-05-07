@@ -5,6 +5,7 @@ namespace BradieTilley\Stories\Concerns;
 use BradieTilley\Stories\Contracts\Invoker;
 use BradieTilley\Stories\Helpers\StoryInvoker;
 use Closure;
+use Illuminate\Container\Container as ApplicationContainer;
 use Illuminate\Contracts\Container\Container;
 
 /**
@@ -13,8 +14,7 @@ use Illuminate\Contracts\Container\Container;
  * The Invoker will be responsible for providing the necessary arguments
  * when invoking the callback.
  *
- * Null will default to use Laravel's container, which has the same `call()`
- * method signature.
+ * Null will default to use the built-in Invoker class.
  */
 trait Invokes
 {
@@ -23,7 +23,8 @@ trait Invokes
 
     /**
      * Replace the injectable instance with the given one, or default
-     * to use Laravel's Container by passing null
+     * to use Laravel's Container by passing `app()` or the `Container`
+     * instance.
      */
     public static function invokeUsing(Invoker|Container|null $invoker): void
     {
@@ -31,11 +32,56 @@ trait Invokes
     }
 
     /**
+     * Invoke all story's callbacks using Laravel's Container callback
+     * invocation method `call()` instead of the Pest Stories built-in one.
+     */
+    public static function invokeUsingLaravel(): void
+    {
+        $app = ApplicationContainer::getInstance();
+
+        static::invokeUsing($app);
+    }
+
+    /**
+     * Invoke all story's callbacks using Laravel's Container callback
+     * invocation method `call()` instead of the Pest Stories built-in one.
+     */
+    public static function invokeUsingBuiltIn(): void
+    {
+        static::invokeUsing(null);
+    }
+
+    /**
+     * Invoke all story's callbacks using Laravel's Container callback
+     * invocation method `call()` instead of the Pest Stories built-in one.
+     *
+     * Non-static alias of `invokeUsingLaravel()`
+     */
+    public function usingLaravelInvoker(): static
+    {
+        static::invokeUsingLaravel();
+
+        return $this;
+    }
+
+    /**
+     * Invoke all story's callbacks using the built-in `StoryInvoker`.
+     *
+     * Non-static alias of `invokeUsingBuiltIn()`
+     */
+    public function usingBuiltInInvoker(): static
+    {
+        static::invokeUsingBuiltIn();
+
+        return $this;
+    }
+
+    /**
      * Get the injector to use
      */
     public function invoker(): Invoker|Container
     {
-        return static::$invokeUsing ?? new StoryInvoker();
+        return static::$invokeUsing ??= new StoryInvoker();
     }
 
     /**

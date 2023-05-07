@@ -65,7 +65,7 @@ test('a story invoker will can be configured to be the laravel container', funct
 });
 
 test('a story invoker will can be configured to be the laravel container via app()', function () {
-    Story::invokeUsing(app());
+    Story::invokeUsingLaravel();
 
     $story = story();
     expect($story->invoker())->toBeInstanceOf(Container::class);
@@ -249,4 +249,20 @@ test('the invoker runs quicker than the laravel container - invoker benchmark te
                 $benchmarks['container'],
             )
         );
+});
+
+test('you can enable laravel container invoker using helper function', function () {
+    story()->fresh()->use();
+    Story::invokeUsingBuiltIn();
+
+    story()->usingLaravelInvoker();
+    expect(story()->invoker())->toBeInstanceOf(Container::class);
+});
+
+test('you can enable built-in invoker using helper function', function () {
+    story()->fresh()->use();
+    Story::invokeUsingLaravel();
+
+    story()->usingBuiltInInvoker();
+    expect(story()->invoker())->toBeInstanceOf(StoryInvoker::class);
 });

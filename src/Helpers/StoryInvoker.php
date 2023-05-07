@@ -26,6 +26,8 @@ use TypeError;
  * in your Pest.php file:
  *
  *     Story::invokeUsing(app());
+ *     Story::invokeUsingLaravel();
+ *     story()->usingLaravelInvoker();
  */
 class StoryInvoker implements ContractsInvoker
 {
